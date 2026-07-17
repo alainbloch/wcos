@@ -1,0 +1,64 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <section class="admin-card mb-8">
+    <h2>Site Settings</h2>
+    <form action="/admin/settings" method="POST" class="admin-form" data-validate style="max-width: 600px;">
+      <div class="form-group">
+        <label for="siteName">Site Name</label>
+        <input type="text" id="siteName" name="siteName" class="form-input" value="{{ siteSettings.siteName }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="siteEmail">Site Email</label>
+        <input type="email" id="siteEmail" name="siteEmail" class="form-input" value="{{ siteSettings.siteEmail }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="heroTitle">Hero Title</label>
+        <input type="text" id="heroTitle" name="heroTitle" class="form-input" value="{{ siteSettings.heroTitle }}">
+      </div>
+
+      <div class="form-group">
+        <label for="heroSubtitle">Hero Subtitle</label>
+        <input type="text" id="heroSubtitle" name="heroSubtitle" class="form-input" value="{{ siteSettings.heroSubtitle }}">
+      </div>
+
+      <div class="form-group">
+        <label for="dojosText">Dojos Text</label>
+        <input type="text" id="dojosText" name="dojosText" class="form-input" value="{{ siteSettings.dojosText }}">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="admin-card">
+    <h2>Navigation Menu</h2>
+    <form action="/admin/settings/navigation" method="POST" class="admin-form" data-validate>
+      <div class="grid grid-2">
+        {% for section in navigation %}
+        <div class="nav-section">
+          <h3>{{ section | capitalize }}</h3>
+          {% for item in navigation[section] %}
+          <div class="form-group">
+            <label>{{ item.label }}</label>
+            <input type="hidden" name="navigation[{{ section }}][{{ loop.index0 }}][label]" value="{{ item.label }}">
+            <input type="text" name="navigation[{{ section }}][{{ loop.index0 }}][slug]" class="form-input" value="{{ item.slug }}" placeholder="Slug (e.g., member-profiles)">
+            <small class="text-muted">Leave blank to use label as slug</small>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update Navigation</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

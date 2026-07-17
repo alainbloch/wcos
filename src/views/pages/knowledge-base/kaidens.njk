@@ -1,0 +1,101 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<div class="container">
+  <header class="page-header">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    {% if pageSubtitle %}
+    <p class="page-subtitle">{{ pageSubtitle }}</p>
+    {% endif %}
+  </header>
+
+  <!-- The Way -->
+  {% if theWay and theWay.content %}
+  <section class="section">
+    <h2 class="section-title">The Way of the Sword Teacher</h2>
+    <div class="card">
+      <div class="card-body">
+        <div class="prose">{{ theWay.content | markdown }}</div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Kaiden's Rules -->
+  {% if rules and rules.length > 0 %}
+  <section class="section">
+    <h2 class="section-title">Kaiden's Rules</h2>
+
+    <div class="accordion" id="kaiden-rules">
+      {% for rule in rules %}
+      <div class="accordion-item">
+        <button class="accordion-trigger" aria-expanded="false" aria-controls="rule-{{ rule.id }}">
+          {{ rule.number }}. {{ rule.title }}
+        </button>
+        <div class="accordion-panel" id="rule-{{ rule.id }}" hidden>
+          <div class="accordion-content">
+            {% if rule.content %}
+            <div class="rule-content">{{ rule.content | markdown }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Documents -->
+  {% if documents and documents.length > 0 %}
+  <section class="section">
+    <h2 class="section-title">Documents</h2>
+
+    <div class="grid grid-2">
+      {% for doc in documents %}
+      <article class="card document-card">
+        <div class="card-body">
+          <h3>{{ doc.title }}</h3>
+          {% if doc.content %}
+          <div class="document-preview">{{ doc.content | truncate(200) | markdown }}</div>
+          {% endif %}
+          <a href="#" class="btn btn-outline btn-sm mt-3">Read More</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Rule accordions
+  document.querySelectorAll('#kaiden-rules .accordion-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const panel = trigger.nextElementSibling;
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      // Close all other panels
+      document.querySelectorAll('#kaiden-rules .accordion-trigger[aria-expanded="true"]').forEach((other) => {
+        if (other !== trigger) {
+          other.setAttribute('aria-expanded', 'false');
+          other.nextElementSibling.hidden = true;
+          other.nextElementSibling.style.maxHeight = '0';
+        }
+      });
+
+      trigger.setAttribute('aria-expanded', !isOpen);
+      panel.hidden = isOpen;
+
+      if (!isOpen) {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      } else {
+        panel.style.maxHeight = '0';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

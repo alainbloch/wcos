@@ -1,0 +1,51 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Pages</h2>
+    <a href="/admin/pages/new" class="btn btn-primary">New Page</a>
+  </div>
+
+  {% if pages and pages.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for page in pages %}
+        <tr>
+          <td>{{ page.title }}</td>
+          <td><code>{{ page.slug }}</code></td>
+          <td>
+            <span class="badge {% if page.published %}badge-success{% else %}badge-warning{% endif %}">
+              {% if page.published %}Published{% else %}Draft{% endif %}
+            </span>
+          </td>
+          <td>{{ page.updatedAt | date('MMM d, yyyy') }}</td>
+          <td class="actions">
+            <a href="/admin/pages/{{ page.id }}/edit" class="btn btn-sm btn-outline">Edit</a>
+            <form action="/admin/pages/{{ page.id }}/delete" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-outline" style="color: var(--color-primary);" data-confirm-delete="Delete '{{ page.title }}'?">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No pages yet.</p>
+    <a href="/admin/pages/new" class="btn btn-primary mt-4">Create First Page</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

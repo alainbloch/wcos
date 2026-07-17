@@ -1,0 +1,299 @@
+/**
+ * WCoS Admin Stylesheet - Matched to Original Design
+ */
+
+/* ==========================================================================
+   Admin Layout
+   ========================================================================== */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  background-color: var(--color-secondary);
+  color: var(--color-text-light);
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.admin-brand { margin-bottom: var(--space-8); }
+
+.admin-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-light);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-2) 0;
+}
+
+.admin-logo img { height: 40px; width: auto; }
+
+.admin-nav ul { list-style: none; padding: 0; }
+
+.admin-nav li { margin-bottom: var(--space-1); }
+
+.admin-nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-light);
+}
+
+.admin-nav a.active { background-color: var(--color-primary); }
+
+.admin-user {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+.admin-header {
+  padding: var(--space-6) var(--space-8);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-header h1 {
+  font-size: var(--font-size-2xl);
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.admin-content {
+  flex: 1;
+  padding: var(--space-8);
+}
+
+/* ==========================================================================
+   Dashboard Stats
+   ========================================================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.stat-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: all var(--transition-base);
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-dark);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(139, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-size: var(--font-size-2xl);
+}
+
+.stat-content { flex: 1; }
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+/* ==========================================================================
+   Admin Tables
+   ========================================================================== */
+.admin-table-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table th {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-alt);
+}
+
+.admin-table tbody tr:hover { background-color: var(--color-surface-alt); }
+
+.admin-table .actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.admin-table .btn { padding: var(--space-1) var(--space-3); font-size: var(--font-size-xs); }
+
+/* ==========================================================================
+   Admin Forms
+   ========================================================================== */
+.admin-form { max-width: 800px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ==========================================================================
+   Rich Text Editor (Simple)
+   ========================================================================== */
+.rich-editor {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background-color: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.editor-btn {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+}
+
+.editor-btn:hover,
+.editor-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.editor-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.editor-content {
+  min-height: 300px;
+  padding: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  outline: none;
+}
+
+.editor-content:empty::before {
+  content: 'Start writing...';
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+  .admin-sidebar.open { transform: translateX(0); }
+  .admin-main { margin-left: 0; }
+}
+
+@media (max-width: 768px) {
+  .admin-header { padding: var(--space-4); flex-direction: column; gap: var(--space-3); }
+  .admin-content { padding: var(--space-4); }
+  .stats-grid { grid-template-columns: 1fr; }
+}

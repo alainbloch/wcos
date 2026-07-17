@@ -1,0 +1,43 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<div class="container" style="max-width: 480px; margin-top: var(--space-16);">
+  <div class="card">
+    <div class="card-body" style="padding: var(--space-8);">
+      <header class="text-center mb-8">
+        <h1 class="page-title">Login</h1>
+        <p class="text-muted">Sign in to access the admin panel</p>
+      </header>
+
+      {% if flash.error %}
+      <div class="alert alert-error">{{ flash.error }}</div>
+      {% endif %}
+      {% if flash.success %}
+      <div class="alert alert-success">{{ flash.success }}</div>
+      {% endif %}
+
+      <form action="/login" method="POST" data-validate>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-input" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-input" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Sign In</button>
+      </form>
+
+      <p class="text-center mt-6 text-muted">
+        Don't have an account? <a href="/register">Register</a>
+      </p>
+
+      <p class="text-center mt-4">
+        <a href="/" class="btn btn-outline">← Back to Site</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
