@@ -514,3 +514,10 @@ body.reference-site {
     font-size: 16px;
   }
 }
+
+/* Generic CMS modal sources stay inert; profile variants reuse the existing design. */
+[data-modal-target] { cursor: pointer; }
+[data-modal-target]:focus-visible { outline: 2px solid #ff3636; outline-offset: 3px; }
+.reference-site .page-modal:not(.profile-modal) { width: min(800px, 94vw); padding: 48px 28px 28px; }
+.page-modal [data-modal-content] { overflow-wrap: anywhere; }
+.profile-biography .biography-text { white-space: pre-line; }

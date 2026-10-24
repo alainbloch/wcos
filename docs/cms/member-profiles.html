@@ -1,0 +1,117 @@
+{# Paste this entire file into the Member Profiles page content and enable the members data source. #}
+<div data-elementor-type="wp-page" data-elementor-id="312" class="elementor elementor-312" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-8c122a8 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="8c122a8" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-6ec6e46 e-con-full e-flex e-con e-child" data-id="6ec6e46" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-ae992a9 e-con-full e-flex e-con e-child" data-id="ae992a9" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-44c4cf0 animated-slow elementor-widget elementor-widget-heading animated fadeIn" data-id="44c4cf0" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">Member profiles
+</h1>				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-e2c84b4 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="e2c84b4" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-7b90f65 e-con-full e-flex e-con e-child" data-id="7b90f65" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-3d6cf14 e-con-full table-scroll e-flex e-con e-child" data-id="3d6cf14" data-element_type="container" data-e-type="container"><div class="elementor-element elementor-element-4f9d3fa e-con-full table-row  e-flex e-con e-child" data-id="4f9d3fa" data-element_type="container" data-e-type="container" id="list-header">
+		<div class="elementor-element elementor-element-a19891b e-con-full e-flex e-con e-child" data-id="a19891b" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-0fb322d elementor-widget elementor-widget-heading" data-id="0fb322d" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">Levels</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-28ccd36 e-con-full e-flex e-con e-child" data-id="28ccd36" data-element_type="container" data-e-type="container">
+				</div>
+		<div class="elementor-element elementor-element-2e985f7 e-con-full e-flex e-con e-child" data-id="2e985f7" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-440204b elementor-widget elementor-widget-heading" data-id="440204b" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">Circle Name</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-ca3b994 e-con-full e-flex e-con e-child" data-id="ca3b994" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-46c6819 elementor-widget elementor-widget-heading" data-id="46c6819" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">Position &amp; Merits</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-4542e8c e-con-full e-flex e-con e-child" data-id="4542e8c" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-cc979ca elementor-widget elementor-widget-heading" data-id="cc979ca" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">Member Since
+</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-d75670b e-con-full e-flex e-con e-child" data-id="d75670b" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-be291d4 elementor-widget elementor-widget-heading" data-id="be291d4" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">Region</p>				</div>
+				</div>
+				</div>{# Keep the restored six-column roster structure; only member values are dynamic. #}
+{% for member in members | selectattr('active') %}
+<div class="elementor-element elementor-element-b615446 e-con-full table-row e-flex e-con e-child" data-id="b615446" data-element_type="container" data-e-type="container" data-member-id="{{ member.id }}" data-modal-target="member-{{ member.id }}" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="page-modal" aria-label="View {{ member.position }} profile">
+		<div class="elementor-element elementor-element-57fb69a e-con-full e-flex e-con e-child" data-id="57fb69a" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-78efa67 e-con-full e-flex e-con e-child" data-id="78efa67" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-4ec73df e-con-full e-flex e-con e-child" data-id="4ec73df" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-4eb9f87 elementor-widget elementor-widget-heading" data-id="4eb9f87" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ member.level }}</p>				</div>
+				</div>
+				<div class="elementor-element elementor-element-3f6d94c elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="3f6d94c" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+		<div class="elementor-element elementor-element-7d95a37 e-con-full e-flex e-con e-child" data-id="7d95a37" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-a9d6a92 elementor-widget elementor-widget-heading" data-id="a9d6a92" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ member.steelRank or member.circleName }}</p>				</div>
+				</div>
+				</div>
+				</div>
+		<div class="elementor-element elementor-element-3b7507e e-con-full e-flex e-con e-child" data-id="3b7507e" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-d109b11 elementor-widget elementor-widget-image" data-id="d109b11" data-element_type="widget" data-e-type="widget" data-widget_type="image.default">
+															{% if member.image %}<img decoding="async" width="47" height="50" src="{{ member.image }}" class="attachment-full size-full wp-image-381" alt="{{ member.position }}" data-member-portrait="{{ member.position }}">{% endif %}															</div>
+				</div>
+		<div class="elementor-element elementor-element-11835d3 e-con-full e-flex e-con e-child" data-id="11835d3" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-3c38739 elementor-widget elementor-widget-heading" data-id="3c38739" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ member.position }}</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-340db23 e-con-full e-flex e-con e-child" data-id="340db23" data-element_type="container" data-e-type="container">{% set merits = member.merits.split('\n') if member.merits is string else (member.merits or []) %}{% for merit in merits %}<div class="elementor-element elementor-element-c3764e0 elementor-widget elementor-widget-heading" data-id="c3764e0" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ merit }}</p>				</div>{% endfor %}</div>
+		<div class="elementor-element elementor-element-6011ac0 e-con-full e-flex e-con e-child" data-id="6011ac0" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-1b9ce12 elementor-widget elementor-widget-heading" data-id="1b9ce12" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ member.memberSince }}</p>				</div>
+				</div>
+		<div class="elementor-element elementor-element-e4361d8 e-con-full e-flex e-con e-child" data-id="e4361d8" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-f45ec86 elementor-widget elementor-widget-heading" data-id="f45ec86" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<p class="elementor-heading-title elementor-size-default">{{ member.region }}</p>				</div>
+				</div>
+				</div>
+
+<template id="member-{{ member.id }}" data-modal-variant="profile">
+  <div class="profile-modal-grid">
+    <div>
+      {% if member.image %}<img class="profile-portrait" src="{{ member.image }}" alt="{{ member.position }}" loading="lazy">{% endif %}
+      <h2 data-modal-title>{{ member.position }}</h2>
+      <p>{% if member.merits is string %}{{ member.merits }}{% else %}{{ (member.merits or []) | join(' · ') }}{% endif %}</p>
+    </div>
+    <div>
+      <table class="profile-statistics">
+        <caption>Battle Ratings and Stats{% if member.statsUpdated %}<small>Updated {{ member.statsUpdated }}</small>{% endif %}</caption>
+        <tbody>
+          {% for label, value in [
+            ['Level', member.level], ['Steel Rank', member.steelRank],
+            ['Years Fought', member.yearsFought], ['Battles Fought', member.battlesFought],
+            ['Steel Battles Fought', member.steelBattlesFought], ['Opponents Fought', member.opponentsFought],
+            ['Weapon Type', member.weaponType], ['Member Since', member.memberSince], ['Region', member.region]
+          ] %}
+            {% if value %}<tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr>{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if member.email %}<p class="profile-email">Email address: <a href="mailto:{{ member.email }}">{{ member.email }}</a></p>{% endif %}
+    </div>
+  </div>
+  <section class="profile-biography" aria-label="Biography">
+    {% if member.biography %}<p class="biography-text">{{ member.biography }}</p>{% else %}<p>A biography has not been added for this member yet.</p>{% endif %}
+  </section>
+</template>
+{% else %}
+<div class="member-empty"><p>No active members to display.</p></div>
+{% endfor %}
+</div>
+				</div>
+					</div>
+				</div>
+				</div>

@@ -70,6 +70,53 @@ document
       lightbox.showModal();
     }),
   );
+// CMS authors provide inert <template> content; a single dialog displays any of it.
+const pageModal = document.getElementById("page-modal");
+const modalContent = pageModal?.querySelector("[data-modal-content]");
+let modalTrigger;
+function openPageModal(event) {
+  const trigger = event.target.closest("[data-modal-target]");
+  if (!trigger || !pageModal || !modalContent || pageModal.open) return;
+  if (
+    event.type === "keydown" &&
+    (event.target !== trigger || !["Enter", " "].includes(event.key))
+  )
+    return;
+  // Links and form controls inside a clickable row keep their own behavior.
+  const control = event.target.closest("a, button, input, select, textarea");
+  if (control && control !== trigger) return;
+  const source = document.getElementById(trigger.dataset.modalTarget);
+  if (!(source instanceof HTMLTemplateElement)) return;
+  event.preventDefault();
+  modalContent.replaceChildren(source.content.cloneNode(true));
+  const profile = source.dataset.modalVariant === "profile";
+  pageModal.classList.toggle("profile-modal", profile);
+  pageModal.classList.toggle("member-dialog", profile);
+  const heading = modalContent.querySelector("[data-modal-title], h1, h2, h3");
+  pageModal.removeAttribute("aria-labelledby");
+  if (heading) {
+    heading.id = "page-modal-title";
+    pageModal.setAttribute("aria-labelledby", heading.id);
+  }
+  pageModal.setAttribute(
+    "aria-label",
+    source.getAttribute("aria-label") || "Details",
+  );
+  modalTrigger = trigger;
+  pageModal.showModal();
+  pageModal.scrollTop = 0;
+  pageModal.querySelector(".dialog-close").focus();
+}
+document.addEventListener("click", openPageModal);
+document.addEventListener("keydown", openPageModal);
+pageModal?.addEventListener("close", () => {
+  modalContent.replaceChildren();
+  pageModal.removeAttribute("aria-labelledby");
+  pageModal.classList.remove("profile-modal", "member-dialog");
+  if (modalTrigger?.isConnected) modalTrigger.focus();
+  modalTrigger = null;
+});
+
 document.querySelectorAll("[data-member-dialog]").forEach((trigger) => {
   const openProfile = (event) => {
     const dialog = document.getElementById(trigger.dataset.memberDialog);

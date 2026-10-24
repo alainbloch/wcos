@@ -71,22 +71,11 @@ describe("One public layout through category controllers", () => {
     delete db.data.memberRosterManaged;
     await db.write();
     try {
-      const original = await app.inject("/member-profiles");
-      const originalDom = load(original.payload);
-      originalDom("#content .table-row")
-        .not("#list-header")
-        .each((_, row) => {
-          const id = originalDom(row).attr("data-member-dialog");
-          expect(id).toBeTruthy();
-          expect(originalDom(`dialog[id="${id}"]`).length).toBe(1);
-        });
-      expect(
-        load(original.payload)("#content .table-row").length,
-      ).toBeGreaterThan(10);
       await pagesRepo.update(page.id, {
+        dataSources: ["members"],
         content:
           '<p id="cms-introduction">Managed member introduction</p>' +
-          page.content,
+          fs.readFileSync("docs/cms/member-profiles.html", "utf8"),
       });
       const fields = {
         level: "L7",
@@ -104,15 +93,19 @@ describe("One public layout through category controllers", () => {
       const created = await post("/admin/members", fields);
       expect(created.statusCode).toBe(302);
       const member = (await membersRepo.findAll())[0];
+      await membersRepo.update(member.id, {
+        image: "/uploads/member-test.webp",
+      });
       const response = await app.inject("/member-profiles");
       const $ = load(response.payload);
       expect($("#cms-introduction").text()).toBe("Managed member introduction");
       expect($("#content .table-row").length).toBe(2);
-      expect($("#member-gad").is("dialog")).toBe(true);
-      expect($("#member-gad").text()).toContain("Longsword");
-      expect($('#member-gad a[href="mailto:member@example.org"]').length).toBe(
-        1,
-      );
+      expect($(`#member-${member.id}`).is("template")).toBe(true);
+      expect($(`#member-${member.id}`).html()).toContain("Longsword");
+      expect(
+        $("template").contents().find('a[href="mailto:member@example.org"]')
+          .length,
+      ).toBe(1);
       expect($("[data-member-id]").attr("role")).toBe("button");
       expect($("[data-member-id]").attr("tabindex")).toBe("0");
       const columns = $(`[data-member-id="${member.id}"]`).children();
@@ -120,10 +113,10 @@ describe("One public layout through category controllers", () => {
       expect(columns.eq(2).text()).toContain("Gad");
       expect(columns.eq(3).text()).toContain("Head Kaiden");
       expect(columns.eq(1).find("img").attr("src")).toBe(
-        "/images/gadthumb.jpg",
+        "/uploads/member-test.webp",
       );
       expect(response.payload).not.toContain("<script>unsafe()");
-      expect($(' [data-member-dialog="member-gad"]').length).toBeGreaterThan(0);
+      expect($(" [data-modal-target]").length).toBeGreaterThan(0);
       for (const css of page.styles)
         expect($(`link[href="${css}"]`).length).toBeGreaterThan(0);
       const editForm = await app.inject({
