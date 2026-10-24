@@ -2,8 +2,8 @@
  * Base Controller
  * Provides common functionality for all controllers
  */
-import { siteService } from '../services/siteService.js';
-import { renderView } from '../utils/viewEngine.js';
+import { siteService } from "../services/siteService.js";
+import { renderView } from "../utils/viewEngine.js";
 
 export class BaseController {
   constructor() {
@@ -12,6 +12,9 @@ export class BaseController {
 
   async render(request, reply, template, additionalContext = {}) {
     const footerData = await this.siteService.getFooterData();
+    const flash = request.flash ||
+      request.session?.adminFlash || { success: null, error: null };
+    if (request.session) delete request.session.adminFlash;
 
     const context = {
       request: {
@@ -19,17 +22,20 @@ export class BaseController {
         path: request.url,
       },
       user: request.user || null,
-      flash: request.flash || { success: null, error: null },
+      flash,
       ...footerData,
       ...additionalContext,
     };
 
     const html = await renderView(request.server, template, context);
-    reply.type('text/html').send(html);
+    reply.type("text/html").send(html);
   }
 
   async renderAdmin(request, reply, template, additionalContext = {}) {
     const footerData = await this.siteService.getFooterData();
+    const flash = request.flash ||
+      request.session?.adminFlash || { success: null, error: null };
+    if (request.session) delete request.session.adminFlash;
 
     const context = {
       request: {
@@ -37,14 +43,14 @@ export class BaseController {
         path: request.url,
       },
       user: request.user,
-      flash: request.flash || { success: null, error: null },
+      flash,
       ...footerData,
       isAdmin: true,
       ...additionalContext,
     };
 
     const html = await renderView(request.server, template, context);
-    reply.type('text/html').send(html);
+    reply.type("text/html").send(html);
   }
 
   jsonSuccess(reply, data, statusCode = 200) {

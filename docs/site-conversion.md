@@ -44,3 +44,11 @@ The original public PayPal hosted button `CK23BQFMGKR3Y`, choices, and USD curre
 Run `npm test` (coverage included). Tests use temporary isolated databases, never the normal CMS database. Coverage includes all imported pages, local asset existence, aliases, trailing slashes, CMS persistence/publication, search escaping, HTML sanitization, PayPal configuration, and mocked contact validation/delivery/failure/throttling.
 
 Manual browser checks cover desktop homepage comparison, 390px mobile layout and dropdown navigation, original member table and profile dialog, rank disclosures, armor lightbox, and search. Original source placeholders and outbound historical resources were not editorially rewritten. SMTP delivery, external video playback, and payment completion were not exercised.
+
+## Admin editing
+
+The admin area has its own responsive styles and a searchable Pages list. Open a page to edit its body visually, or switch to HTML source for layout and media changes. The original content is loaded into a single submitted field; untouched source markup is preserved. The visual editor is sandboxed, uses the page's local styles, and disables public scripts and form submission. If preview loading fails, the HTML editor remains available.
+
+Saving displays a one-time confirmation. Validation failures retain entered content, duplicate/reserved addresses are rejected, and the homepage keeps its empty address. Unsaved edits trigger a navigation warning. Public member profiles are edited through their Pages entry; legacy member records are shown read-only instead of linking to unimplemented actions. Settings links to the homepage and contact editors rather than offering legacy controls that do not affect the migrated pages.
+
+Admin regression coverage includes server-side create/edit/load, publication state, validation, feedback, preview sanitization, and DOM-based visual/HTML editor synchronization. Full browser visual QA for this update could not run in the implementation environment: the cloud browser cannot reach its local server and the Chromium download failed.
