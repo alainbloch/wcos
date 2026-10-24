@@ -60,7 +60,7 @@
 
         <div class="form-field">
           <label for="merits">Merits & Titles</label>
-          <textarea id="merits" name="merits" rows="3" placeholder="One per line: Expert Swordsman, Kaiden, Council, Medical Officer, Webmaster">{{ (member.merits or []).join('\n') }}</textarea>
+          <textarea id="merits" name="merits" rows="3" placeholder="One per line: Expert Swordsman, Kaiden, Council, Medical Officer, Webmaster">{% if member.merits is string %}{{ member.merits }}{% else %}{{ (member.merits or []) | join('\n') }}{% endif %}</textarea>
           <small class="form-hint">All merits/titles, one per line (includes position if not specified above)</small>
         </div>
       </fieldset>

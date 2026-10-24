@@ -36,7 +36,7 @@
           <td>{{ member.circleName }}</td>
           <td>
             {% if member.merits and member.merits.length > 0 %}
-              <span class="merits-list">{{ member.merits.join(', ') }}</span>
+              <span class="merits-list">{{ (member.merits is string ? member.merits.split(', ') : (member.merits or [])) | join(', ') }}</span>
             {% else %}
               <span class="text-muted">—</span>
             {% endif %}

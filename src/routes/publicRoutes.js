@@ -66,9 +66,9 @@ export async function publicRoutes(fastify) {
   });
 
   // Who We Are pages
-  fastify.get("/member-profiles", async (request, reply) => {
-    await whoWeAreController.memberProfiles(request, reply);
-  });
+  // fastify.get("/member-profiles", async (request, reply) => {
+  //   await whoWeAreController.memberProfiles(request, reply);
+  // });
   fastify.get("/wcos-council", async (request, reply) => {
     await whoWeAreController.wcosCouncil(request, reply);
   });

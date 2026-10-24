@@ -215,7 +215,8 @@ export class AdminController extends BaseController {
     const formMember = {
       ...member,
       circleName: member.position, // Form's circleName = member's circle name
-      position: member.merits?.[0] || "", // Form's position = first merit (position/title)
+      position: (member.merits?.[0] || ""), // Form's position = first merit (position/title)
+      merits: Array.isArray(member.merits) ? member.merits : (member.merits ? String(member.merits).split("\n").filter(Boolean) : []),
     };
     await this.renderAdmin(request, reply, "admin/members/form.njk", {
       pageTitle: "Edit Member",
@@ -224,21 +225,60 @@ export class AdminController extends BaseController {
   }
 
   async updateMember(request, reply) {
-    try {
-      const merits = request.body.merits
-        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
-        : [];
+    /**
+     * Normalize merits into an array.
+     *
+     * Supports:
+     * - Arrays
+     * - JSON-encoded arrays
+     * - Newline-separated strings
+     * - Empty or missing values
+     */
+    const normalizeMerits = (value) => {
+      if (Array.isArray(value)) {
+        return value
+          .map((merit) => String(merit).trim())
+          .filter(Boolean);
+      }
 
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+
+        if (!trimmed) return [];
+
+        // Handle JSON-encoded arrays stored in the database.
+        try {
+          const parsed = JSON.parse(trimmed);
+
+          if (Array.isArray(parsed)) {
+            return parsed
+              .map((merit) => String(merit).trim())
+              .filter(Boolean);
+          }
+        } catch {
+          // Not JSON; interpret as newline-separated text.
+        }
+
+        return trimmed
+          .split(/\r?\n/)
+          .map((merit) => merit.trim())
+          .filter(Boolean);
+      }
+
+      return [];
+    };
+
+    try {
       // Build circleName from level and steelRank
       const level = request.body.level;
       const steelRank = request.body.steelRank || level;
-      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
+      const merits = normalizeMerits(request.body.merits);
 
       await memberService.updateMember(request.params.id, {
         level,
         steelRank,
-        circleName, // Level display name
-        position: request.body.circleName, // Member's circle name
+        circleName: request.body.circleName, // Level display name
+        position: request.body.position, // Member's circle name
         merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
         memberSince: request.body.memberSince || "",
         region: request.body.region || "",
@@ -252,13 +292,15 @@ export class AdminController extends BaseController {
       const existing = await memberService.getMemberById(request.params.id);
       reply.code(existing ? 400 : 404);
       // Prepare member data for form
+      const body = request.body || {};
+      console.log("\n\n\nHEY!!!\n\n\n", body);
       const formMember = {
         ...existing,
-        ...request.body,
+        ...body,
         id: request.params.id,
-        circleName: request.body.circleName,
-        position: request.body.position,
-        merits: request.body.merits,
+        circleName: body.circleName,
+        position: body.position,
+        merits: normalizeMerits(body.merits),
       };
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "Edit Member",
