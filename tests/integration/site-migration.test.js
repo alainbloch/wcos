@@ -82,9 +82,9 @@ describe("Complete public conversion", () => {
       "/search?q=armor",
     ));
   it("serves the favicon instead of interpreting it as a CMS slug", async () => {
-    const response = await app.inject("/favicon.svg");
+    const response = await app.inject("/favicon.png");
     expect(response.statusCode).toBe(200);
-    expect(response.headers["content-type"]).toContain("image/svg+xml");
+    expect(response.headers["content-type"]).toContain("image/png");
   });
   it("preserves CMS edits and publication state across migration runs", async () => {
     const page = await pagesRepo.findBySlug("weapons");
