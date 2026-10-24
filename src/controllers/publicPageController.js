@@ -14,18 +14,21 @@ export class PublicPageController extends BaseController {
     let dynamicContent = page.content || "";
     let dynamicData = {};
 
+    // If dataSources set, resolve data and render page content through Nunjucks
     if (page.dataSources && page.dataSources.length > 0) {
       dynamicData = await dynamicPageService.resolveDataSources(page.dataSources);
-    }
-
-    if (page.templatePartial) {
-      const partialHtml = await dynamicPageService.renderPartial(
-        request.server,
-        page.templatePartial,
-        page.dataSources || [],
-      );
-      if (partialHtml !== null) {
-        dynamicContent = partialHtml;
+      if (typeof dynamicContent === "string" && dynamicContent.trim()) {
+        try {
+          const contentRendered = await new Promise((resolve, reject) => {
+            request.server.nunjucks.renderString(dynamicContent, dynamicData, (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            });
+          });
+          dynamicContent = contentRendered;
+        } catch (e) {
+          // If content isn't a valid template, leave it as-is
+        }
       }
     }
 
