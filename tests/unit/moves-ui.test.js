@@ -21,3 +21,16 @@ it('reorders and removes media while preserving captions and URLs', async () => 
  w.document.querySelector('[data-down]').click(); expect(JSON.parse(input.value)).toEqual([...media].reverse());
  w.document.querySelector('[data-remove]').click(); expect(JSON.parse(input.value)).toEqual([media[0]]); dom.window.close();
 });
+it('opens the type dropdown, updates selected labels, and closes with Escape', async () => {
+ const dom=new JSDOM('<div data-move-types><button type="button" class="dropdown-trigger" aria-expanded="false"><span class="dropdown-display">Select move types...</span></button><div class="dropdown-panel"><input type="checkbox" value="Straight Offense"><input type="checkbox" value="Offensive Defense"></div></div>',{runScripts:'outside-only'});
+ const w=dom.window;
+ w.eval(fs.readFileSync('public/js/admin.js','utf8')); await tick();
+ const trigger=w.document.querySelector('button'), panel=w.document.querySelector('.dropdown-panel');
+ trigger.click(); expect(trigger.getAttribute('aria-expanded')).toBe('true'); expect(panel.classList.contains('open')).toBe(true);
+ w.document.querySelectorAll('input').forEach(input=>input.click());
+ expect(w.document.querySelector('.dropdown-display').textContent).toBe('Straight Offense, Offensive Defense');
+ panel.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ expect(trigger.getAttribute('aria-expanded')).toBe('false'); expect(w.document.activeElement).toBe(trigger);
+ trigger.click(); w.document.body.click(); expect(panel.classList.contains('open')).toBe(false);
+ dom.window.close();
+});
