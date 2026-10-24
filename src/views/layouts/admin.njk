@@ -5,34 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if pageTitle %}{{ pageTitle }} | {% endif %}{{ siteName }} - Admin</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Anton:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Meow+Script:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/admin.css">
   {% block head %}{% endblock %}
 </head>
 <body>
+  <a href="#admin-content" class="skip-link">Skip to content</a>
   <div class="admin-layout">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="admin-sidebar">
       <div class="admin-brand">
         <a href="/admin" class="admin-logo">
           <img src="/images/WCoS-Logo-1024x953.png" alt="WCoS" height="40">
           <span>WCoS Admin</span>
         </a>
       </div>
-      <nav class="admin-nav">
+      <nav class="admin-nav" aria-label="Administration">
         <ul>
-          <li><a href="/admin" {% if request.path == '/admin' %}class="active"{% endif %}>📊 Dashboard</a></li>
-          <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active"{% endif %}>📄 Pages</a></li>
-          <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}>👥 Members</a></li>
+          <li><a href="/admin" {% if request.path == '/admin' %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">01</span> Overview</a></li>
+          <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">02</span> Pages</a></li>
+          <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Members</a></li>
           {% if user and user.role === 'admin' %}
-          <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}>⚙️ Settings</a></li>
+          <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">04</span> Settings</a></li>
           {% endif %}
         </ul>
       </nav>
       <div class="admin-user">
-        <span>{{ user.name }} ({{ user.role }})</span>
+        <span>{{ user.name }}<br><small>{{ user.role | capitalize }}</small></span>
         <a href="/logout" class="btn btn-sm btn-outline">Logout</a>
       </div>
     </aside>
@@ -40,15 +37,15 @@
     <div class="admin-main">
       <header class="admin-header">
         <h1>{{ pageTitle }}</h1>
-        <a href="/" target="_blank" class="btn btn-sm btn-outline">View Site</a>
+        <a href="/" target="_blank" rel="noopener" class="btn btn-sm btn-outline">View Site</a>
       </header>
 
-      <main class="admin-content">
+      <main class="admin-content" id="admin-content">
         {% if flash.success %}
-          <div class="alert alert-success">{{ flash.success }}</div>
+          <div class="alert alert-success" role="status">{{ flash.success }}</div>
         {% endif %}
         {% if flash.error %}
-          <div class="alert alert-error">{{ flash.error }}</div>
+          <div class="alert alert-error" role="alert">{{ flash.error }}</div>
         {% endif %}
 
         {% block content %}{% endblock %}

@@ -1,39 +1,6 @@
 {% extends 'layouts/admin.njk' %}
-
 {% block content %}
-<div class="admin-content">
-  <div class="stats-grid">
-    {% for key in stats %}
-    <div class="stat-card">
-      <div class="stat-icon">
-        {% if key == 'pages' %}📄
-        {% elif key == 'members' %}👥
-        {% elif key == 'champions' %}🏆
-        {% elif key == 'council' %}⚔️
-        {% elif key == 'classes' %}🥋
-        {% elif key == 'ranks' %}📜
-        {% elif key == 'coreMoves' %}📚
-        {% elif key == 'dalmaterColors' %}🎨
-        {% elif key == 'kaidens' %}👑
-        {% elif key == 'resources' %}🔗
-        {% elif key == 'dues' %}💰
-        {% else %}📦
-        {% endif %}
-      </div>
-      <div class="stat-content">
-        <div class="stat-value">{{ stats[key] }}</div>
-        <div class="stat-label">{{ key | capitalize }}</div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <div class="admin-card">
-    <h2>Quick Actions</h2>
-    <div class="flex gap-3" style="margin-top: var(--space-4);">
-      <a href="/admin/pages/new" class="btn btn-primary">New Page</a>
-      <a href="/admin/settings" class="btn btn-secondary">Site Settings</a>
-    </div>
-  </div>
-</div>
+<div class="page-heading"><div><div class="eyebrow">Your website, at a glance</div><h2>Welcome back, {{ user.name }}.</h2><p>Manage the pages your visitors see, from the homepage to the knowledge base.</p></div><a href="/admin/pages/new" class="btn btn-primary">+ New page</a></div>
+<div class="stats-grid">{% for key, value in stats %}<div class="stat-card"><div class="stat-label">{{ key | capitalize }}</div><div class="stat-value">{{ value }}</div></div>{% endfor %}</div>
+<div class="dashboard-grid"><section class="admin-card"><h2>Recently updated</h2>{% for page in recentPages %}<a class="quick-link" href="/admin/pages/{{ page.id }}/edit">{{ page.title }}<small>{% if page.published %}Published{% else %}Draft{% endif %} · /{{ page.slug }}</small></a>{% else %}<p>No pages yet. Create your first page to get started.</p>{% endfor %}<a class="btn" href="/admin/pages">Browse all pages →</a></section><section class="admin-card"><h2>Start here</h2><p class="text-muted">Choose a page, edit its content, and save when you’re ready.</p><a class="quick-link" href="/admin/pages">Edit website content<small>Titles, text, images, and page layouts</small></a>{% if user.role == 'admin' %}<a class="quick-link" href="/admin/settings">Site settings<small>Website identity and content shortcuts</small></a>{% endif %}<div class="notice">Draft pages are private. Published changes become visible as soon as you save.</div></section></div>
 {% endblock %}

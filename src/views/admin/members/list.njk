@@ -3,10 +3,11 @@
 {% block content %}
 <div class="admin-content">
   <div class="flex justify-between items-center mb-6">
-    <h2>Members</h2>
-    <a href="/admin/members/new" class="btn btn-primary">Add Member</a>
+    <h2>Member records</h2>
+    {% if memberPage %}<a href="/admin/pages/{{ memberPage.id }}/edit" class="btn btn-primary">Edit public member profiles</a>{% endif %}
   </div>
 
+  <div class="notice">Public profiles are managed on the Member Profiles page. The records below are a read-only reference from the earlier import.</div>
   {% if members and members.length > 0 %}
   <div class="admin-table-container">
     <table class="admin-table">
@@ -17,7 +18,7 @@
           <th>Position & Merits</th>
           <th>Member Since</th>
           <th>Region</th>
-          <th>Actions</th>
+
         </tr>
       </thead>
       <tbody>
@@ -28,12 +29,7 @@
           <td>{{ member.position }}</td>
           <td>{{ member.memberSince }}</td>
           <td>{{ member.region }}</td>
-          <td class="actions">
-            <a href="/admin/members/{{ member.id }}/edit" class="btn btn-sm btn-outline">Edit</a>
-            <form action="/admin/members/{{ member.id }}/delete" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-sm btn-outline" style="color: var(--color-primary);" data-confirm-delete="Delete '{{ member.circleName }}'?">Delete</button>
-            </form>
-          </td>
+
         </tr>
         {% endfor %}
       </tbody>
@@ -42,7 +38,7 @@
   {% else %}
   <div class="text-center py-12">
     <p class="text-muted">No members yet.</p>
-    <a href="/admin/members/new" class="btn btn-primary mt-4">Add First Member</a>
+
   </div>
   {% endif %}
 </div>

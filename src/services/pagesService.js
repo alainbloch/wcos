@@ -2,7 +2,7 @@
  * Pages Service
  * Handles general CMS pages
  */
-import { pagesRepo } from '../models/database.js';
+import { pagesRepo } from "../models/database.js";
 
 export class PagesService {
   async getAllPages() {
@@ -21,16 +21,67 @@ export class PagesService {
     return pagesRepo.findBySlug(slug);
   }
 
+  async validatePage(data, existing = null) {
+    const title = typeof data.title === "string" ? data.title.trim() : "";
+    if (!title || title.length > 180)
+      throw new Error("Enter a page title of 1–180 characters.");
+    const requestedSlug =
+      typeof data.slug === "string" ? data.slug.trim() : existing?.slug;
+    // The homepage deliberately has an empty slug. Editing its title must not move it.
+    const slug =
+      existing?.slug === "" && requestedSlug === ""
+        ? ""
+        : requestedSlug || this.generateSlug(title);
+    if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))
+      throw new Error(
+        "Use lowercase letters, numbers, and hyphens in the page address.",
+      );
+    if (!slug && existing?.slug !== "")
+      throw new Error(
+        "Enter a page address using lowercase letters or numbers.",
+      );
+    if (
+      [
+        "admin",
+        "api",
+        "login",
+        "logout",
+        "register",
+        "search",
+        "health",
+        "photo-gallery",
+        "contact-us",
+        "previous-updates",
+      ].includes(slug)
+    )
+      throw new Error("That address is reserved. Choose another page address.");
+    const duplicate = await pagesRepo.findBySlug(slug);
+    if (duplicate && duplicate.id !== existing?.id)
+      throw new Error(
+        "A page already uses that address. Choose a unique address.",
+      );
+    return {
+      title,
+      slug,
+      content:
+        typeof data.content === "string"
+          ? data.content
+          : existing?.content || "",
+      published: data.published === true,
+    };
+  }
+
   async createPage(data) {
-    const slug = data.slug || this.generateSlug(data.title);
-    return pagesRepo.create({ ...data, slug });
+    return pagesRepo.create(await this.validatePage(data));
   }
 
   async updatePage(id, data) {
-    if (data.title && data.slug === undefined) {
-      data.slug = this.generateSlug(data.title);
-    }
-    return pagesRepo.update(id, data);
+    const existing = await this.getPageById(id);
+    if (!existing) throw new Error("Page not found.");
+    return pagesRepo.update(
+      id,
+      await this.validatePage({ ...existing, ...data }, existing),
+    );
   }
 
   async deletePage(id) {
@@ -40,8 +91,8 @@ export class PagesService {
   generateSlug(title) {
     return title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
   }
 }
 
