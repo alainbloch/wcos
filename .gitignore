@@ -58,3 +58,5 @@ data/*.backup-*
 *.backup-moves-*
 
 *.backup-classes-*
+
+*.backup-glossary-*

@@ -22,6 +22,7 @@
         <ul>
           <li><a href="/admin" {% if request.path == '/admin' %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">01</span> Overview</a></li>
           <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">02</span> Pages</a></li>
+          <li><a href="/admin/glossary">Glossary</a></li>
           <li><a href="/admin/moves">Moves</a></li>
           <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Members</a></li>
           <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Classes</a></li>

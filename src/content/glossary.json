@@ -1,0 +1,278 @@
+[
+  {
+    "name": "Advanced Blocks",
+    "definition": "<p>Basic blocks with 6 additional blocks integrated in the pattern (4 advanced blocks, 1 additional thrust block, and a katana-style push block).</p>"
+  },
+  {
+    "name": "Advanced Response Training",
+    "definition": "<p>Specialized training series that involves three attacks to the student. The student must block an initial strike without stepping backward, block or evade the 2nd attack, then with the final attack, the student must finish with an evade/block and attack combination (attack their attacker).</p>"
+  },
+  {
+    "name": "Advanced Stance",
+    "definition": "Linear hanging guard stance with hilt above the head, point of the sword pointed at the opponent's heart and toes pointed outward."
+  },
+  {
+    "name": "Advanced Night Skill",
+    "definition": "Training at night with no light sources other than moon or starlight (no firelight). The requirement calls for 5 hours of training (can include combat)."
+  },
+  {
+    "name": "Ai Uchi",
+    "definition": "In Aikido it means \"Mutual Killing\". It is the term used for double kills in the WCoS that occur while sparring. There is no victor in the match, so often the battle is restarted until there is a clear victory."
+  },
+  {
+    "name": "All Weather",
+    "definition": "Fighting conditions to include unusual weather such as rain, snow, or summer heat."
+  },
+  {
+    "name": "Altered Terrain",
+    "definition": "Altered terrain fighting includes surfaces with uneven ground and/or obstacles. Altered terrain can also include muddy or snow-covered ground, rain storms, and rocky ground."
+  },
+  {
+    "name": "Balance 1, 2, 3 & 4",
+    "definition": "<p>The levels of balance are defined as such:</p><ol><li>Something that rolls (8 to 10ft in length). Students must step on to the obstacle and walk across it to a designated end point without touching the ground</li><li>Any elevated (1 foot or less off ground) narrow or unstable surface (2 x 4's are best for this)</li><li>Elevated (1 to 2 feet off ground) narrow surface/s where the student is chased by combatants with swords/weapons (demonstrates balance combat movement/evasion)</li><li>The Rope: an elevated loosely strung rope approximately 2\" in width and 3 feet above the ground</li></ol>"
+  },
+  {
+    "name": "Basic Cuts",
+    "definition": "<p>Core set of full circle cuts (head, neck, decapitation, leg) with ending shuffle and thrust. To ensure that a full circle cut is effective, you must be able to \"see through your arms\" at the aiming portion of the cut.</p>"
+  },
+  {
+    "name": "Basic Strikes",
+    "definition": "<p>Core set of full circle cuts with additional two chop cuts (aimed at upper arm/body) and 90 degree thrust.</p>"
+  },
+  {
+    "name": "Basic Blocks",
+    "definition": "<p>Core set of shift and circle blocks that correspond with the basic cuts (head (shift), neck (circle), decapitation/body (shift), leg (circle) and thrust block (shift)).</p>"
+  },
+  {
+    "name": "Bokken",
+    "definition": "<p>The word 'bokken' is Japanese; 'bok(u)' means 'wood', 'ken' means 'sword' or 'weapon'. Hence, 'bokken' means 'wooden sword'.</p>"
+  },
+  {
+    "name": "Bracers",
+    "definition": "<p>This is the name for armor worn on the forearms. They protect the wrists and may cover up to the entire forearm.</p>"
+  },
+  {
+    "name": "Cathan",
+    "definition": "<p>Clean kill battles that end with a single strike or move (both opponents without any previous wounding).</p>"
+  },
+  {
+    "name": "Centered Cuts",
+    "definition": "<p>Similar to parry, centered cuts has one opponent on offense and the other on defense. The offensive opponent makes 3 to 7 attacks (more or less depending on who's running it), while the defensive opponent evades or blocks. \"Switch\" is not called, but moved into fluidly to change roles. Occasionally/Randomly, the defensive opponent will leave an opening for the attacker to take advantage of. The point of this requirement is to be able to see the openings and attack them effectively.</p>"
+  },
+  {
+    "name": "Chop Cuts",
+    "definition": "<p>Core set of chop cuts (head, neck, upper arm/body, leg) and 90 degree thrust. Chop cuts must be pulled far enough behind you to ensure power (otherwise considered a half chop or quarter chop). Upon completion of L3, Basic Strikes (with the 2 chop cuts) are removed from your requirements and you demonstrate Basic Cuts and Chop Cuts separately.</p>"
+  },
+  {
+    "name": "Close Quarters Combat",
+    "definition": "<p>Sparring within a 6'x 6' to 8' x 8' square area (depending on height of combatants). Can be done with bokken or steel.</p>"
+  },
+  {
+    "name": "Combat Movement",
+    "definition": "<p>Lack of strictly linear movement in combat: using circular movement, shuffles, cross steps, pivots, etc. Completion of this requirement is determined per Kaiden's discretion.</p>"
+  },
+  {
+    "name": "Control",
+    "definition": "<p>The control requirement is determined per Kaiden's discretion upon their observation of their student in combat.</p>"
+  },
+  {
+    "name": "Cutting",
+    "definition": "<p>Cutting training can include: basic cutting: where objects or fruits and vegetables are cut in a manner that requires accuracy, force, and reaction (like being thrown at the student or held).\"The 2 Cut Challenge\": student throws two potatoes into the air with one hand and cuts them both before they fall to the ground. \"4 Cut Challenge\": student sets 4 potatoes on the ground (one in front, one in back, one to the left and one to the right). The student then picks up one potato, throws it in the air and cuts it in half. Then moves on to the next potato and for each one, must use a different cut. If the student uses the same cut they used before or misses, they must start again from the beginning.</p>"
+  },
+  {
+    "name": "Cutting 1",
+    "definition": "<p>One cut at a stationary object and one cut at an object thrown; this is completed as part of the L4 test and the student will get 3 attempts for both challenges.</p>"
+  },
+  {
+    "name": "Cutting 2",
+    "definition": "<p>One cut at a stationary object, one cut at an object on a string, and one cut at an object thrown; this is completed as part of the L5 test and the student will get 3 attempts for both challenges.</p>"
+  },
+  {
+    "name": "Cutting Patterns",
+    "definition": "<p>A cutting pattern is essentially a kata intended for two students to practice together and is typically created in such a way that the sword play may progress back and forth without pause until the initiating student calls a hold. Cutting pattern 1 involves basic cuts and basic blocks only, Cutting Pattern 2 involves more complex movement including some chop cuts and the move \"The Illusion\". Cutting Pattern 3 involves even more complex movement and several core moves such as \"Jaguar\", \"Double Chop\" and \"The Tradition\". Cutting Pattern 4 is a pattern of the student's own design.</p>"
+  },
+  {
+    "name": "Dagger Fighting",
+    "definition": "<p>The dagger fighting requirement is based on learning basic slashes, 3 basic moves, how to shuffle and cross-step with a dagger, evasion, and dagger vs dagger sparring.</p>"
+  },
+  {
+    "name": "Dalmater",
+    "definition": "<p>All WCoS members receive a dalmater upon passing their L2 Green Braid evaluation. It is a garment resembling a tunic that is to be worn in the WCoS classes and at WCoS sanctioned events. The main section of the garment is black and the colored stripes sewn into the sides represent that member's Kaiden. Kaidens may wear their own color opposed to the color of the Kaiden who taught them. See the&nbsp;<a href=\"https://www.westerncircle.org/dalcolors.html\" target=\"_blank\" rel=\"noopener\">Dalmater Colors</a>&nbsp;and the&nbsp;<a href=\"https://www.westerncircle.org/reddalmater.html\" target=\"_blank\" rel=\"noopener\">Red Dalmater</a>&nbsp;pages for more information.</p><p>nvolves three attacks to the student. The student must block an initial strike without stepping backward, block or evade the 2nd attack, then with the final attack, the student must finish with an evade/block and attack combination (attack their attacker).</p>"
+  },
+  {
+    "name": "Defensive Stance",
+    "definition": "<p>Linear forward stance with hips forward, toes pointed outward and weapon pointed out, forward and towards the opponent's heart (waist if with steel). This stance can vary depending on weapon type.</p>"
+  },
+  {
+    "name": "Dodging",
+    "definition": "<ol><li>(no sword) Objects are thrown at moderate speed by one person (underhand throwing)</li><li>(with sword) Objects are thrown at moderate speed (overhand throwing) by multiple people</li><li>Dodging using a projectile/something that shoots (low powered crossbow or bow with safe projectiles)</li></ol>"
+  },
+  {
+    "name": "Dojo",
+    "definition": "<p>This Japanese term means 'school' or 'training room'.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Draw Cuts",
+    "definition": "<p>Core set of draw cuts (head, neck, body, leg). Thrust under the chin when switching feet and body sides and include two neck draws at the end (use both edges of your sword if using a broadsword).</p>"
+  },
+  {
+    "name": "Endurance",
+    "definition": "<p>Determined per Kaiden's descretion of student's abilities: Kaiden should try pushing students past current fitness status and/or use endurance as a tool to get healthy.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Event",
+    "definition": "<p>Gathering of 8 or more actively sparring WCoS swordfighters. Swordfighters do not need to be fighting all at once, but can fight one-on-one combat or any combination as long as at least 8 individual fighters have participated in combat.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Expert Blocks",
+    "definition": "<p>Advanced blocks with additional 4 blocks integrated in the pattern (2 lower leg blocks and 2 upper crossguard blocks).</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Expert Cutting",
+    "definition": "<p>Completing the 2-cut and 4-cut challenges; can be done in advance of the L7 test.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Gauntlets",
+    "definition": "<p>Gauntlets are essentially armored gloves, typically constructed of metal (though they may on occasion be of hard leather) and fashioned in a variety of ways. 16 gauge steel minimum for protection against steel weapons in the WCoS. Aluminum is only acceptable as a clamshell style gauntlet.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Gorget ('gor-jshay)",
+    "definition": "<p>This is a band of armor worn around the neck to protect it from attacks from any direction.</p>"
+  },
+  {
+    "name": "Hai",
+    "definition": "<p>The Japanese word for \"yes\" and is used commonly as communication of \"yes\" in the WCoS.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Helm",
+    "definition": "<p>A metal helmet worn for head protection in sword combat. 16 gauge steel minimum requirement for protection against steel weapons in the WCoS.</p>"
+  },
+  {
+    "name": "Hold",
+    "definition": "<p>Hold is called to freeze a match. All participants must freeze in place until the hold is called off by the person who initiated it. Anyone may call a hold with good reason. Hold is also called at the end of each cutting pattern by the person demonstrating.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Iie (E-ay)",
+    "definition": "<p>The Japanese word for \"no\" and is used commonly as communication of \"no\" in the WCoS.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Iron Sword",
+    "definition": "<p>An endurance, strength, and control training implement, typically of solid metal such as allthread bars.<br>An Iron Sword must weigh a minimum of 5lbs for a two-hand sword practitioner, and a minimum of 3lbs for single-hand sword practitioner. Not to exceed 12lbs.</p>"
+  },
+  {
+    "name": "Japanese Counting",
+    "definition": "<p>Though the sword art practiced by the Western Circle encompasses a great diversity of styles, some aspects of the Western Circle are distinctly influenced by the Eastern martial arts. One obvious example is the use of Japanese terminology. Following are the Japanese words for the numbers one through ten:<br>1. ichi (eech-ee)<br>2. ni (nee)<br>3. san (sawn)<br>4. shi (shee)<br>5. go (goe)<br>6. roku (roe-koo)<br>7. shichi (shee-chee)<br>8. hachi (hah-chee)<br>9. ku (koo)<br>10. ju (joo)</p>"
+  },
+  {
+    "name": "Jo-Dan Stance",
+    "definition": "<p>Linear forward stance with hips forward, toes pointed outward and and the sword is straight up above your head (able to see through your arms). This stance varies depending on weapon type.</p>"
+  },
+  {
+    "name": "Kata",
+    "definition": "<p>A kata is a set of predefined actions that may be performed individually or with one or more partners. Kata Ich is a flowing linear pattern of movements that combines controlled cuts, blocks, thrusts, pivots and cross steps. Kata Ni is meant to show power and strength: it is also a linear kata that combines several core moves such as Casper, Defense Cut, The Samaurai, The Lightning, Dragon's Tail (one-handed), and The Illusion. Kata San is a non-linear pattern that involves the four corners and is done both fast and slow. It incorporates the core moves Akira, The Lightning, Jaguar and the Illusion. Kata Shi is a kata of the student's own design.</p>"
+  },
+  {
+    "name": "Kaiden",
+    "definition": "<p>In a general sense, it is a Japanese term meaning \"teaching license\", referring to a document most commonly given a to a practitioner by their sensei. In the Western Circle, 'Kaiden' is used to refer to students that have earned the right to teach their own student(s) and/or class. There is a complete section devoted to describing&nbsp;<a href=\"https://www.westerncircle.org/kaiden.html\" target=\"_blank\" rel=\"noopener\">Kaidens</a>.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Marshaling",
+    "definition": "<p>Must ensure safety in combat and make accurate calls based on knowledge of proper cuts and anatomy. Must know&nbsp;<a href=\"https://www.westerncircle.org/combat.html\" target=\"_blank\" rel=\"noopener\">combat rules</a>&nbsp;&amp;&nbsp;<a href=\"https://www.westerncircle.org/sparring.html\" target=\"_blank\" rel=\"noopener\">sparring rules</a>. Other important rules are also linked in the&nbsp;<a href=\"https://www.westerncircle.org/wcosrules.html\" target=\"_blank\" rel=\"noopener\">WCoS Rules</a>&nbsp;page.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Melee",
+    "definition": "<p>This term refers to combat amongst multiple combatants. In the Western Circle, to be an official melee, there must be at least five combatants. The combatants in a melee may all be fighting for themselves or may be arranged into teams (called 'Scenario Melees').</p>"
+  },
+  {
+    "name": "Non-Weapon Combat or NSC (no sword combat)",
+    "definition": "<p>How to use hand-to-hand techniques in the WCoS. Examples of moves taught are: two-hand twist lock, outside leg reap, goose neck wrist lock, standing guillotine, carotid restraint, lockup techniques, 3 punch rule, etc. If you have previous experience in other martial arts it is the Kaiden's discretion if it is valid for testing/requirements.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "OSC and TOSC",
+    "definition": "<p>Abbreviations for One Solid Color and True One Solid Color. True One Solid Color is the color chosen to be worn by the student upon reaching L2. The appearance must not be interrupted by logos, stripes, or other decoration. Once you choose your TOSC (past L2) you cannot change it (unless you get permission from your Kaiden).</p>"
+  },
+  {
+    "name": "Parry",
+    "definition": "<p>A prelude to sparring - Parry is an exercise in which the student demonstrates the ability to use precise full circle cuts, and correct blocks during combat movement. It can be performed either armored or unarmored, and appropriate control is required in both conditions. One opponent is on offense and the other on defense. Opponents switch roles when \"switch\" is called, either by the person on offense, or by the Kaiden instructing the exercise. Its purpose is preparing students and fighters for Western Circle style sparring.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Refined Strikes",
+    "definition": "<p>The student makes strikes at a stationary target with control. Refined Strikes 1: full circle cuts, chop cuts, and thrusts. Refined Strikes 2: full circle cuts, chop cuts, draw cuts, and thrusts. Refined Strikes 3: full circle cuts, chop cuts, draw cuts, short circle cuts, and thrusts. When demonstrating, there should be more full circle cuts than chop cuts, more chop cuts than draw cuts (if applicable), and more draw cuts (if applicable) than thrusts. There should be fluid movement and a balance of shuffle and cross steps with the cuts and thrusts.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Resting Position",
+    "definition": "<p>This is the first stance you learn in the WCoS. You stand with your feet together and your weapon at your non-dominate side in a non-threatening position. May vary depending on weapon type.</p>"
+  },
+  {
+    "name": "Resting Death Stance",
+    "definition": "<p>Stance with hips forward, toes pointed outward (left stance) and weapon is blade down, back and to the right. May vary depending on weapon type and left or right handedness.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "The Retreat & The Duel",
+    "definition": "<p>The Retreat and The Duel are almost always done as a combination requirement after the student has recently achieved the rank of Copper Chain. The student camps out with their Kaiden to discuss training and the sword (The Retreat). The following day, the student must spar with the Kaiden and only has 3 attempts to win with a Cathan (The Duel). If the student does not win, they are considered without rank. They will have a chance to participate again in The Duel at their Kaiden's discretion and will receive their rank again upon winning The Duel.</p>"
+  },
+  {
+    "name": "Second Weapon",
+    "definition": "<p>Refers to learning a new weapon style, such as: two-handed broadsword, katana, one-handed sword, axe, 2 sword (one in each hand), sword and axe, sword and shield, spear, naganata, etc.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Second Style",
+    "definition": "<p>Refers to the type of fighting technique a student uses during combat. To use a \"second style\", if you are considered an offensive defense fighter, you will demonstrate being a straight offense fighter (for example). It can also refer to fighting close combat if you are generally a long range fighter. This requirement is determined per your Kaiden's discretion.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Sensei",
+    "definition": "<p>This is a Japanese term for 'teacher' or 'master'. In the Western Circle, it may be used to refer to your instructor. Most Kaidens will let you know what name(s) to call them by inside of class, whether it be 'Sensei', their name, etc.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Scenario",
+    "definition": "<p>Sparring (typically done in melees, but can use any combination of opponents) where certain situations or parameters are presented for opponents to follow during combat. This can involve teams, strategy, limited kill targets, rank vs rank, dojo vs dojo, etc.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Short Circle Cuts",
+    "definition": "<p>Learned at the highest level, short circle cuts are similar to full circle cuts, but done in front of the body for the purpose of speed.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "6 Deflections/9 Deflections",
+    "definition": "<p>The 6 deflections are 3 sets of deflections (2 per set) that ends in defensive stance. The first set deflects thrusts by having the tip of the blade at a fixed point while moving only the back of the sword to the left or right. The second set moves you oblique while cutting down an attacking blade (generally against an overhead full circle cut). The third set \"catches and flings\" away an attacking blade (generally against an overhead or neck full circle cut). The 9 deflections adds an additional 3 deflections at the end of the above pattern. The next set involves moving oblique and using a high sweeping motion while cutting the attacking blade to the side. The last deflection moves an attacking blade slightly to the side and ends by cutting downward then returning to defensive stance.</p>"
+  },
+  {
+    "name": "The Six Traditions",
+    "definition": "<p>These are a code of conduct amongst swordsmen. There is a complete section devoted to&nbsp;<a href=\"https://www.westerncircle.org/sixtrad.html\" target=\"_blank\" rel=\"noopener\">The Six Traditions</a>.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Strategy",
+    "definition": "<p>(Specifically the L7 requirement) The student answers a series of written strategies designed by their Kaiden. The student also demonstrates clear strategy in combat and melees.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Striding and Leaping",
+    "definition": "<p>(optional requirement) 1 mile jog (anywhere away from dojo) that involves obstacles (safe but challenging). No sword is required.</p>"
+  },
+  {
+    "name": "Sword Book",
+    "definition": "<p>A sword book is your record of your training throughout the entirety of your sword career. Each dojo or Kaiden may have different sword book requirements (so you must check with your Kaiden before you test to see what they require). Here are some options of things that you&nbsp;<u>may</u>&nbsp;be required to put in your sword book/s:<br>Your name, The Six Traditions, Three types of Moves, The Three Rules of Swordsmanship, Your practiced moves (descriptions, type of move, target areas), Rank Requirements and dates completed up to the rank you are testing for, Descriptions of other requirements (such as cutting patterns, katas, blocks, etc), Steel Requirements (Steel book only), Accurate Battle Log (with dates, events, requirements met, etc.), Class attendance and training dates and description (brief one sentence descriptions are allowed), Non-Weapon combat hours/training, and logged full circle cuts (steel), Summary of Wins, Losses and Victory Percentages, Log of Opponents fought, Journal entries from classes and events, your Story/True story of the sword, and Pictures.<br><br>Electronic sword books may be kept after successful completion of the L3 test, but must be printed/bound and have a physical copy turned in for the L4 test (and all future tests). The steel sword book may be electronic from the start since you cannot start training towards steel until completing your L3 test.<br><br>** \"Accurate log\" is knowing what is in your sword book, knowing how many battles, knowing where everything is, and dates **</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "Tare",
+    "definition": "<p>This Japanese term refers to a form of upper leg protection, common in Kendo bogu. It is composed of protective panels (within the WCoS, typically reinforced with leather or ABS plastic on/in a cloth sleeve) hung together from a belt composing a sort of armored skirt. Might also be referred to as kusazuri.</p>"
+  },
+  {
+    "name": "Tatami Cutting",
+    "definition": "<p>Completing 3 hours of cutting training against a tatami mat to learn the precise angles and techniques needed to cut the material.</p>"
+  },
+  {
+    "name": "The 13th Move",
+    "definition": "<p>Move of the student's own design. It is accepted for the requirement when the student has used it successfully in combat 3 times.</p><p>&nbsp;</p>"
+  },
+  {
+    "name": "The 20 Minute (and 60 minute) Non-Stop Battle",
+    "definition": "<p>Both the 20 and 60 minute non-stop battles are done with bokken and require at least 6 opponents other than the individual/s being tested (there is a 10 minute non-stop battle in steel listed under the steel requirements). The timer is set and the person being tested must continue to fight and/or defend themselves until the time is done. Opponents will come in quickly, but one at a time to attack the student from multiple directions without the ability for the student to rest inbetween matches. The student must start and finish on their feet. The 60 minute non-stop battle has additional requirements since it is designed to earn the red dalmater. To see what is required for the 60 minute non-stop battle, see the&nbsp;<a href=\"https://www.westerncircle.org/reddalmater.html\" target=\"_blank\" rel=\"noopener\">red dalmater page</a>.</p>"
+  },
+  {
+    "name": "Warrior Stance",
+    "definition": "<p>Stance where the feet are in an \"L\" stance and the sword is low, near the body by the hip, while aiming at the opponent's heart (waist if steel). May vary depending on weapon type.</p>"
+  },
+  {
+    "name": "WCoS Etiquette",
+    "definition": "<div class=\"companyNews\"><p>The basic understanding of respect in the WCoS (learned at trainee level): do not pick up or move someone's sword without permission, do not pick up or move someone's armor without permission, do not pick up or move someone's dalmater and rank without permission, how to care for your armor (and loaned armor), do not throw your sword, and how to care for your sword (and loaned weapons as well). Different Kaidens/dojos may have additional etiquette you must follow.</p></div>"
+  }
+]

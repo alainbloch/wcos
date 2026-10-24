@@ -1,3 +1,4 @@
+import { glossaryService } from './glossaryService.js';
 import { classesService } from './classesService.js';
 /**
  * Dynamic Page Service
@@ -16,6 +17,7 @@ import {
 import { memberService } from "./memberService.js";
 
 const repoMapping = {
+  glossary: { findAll: () => glossaryService.getAll() },
   members: membersRepo,
   champions: championsRepo,
   // Compatibility data-source names now query the unified members repository.

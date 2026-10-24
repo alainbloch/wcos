@@ -25,10 +25,12 @@ async function resetDatabase() {
   await initDatabase();
   const db = getDatabase();
   
+  delete db.data.migrations?.glossary;
+
   // Clear all collections (keep schema defaults)
   const collections = [
     'pages', 'members', 'champions',
-    'classes', 'moves',
+    'classes', 'moves', 'glossary',
     'resources',
     'siteSettings', 'navigation', 'users'
   ];
