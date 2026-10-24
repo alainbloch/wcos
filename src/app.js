@@ -37,6 +37,7 @@ async function buildApp() {
     limits: {
       fileSize: config.maxFileSize,
     },
+    attachFieldsToBody: true,
   });
   await fastify.register(fastifyCookie);
   await fastify.register(fastifySession, {
