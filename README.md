@@ -56,13 +56,13 @@ wcos/
 │   ├── utils/
 │   │   └── viewEngine.js      # Nunjucks setup + filters
 │   └── views/
-│       ├── layouts/           # base.njk, admin.njk
-│       ├── partials/          # header.njk, footer.njk
+│       ├── layouts/           # reference.njk, admin.njk
+│       ├── partials/          # reference-header/footer, member-rows
 │       ├── pages/             # Public page templates
 │       └── admin/             # Admin panel templates
 ├── public/
-│   ├── css/                   # main.css, admin.css
-│   ├── js/                    # main.js, admin.js
+│   ├── css/                   # reference.css, fonts.css, original/, admin.css
+│   ├── js/                    # reference.js, admin.js
 │   └── uploads/               # User uploads
 ├── data/
 │   └── db.json                # Lowdb database file
@@ -309,25 +309,25 @@ cp data/db.json.backup.20240115 data/db.json
 
 ## 🎨 Customization
 
-### Design Tokens (CSS Variables)
-Edit `public/css/main.css` `:root` section:
-```css
-:root {
-  --color-primary: #8B0000;      /* Deep red */
-  --color-accent: #D4A542;       /* Gold */
-  --font-heading: 'Cinzel', serif;
-  --font-body: 'Libre Baskerville', serif;
-  --container-max: 1200px;
-  /* ... */
-}
-```
+### Public Layout
+All public category controllers extend `PublicPageController`. Its `renderPage()` loads
+published CMS content and the page-specific original CSS metadata, then renders
+`pages/reference.njk` inside `layouts/reference.njk`. Shared navigation and footer
+live in `partials/reference-header.njk` and `partials/reference-footer.njk`.
+
+Use `public/css/reference.css` for maintained public overrides, `fonts.css` for local
+fonts, and `admin.css` for admin controls. The obsolete base layout, sample public
+templates, and main.css/main.js have been removed; do not recreate a second public shell.
 
 ### Add New Page Type
-1. Add repository method in `src/models/database.js`
-2. Create service in `src/services/`
-3. Add controller in `src/controllers/`
-4. Register route in `src/routes/publicRoutes.js`
-5. Create template in `src/views/pages/`
+1. Use Pages in the CMS for ordinary content; the dynamic route uses the same renderer.
+2. For a dedicated route, add a method to the appropriate category controller and call
+   `this.renderPage(request, reply, 'the-page-slug')`.
+3. Keep business/data transformations in services, and add route regression tests that
+   verify publication rules, content, and the complete stylesheet set.
+4. For member profiles, only roster rows are generated from managed records. The
+   surrounding CMS page and original six-column layout remain intact. Once member
+   management is used, an empty roster stays empty rather than restoring old names.
 
 ### Add New Admin Section
 1. Add CRUD methods to `AdminController`

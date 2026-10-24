@@ -38,8 +38,9 @@ export async function publicRoutes(fastify) {
   }
 
   // Photo gallery redirects to SmugMug
-  fastify.get("/photo-gallery", async (_request, reply) =>
-    reply.redirect("https://westerncircle.smugmug.com/"),
+  fastify.get(
+    "/photo-gallery",
+    whoWeAreController.photoGallery.bind(whoWeAreController),
   );
 
   // Category redirects to news
