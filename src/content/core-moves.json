@@ -1,0 +1,452 @@
+[
+  {
+    "name": "Jumping Tiger",
+    "category": "",
+    "description": "Starts in defensive stance (Right Stance). Swordsman shuffles forward with full circle angled neck cut over the swordsman’s right shoulder. When the opponent blocks, the swordsman cross-steps to their left (off-line) with a full circle over-head cut straight down on the opponent’s exposed arm. As the cut completes the final arc, the swordsman’s right foot should swing around behind them in a sliding motion, so that they end up in a proper left stance when the cut is finished. This move is only effective if done with full commitment on the initial cut, and it is most useful with a feint.",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 0
+  },
+  {
+    "name": "Jumping Tiger II",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 1
+  },
+  {
+    "name": "The 'I' Move",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 2
+  },
+  {
+    "name": "The Tradition",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 3
+  },
+  {
+    "name": "Thorn",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 4
+  },
+  {
+    "name": "Akira",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 5
+  },
+  {
+    "name": "Double Thrust/ Triple Thrust",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 6
+  },
+  {
+    "name": "Illusion",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 7
+  },
+  {
+    "name": "Mantis",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 8
+  },
+  {
+    "name": "Whispering Wind",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 9
+  },
+  {
+    "name": "Casper",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 10
+  },
+  {
+    "name": "Lightning",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 11
+  },
+  {
+    "name": "The Unnamed Move",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 12
+  },
+  {
+    "name": "The Drop",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 13
+  },
+  {
+    "name": "Double Chop",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 14
+  },
+  {
+    "name": "Musashi",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 15
+  },
+  {
+    "name": "Defense Cut",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 16
+  },
+  {
+    "name": "The Strike",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 17
+  },
+  {
+    "name": "Samurai",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 18
+  },
+  {
+    "name": "Crescent Cut",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 19
+  },
+  {
+    "name": "The Phantom",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 20
+  },
+  {
+    "name": "Dragon's Tail",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 21
+  },
+  {
+    "name": "Rising Sun / Setting Sun",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 22
+  },
+  {
+    "name": "The Spike",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 23
+  },
+  {
+    "name": "Arc",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 24
+  },
+  {
+    "name": "The Chopper",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 25
+  },
+  {
+    "name": "The Femoral",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 26
+  },
+  {
+    "name": "Ubi",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 27
+  },
+  {
+    "name": "Sliding Sand",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 28
+  },
+  {
+    "name": "Scythe",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 29
+  },
+  {
+    "name": "The Second",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 30
+  },
+  {
+    "name": "Teacher's move* not confirmed yet",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 31
+  },
+  {
+    "name": "Falling Water",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 32
+  },
+  {
+    "name": "Shield Cut",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 33
+  },
+  {
+    "name": "Double Thrust Cut",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 34
+  },
+  {
+    "name": "Illusion 2",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 35
+  },
+  {
+    "name": "Kill the Tiger",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 36
+  },
+  {
+    "name": "The Nikon",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 37
+  },
+  {
+    "name": "High Wrap",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 38
+  },
+  {
+    "name": "Gad's Bane",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 39
+  },
+  {
+    "name": "Blackbird",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 40
+  },
+  {
+    "name": "The Wrap",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 41
+  },
+  {
+    "name": "Shadow",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 42
+  },
+  {
+    "name": "The Evasion",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 43
+  },
+  {
+    "name": "Jaguar",
+    "category": "",
+    "description": "",
+    "details": "",
+    "core": true,
+    "creatorId": "",
+    "media": [],
+    "order": 44
+  }
+]

@@ -102,21 +102,24 @@ export async function adminRoutes(fastify) {
     adminController.deleteRank.bind(adminController),
   );
 
-  // Core Moves
-  fastify.get("/core-moves", adminController.listCoreMoves.bind(adminController));
-  fastify.get("/core-moves/new", adminController.newCoreMove.bind(adminController));
-  fastify.post("/core-moves", adminController.createCoreMove.bind(adminController));
+  // Moves
+  fastify.post("/moves/order", adminController.reorderMoves.bind(adminController));
+  fastify.post("/moves/media", adminController.uploadMoveMedia.bind(adminController));
+  fastify.get("/core-moves", (request, reply) => reply.redirect("/admin/moves"));
+  fastify.get("/moves", adminController.listMoves.bind(adminController));
+  fastify.get("/moves/new", adminController.newMove.bind(adminController));
+  fastify.post("/moves", adminController.createMove.bind(adminController));
   fastify.get(
-    "/core-moves/:id/edit",
-    adminController.editCoreMove.bind(adminController),
+    "/moves/:id/edit",
+    adminController.editMove.bind(adminController),
   );
   fastify.post(
-    "/core-moves/:id/edit",
-    adminController.updateCoreMove.bind(adminController),
+    "/moves/:id/edit",
+    adminController.updateMove.bind(adminController),
   );
   fastify.post(
-    "/core-moves/:id/delete",
-    adminController.deleteCoreMove.bind(adminController),
+    "/moves/:id/delete",
+    adminController.deleteMove.bind(adminController),
   );
 
   // Kaidens

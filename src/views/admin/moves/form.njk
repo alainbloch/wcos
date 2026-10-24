@@ -1,0 +1,21 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<h2>{{ pageTitle }}</h2>
+<form method="POST" action="{% if move.id %}/admin/moves/{{ move.id }}/edit{% else %}/admin/moves{% endif %}" class="admin-form" data-move-form>
+  <label>Name <input name="name" value="{{ move.name }}" required></label>
+  <label>Category <input name="category" value="{{ move.category }}"></label>
+  <label>Creator <select name="creatorId"><option value="">Unknown / unspecified</option>{% for member in creators %}<option value="{{ member.id }}" {% if move.creatorId == member.id %}selected{% endif %}>{{ member.position }}</option>{% endfor %}</select></label>
+  <label><input type="checkbox" name="core" {% if move.core %}checked{% endif %}> Core move</label>
+  <label>Description <textarea name="description">{{ move.description }}</textarea></label>
+  <label>Details / instructions <textarea name="details">{{ move.details }}</textarea></label>
+  <fieldset><legend>Images and videos</legend>
+    <p>Drag to reorder, or use Up / Down. Media order is saved with the move. Video URLs must point directly to MP4 or WebM files.</p>
+    <input type="hidden" name="media" value="{{ mediaJson }}">
+    <div data-move-media></div>
+    <button type="button" data-add-media>Add media URL</button>
+    <label>Upload image or video <input type="file" data-upload-media accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" multiple></label>
+    <p data-media-status role="status"></p>
+  </fieldset>
+  <button type="submit" class="btn btn-primary">Save Move</button> <a href="/admin/moves">Cancel</a>
+</form>
+{% endblock %}

@@ -1,3 +1,5 @@
+import { movesRepo, membersRepo } from '../models/database.js';
+import { uploadMoveMedia } from '../services/moveMediaService.js';
 /**
  * Admin Controller
  * Handles admin dashboard and content management
@@ -8,7 +10,7 @@ import { memberService } from "../services/memberService.js";
 import { championService } from "../services/championService.js";
 import { classesService } from "../services/classesService.js";
 import { ranksService } from "../services/ranksService.js";
-import { coreMovesService } from "../services/coreMovesService.js";
+import { readMoveForm, movesService } from "../services/movesService.js";
 import { kaidensService } from "../services/kaidensService.js";
 import { resourcesService } from "../services/resourcesService.js";
 import { duesService } from "../services/duesService.js";
@@ -459,73 +461,54 @@ export class AdminController extends BaseController {
     }
   }
 
-  // Core Moves management
-  async listCoreMoves(request, reply) {
-    const coreMoves = await coreMovesService.getAllCoreMoves();
-    await this.renderAdmin(request, reply, "admin/coreMoves/list.njk", {
-      pageTitle: "Manage Core Moves",
-      coreMoves,
+  // Moves management
+  async listMoves(request, reply) {
+    return this.renderAdmin(request, reply, 'admin/moves/list.njk', { pageTitle: 'Moves', moves: await movesService.getAllMoves() });
+  }
+  async moveForm(request, reply, move = {}, flash) {
+    return this.renderAdmin(request, reply, 'admin/moves/form.njk', {
+      pageTitle: move.id ? 'Edit Move' : 'New Move', move, flash,
+      mediaJson: typeof move.media === 'string' ? move.media : JSON.stringify(move.media || []),
+      creators: await membersRepo.findAll(),
     });
   }
-
-  async newCoreMove(request, reply) {
-    await this.renderAdmin(request, reply, "admin/coreMoves/form.njk", {
-      pageTitle: "New Core Move",
-      coreMove: null,
-    });
+  async newMove(request, reply) { return this.moveForm(request, reply); }
+  async editMove(request, reply) {
+    const move = await movesService.getMoveById(request.params.id);
+    if (!move) return reply.code(404).send('Move not found');
+    return this.moveForm(request, reply, move);
   }
-
-  async createCoreMove(request, reply) {
+  async createMove(request, reply) {
     try {
-      const coreMove = await coreMovesService.createCoreMove(request.body);
-      request.session.adminFlash = { success: "Core move created successfully" };
-      reply.redirect(`/admin/core-moves/${coreMove.id}/edit`);
+      const move = await movesService.createMove(request.body);
+      return reply.redirect(`/admin/moves/${move.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.renderAdmin(request, reply, "admin/coreMoves/form.njk", {
-        pageTitle: "New Core Move",
-        coreMove: request.body,
-        flash: { error: error.message },
-      });
+      return this.moveForm(request, reply, readMoveForm(request.body), { error: error.message });
     }
   }
-
-  async editCoreMove(request, reply) {
-    const coreMove = await coreMovesService.getCoreMoveById(request.params.id);
-    if (!coreMove) {
-      return reply.code(404).send("Core move not found");
-    }
-    await this.renderAdmin(request, reply, "admin/coreMoves/form.njk", {
-      pageTitle: "Edit Core Move",
-      coreMove,
-    });
-  }
-
-  async updateCoreMove(request, reply) {
+  async updateMove(request, reply) {
+    if (!await movesService.getMoveById(request.params.id)) return reply.code(404).send('Move not found');
     try {
-      await coreMovesService.updateCoreMove(request.params.id, request.body);
-      request.session.adminFlash = { success: "Core move updated successfully" };
-      reply.redirect(`/admin/core-moves/${request.params.id}/edit`);
+      await movesService.updateMove(request.params.id, request.body);
+      return reply.redirect(`/admin/moves/${request.params.id}/edit`);
     } catch (error) {
-      const existing = await coreMovesService.getCoreMoveById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/coreMoves/form.njk", {
-        pageTitle: "Edit Core Move",
-        coreMove: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
+      reply.code(400);
+      return this.moveForm(request, reply, { ...readMoveForm(request.body), id: request.params.id }, { error: error.message });
     }
   }
-
-  async deleteCoreMove(request, reply) {
-    try {
-      await coreMovesService.deleteCoreMove(request.params.id);
-      request.session.adminFlash = { success: "Core move deleted successfully" };
-      reply.redirect("/admin/core-moves");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/core-moves");
-    }
+  async deleteMove(request, reply) {
+    if (!await movesService.getMoveById(request.params.id)) return reply.code(404).send('Move not found');
+    await movesService.deleteMove(request.params.id);
+    return reply.redirect('/admin/moves');
+  }
+  async reorderMoves(request, reply) {
+    try { await movesRepo.reorder(request.body?.ids); return { saved: true }; }
+    catch (error) { return reply.code(400).send({ error: error.message }); }
+  }
+  async uploadMoveMedia(request, reply) {
+    try { return await uploadMoveMedia(request.body?.file); }
+    catch (error) { return reply.code(400).send({ error: error.message }); }
   }
 
   // Kaidens management

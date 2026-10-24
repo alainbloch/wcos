@@ -54,3 +54,5 @@ data/*.backup-*
 *.backup-council-*
 
 *.backup-dalmater-*
+
+*.backup-moves-*

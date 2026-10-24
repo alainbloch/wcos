@@ -1,0 +1,8 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<h2>Moves</h2><a href="/admin/moves/new" class="btn btn-primary">Add Move</a>
+<p>Drag a row to change the order, or use Up / Down. Changes save automatically.</p>
+<p data-move-order-status role="status"></p>
+<table class="admin-table"><thead><tr><th>Order</th><th>Name</th><th>Core</th><th>Actions</th></tr></thead>
+<tbody data-move-order>{% for move in moves %}<tr draggable="true" data-id="{{ move.id }}"><td><button type="button" data-up aria-label="Move {{ move.name }} up">↑</button><button type="button" data-down aria-label="Move {{ move.name }} down">↓</button></td><td>{{ move.name }}</td><td>{% if move.core %}Yes{% else %}No{% endif %}</td><td><a href="/admin/moves/{{ move.id }}/edit">Edit</a> <form method="POST" action="/admin/moves/{{ move.id }}/delete" class="inline-form"><button type="submit" data-confirm-delete="Delete this move?">Delete</button></form></td></tr>{% endfor %}</tbody></table>
+{% endblock %}

@@ -551,3 +551,79 @@ document.querySelectorAll('[data-dalmater-picker]').forEach(picker => {
   picker.addEventListener('change', syncHex);
   syncPicker();
 });
+
+// Shared sortable behavior; keyboard-accessible buttons offer the same operation.
+function moveSortable(container, changed, locked = () => false) {
+  let dragged;
+  container.addEventListener('dragstart', event => {
+    if (locked()) { event.preventDefault(); return; }
+    dragged = event.target.closest('[draggable]');
+    if (dragged) event.dataTransfer?.setData('text/plain', 'move');
+  });
+  container.addEventListener('dragover', event => { if (!locked()) event.preventDefault(); });
+  container.addEventListener('drop', event => {
+    event.preventDefault();
+    const target = event.target.closest('[draggable]');
+    if (locked() || !dragged || !target || target === dragged || target.parentNode !== container) return;
+    const children = [...container.children];
+    container.insertBefore(dragged, children.indexOf(dragged) < children.indexOf(target) ? target.nextSibling : target);
+    dragged = null; changed();
+  });
+  container.addEventListener('dragend', () => { dragged = null; });
+  container.addEventListener('click', event => {
+    const button = event.target.closest('[data-up], [data-down]');
+    if (!button || locked()) return;
+    const row = button.closest('[draggable]');
+    if (button.hasAttribute('data-up') && row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); changed(); }
+    else if (button.hasAttribute('data-down') && row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); changed(); }
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const list = document.querySelector('[data-move-order]');
+  if (list) {
+    let busy = false, saved = [...list.children];
+    const status = document.querySelector('[data-move-order-status]');
+    moveSortable(list, async () => {
+      busy = true; status.textContent = 'Saving order…';
+      try {
+        const response = await fetch('/admin/moves/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: [...list.children].map(row => row.dataset.id) }) });
+        const result = await response.json();
+        if (!response.ok || !result.saved) throw new Error(result.error || 'Could not save order');
+        saved = [...list.children]; status.textContent = 'Order saved.';
+      } catch (error) { saved.forEach(row => list.append(row)); status.textContent = `${error.message}. Order restored; reload if the list changed.`; }
+      finally { busy = false; }
+    }, () => busy);
+  }
+  const form = document.querySelector('[data-move-form]');
+  if (!form) return;
+  const input = form.querySelector('[name=media]'), container = form.querySelector('[data-move-media]'), status = form.querySelector('[data-media-status]');
+  const sync = () => { input.value = JSON.stringify([...container.children].map(row => ({ type: row.querySelector('select').value, url: row.querySelector('[data-url]').value, caption: row.querySelector('[data-caption]').value }))); };
+  function add(item = { type: 'image', url: '', caption: '' }) {
+    const row = document.createElement('div'); row.draggable = true; row.className = 'move-media-row';
+    row.innerHTML = '<label>Type <select><option value="image">Image</option><option value="video">Video</option></select></label><label>URL <input data-url required></label><label>Caption <input data-caption></label><button type="button" data-up aria-label="Move media up">↑</button><button type="button" data-down aria-label="Move media down">↓</button><button type="button" data-remove>Remove</button>';
+    row.querySelector('select').value = item.type; row.querySelector('[data-url]').value = item.url; row.querySelector('[data-caption]').value = item.caption || '';
+    row.querySelector('[data-remove]').addEventListener('click', () => { row.remove(); sync(); });
+    container.append(row);
+  }
+  try { JSON.parse(input.value).forEach(add); } catch { status.textContent = 'Invalid media list. Add media again to replace it.'; }
+  container.addEventListener('input', sync); container.addEventListener('change', sync);
+  moveSortable(container, sync);
+  form.querySelector('[data-add-media]').addEventListener('click', () => { add(); sync(); });
+  let uploading = false;
+  form.addEventListener('submit', event => { if (uploading) { event.preventDefault(); status.textContent = 'Wait for uploads to finish.'; } });
+  form.querySelector('[data-upload-media]').addEventListener('change', async event => {
+    uploading = true; event.target.disabled = true;
+    try {
+      for (const file of event.target.files) {
+        status.textContent = `Uploading ${file.name}…`;
+        const body = new FormData(); body.append('file', file);
+        const response = await fetch('/admin/moves/media', { method: 'POST', body });
+        const result = await response.json();
+        if (!response.ok || !result.url) throw new Error(result.error || 'Upload failed');
+        add(result); sync();
+      }
+      status.textContent = 'Uploaded. Save the move to keep these associations.';
+    } catch (error) { status.textContent = error.message; }
+    finally { uploading = false; event.target.disabled = false; event.target.value = ''; }
+  });
+});
