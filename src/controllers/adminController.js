@@ -76,9 +76,11 @@ export class AdminController extends BaseController {
   }
 
   async newPage(request, reply) {
+    const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
       pageTitle: "New Page",
       page: null,
+      pages,
     });
   }
 
@@ -92,9 +94,11 @@ export class AdminController extends BaseController {
       reply.redirect(`/admin/pages/${page.id}/edit`);
     } catch (error) {
       reply.code(400);
+      const pages = await pagesService.getAllPages();
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
         pageTitle: "New Page",
         page: { ...request.body, published: request.body.published === "on" },
+        pages,
         flash: { error: error.message },
       });
     }
@@ -105,9 +109,11 @@ export class AdminController extends BaseController {
     if (!page) {
       return reply.code(404).send("Page not found");
     }
+    const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
       pageTitle: "Edit Page",
       page,
+      pages,
     });
   }
 
@@ -121,6 +127,7 @@ export class AdminController extends BaseController {
       reply.redirect(`/admin/pages/${request.params.id}/edit`);
     } catch (error) {
       const existing = await pagesService.getPageById(request.params.id);
+      const pages = await pagesService.getAllPages();
       reply.code(existing ? 400 : 404);
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
         pageTitle: "Edit Page",
@@ -130,6 +137,7 @@ export class AdminController extends BaseController {
           id: request.params.id,
           published: request.body.published === "on",
         },
+        pages,
         flash: { error: error.message },
       });
     }
