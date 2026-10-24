@@ -26,7 +26,6 @@ const values = {
   biography: "New <biography>",
   region: "Seattle",
   memberSince: "2004",
-  image: "/images/member.jpg",
   email: "member@example.com",
   yearsFought: "20",
   battlesFought: "100",
