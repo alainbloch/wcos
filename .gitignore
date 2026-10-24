@@ -52,3 +52,5 @@ data/*.backup-*
 
 # Council consolidation backups may be next to a custom database path
 *.backup-council-*
+
+*.backup-dalmater-*

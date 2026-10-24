@@ -119,23 +119,6 @@ export async function adminRoutes(fastify) {
     adminController.deleteCoreMove.bind(adminController),
   );
 
-  // Dalmater Colors
-  fastify.get("/dalmater-colors", adminController.listDalmaterColors.bind(adminController));
-  fastify.get("/dalmater-colors/new", adminController.newDalmaterColor.bind(adminController));
-  fastify.post("/dalmater-colors", adminController.createDalmaterColor.bind(adminController));
-  fastify.get(
-    "/dalmater-colors/:id/edit",
-    adminController.editDalmaterColor.bind(adminController),
-  );
-  fastify.post(
-    "/dalmater-colors/:id/edit",
-    adminController.updateDalmaterColor.bind(adminController),
-  );
-  fastify.post(
-    "/dalmater-colors/:id/delete",
-    adminController.deleteDalmaterColor.bind(adminController),
-  );
-
   // Kaidens
   fastify.get("/kaidens", adminController.listKaidens.bind(adminController));
   fastify.get("/kaidens/new", adminController.newKaiden.bind(adminController));

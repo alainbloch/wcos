@@ -8,7 +8,6 @@ import {
   classesRepo,
   ranksRepo,
   coreMovesRepo,
-  dalmaterColorsRepo,
   kaidensRepo,
   kaidenRulesRepo,
   resourcesRepo,
@@ -31,7 +30,12 @@ const repoMapping = {
   classes: classesRepo,
   ranks: ranksRepo,
   coreMoves: coreMovesRepo,
-  dalmaterColors: dalmaterColorsRepo,
+  dalmaterColors: {
+    findAll: async () =>
+      (await memberService.getAllMembers()).filter(
+        (member) => member.dalmaterColorName,
+      ),
+  },
   kaidens: kaidensRepo,
   kaidenRules: kaidenRulesRepo,
   resources: resourcesRepo,

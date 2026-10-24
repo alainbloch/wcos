@@ -9,7 +9,6 @@ import { championService } from "../services/championService.js";
 import { classesService } from "../services/classesService.js";
 import { ranksService } from "../services/ranksService.js";
 import { coreMovesService } from "../services/coreMovesService.js";
-import { dalmaterColorsService } from "../services/dalmaterColorsService.js";
 import { kaidensService } from "../services/kaidensService.js";
 import { resourcesService } from "../services/resourcesService.js";
 import { duesService } from "../services/duesService.js";
@@ -173,6 +172,7 @@ export class AdminController extends BaseController {
 
   async newMember(request, reply) {
     await this.renderAdmin(request, reply, "admin/members/form.njk", {
+      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
       pageTitle: "New Member",
       member: null,
     });
@@ -195,6 +195,7 @@ export class AdminController extends BaseController {
       }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
+      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
         pageTitle: "New Member",
         member: form,
         flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
@@ -206,6 +207,7 @@ export class AdminController extends BaseController {
     const member = await memberService.getMemberById(request.params.id);
     if (!member) return reply.code(404).send("Member not found");
     return this.renderAdmin(request, reply, "admin/members/form.njk", {
+      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
       pageTitle: "Edit Member",
       member: memberRecordToForm(member),
     });
@@ -231,8 +233,9 @@ export class AdminController extends BaseController {
       }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
+      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
         pageTitle: "Edit Member",
-        member: { ...form, id: request.params.id, councilHistory: existing.councilHistory || [] },
+        member: { ...form, id: request.params.id, councilHistory: existing.councilHistory || [], dalmaterLegacyRecords: existing.dalmaterLegacyRecords || [] },
         flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
       });
     }
@@ -522,75 +525,6 @@ export class AdminController extends BaseController {
     } catch (error) {
       request.session.adminFlash = { error: error.message };
       reply.redirect("/admin/core-moves");
-    }
-  }
-
-  // Dalmater Colors management
-  async listDalmaterColors(request, reply) {
-    const dalmaterColors = await dalmaterColorsService.getAllDalmaterColors();
-    await this.renderAdmin(request, reply, "admin/dalmaterColors/list.njk", {
-      pageTitle: "Manage Dalmater Colors",
-      dalmaterColors,
-    });
-  }
-
-  async newDalmaterColor(request, reply) {
-    await this.renderAdmin(request, reply, "admin/dalmaterColors/form.njk", {
-      pageTitle: "New Dalmater Color",
-      dalmaterColor: null,
-    });
-  }
-
-  async createDalmaterColor(request, reply) {
-    try {
-      const dalmaterColor = await dalmaterColorsService.createDalmaterColor(request.body);
-      request.session.adminFlash = { success: "Dalmater color created successfully" };
-      reply.redirect(`/admin/dalmater-colors/${dalmaterColor.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/dalmaterColors/form.njk", {
-        pageTitle: "New Dalmater Color",
-        dalmaterColor: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editDalmaterColor(request, reply) {
-    const dalmaterColor = await dalmaterColorsService.getDalmaterColorById(request.params.id);
-    if (!dalmaterColor) {
-      return reply.code(404).send("Dalmater color not found");
-    }
-    await this.renderAdmin(request, reply, "admin/dalmaterColors/form.njk", {
-      pageTitle: "Edit Dalmater Color",
-      dalmaterColor,
-    });
-  }
-
-  async updateDalmaterColor(request, reply) {
-    try {
-      await dalmaterColorsService.updateDalmaterColor(request.params.id, request.body);
-      request.session.adminFlash = { success: "Dalmater color updated successfully" };
-      reply.redirect(`/admin/dalmater-colors/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await dalmaterColorsService.getDalmaterColorById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/dalmaterColors/form.njk", {
-        pageTitle: "Edit Dalmater Color",
-        dalmaterColor: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteDalmaterColor(request, reply) {
-    try {
-      await dalmaterColorsService.deleteDalmaterColor(request.params.id);
-      request.session.adminFlash = { success: "Dalmater color deleted successfully" };
-      reply.redirect("/admin/dalmater-colors");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/dalmater-colors");
     }
   }
 

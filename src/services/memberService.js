@@ -4,7 +4,16 @@
  */
 import { membersRepo, getDatabase } from "../models/database.js";
 
+import {
+  prepareDalmater,
+  kaidenColorOptions,
+} from "../utils/memberDalmater.js";
+
 export class MemberService {
+  async getKaidenColorOptions(excludeId) {
+    return kaidenColorOptions(await membersRepo.findAll(), excludeId);
+  }
+
   async getAllMembers() {
     return membersRepo.findAll();
   }
@@ -46,11 +55,13 @@ export class MemberService {
   }
 
   async createMember(data) {
+    data = prepareDalmater(data, await membersRepo.findAll());
     await this.markRosterManaged();
     return membersRepo.create(data);
   }
 
   async updateMember(id, data) {
+    data = prepareDalmater(data, await membersRepo.findAll(), id);
     await this.markRosterManaged();
     return membersRepo.update(id, data);
   }
