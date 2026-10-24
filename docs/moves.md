@@ -2,6 +2,8 @@
 
 `/admin/moves` replaces Core Moves administration. Choose a member as creator, check Core move to include it on the public core-moves page, and attach images or videos using uploads or direct HTTP(S) URLs. Images are decoded and converted to WebP. Videos accept MP4/WebM containers; uploads use the configured `MAX_FILE_SIZE` (10 MB by default). Uploads are stored immediately; removing an association does not delete the file, since other moves may reference it.
 
+The Move types dropdown supports any combination of Straight Offense, Offensive Defense, and Initiated Response. Selections are stored in `move.types`; existing moves start with no assigned types until edited. No migration or seed command is needed for this field.
+
 Drag list rows (or use Up/Down) to automatically save move order. Failed requests restore the last saved order and display an error. Media rows support drag and Up/Down; save the move to persist their order. Creator is optional for historical moves with unknown attribution. Deleting a member does not delete their moves.
 
 On restart, existing `coreMoves` data migrates to `moves`, preserving IDs and record content, with a `*.backup-moves-*` database backup. Existing moves are marked core; the three old move-type explanation records remain available but are not marked core. `moves` is the full ordered CMS data source; `coreMoves` remains a filtered source containing only core moves.

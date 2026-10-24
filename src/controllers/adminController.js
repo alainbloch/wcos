@@ -10,7 +10,7 @@ import { memberService } from "../services/memberService.js";
 import { championService } from "../services/championService.js";
 import { classesService } from "../services/classesService.js";
 import { ranksService } from "../services/ranksService.js";
-import { readMoveForm, movesService } from "../services/movesService.js";
+import { MOVE_TYPES, readMoveForm, movesService } from "../services/movesService.js";
 import { kaidensService } from "../services/kaidensService.js";
 import { resourcesService } from "../services/resourcesService.js";
 import { duesService } from "../services/duesService.js";
@@ -470,6 +470,7 @@ export class AdminController extends BaseController {
       pageTitle: move.id ? 'Edit Move' : 'New Move', move, flash,
       mediaJson: typeof move.media === 'string' ? move.media : JSON.stringify(move.media || []),
       creators: await membersRepo.findAll(),
+      moveTypes: MOVE_TYPES,
     });
   }
   async newMove(request, reply) { return this.moveForm(request, reply); }

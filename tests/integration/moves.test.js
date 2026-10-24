@@ -70,3 +70,23 @@ it('rejects fake video uploads and accepts a decoded image', async () => {
   const response=await upload(image,'image/png','test.png'); expect(response.statusCode).toBe(200); expect(response.json().type).toBe('image');
   const {memberImageService}=await import('../../src/services/memberImageService.js'); await memberImageService.discard(response.json().url);
 });
+it('saves multiple move types, restores selections on errors, and clears unchecked types', async () => {
+  const { load } = await import('cheerio');
+  const response = await app.inject({ method:'POST',url:'/admin/moves',headers:{cookie,'content-type':'application/x-www-form-urlencoded'},payload:'name=Typed&types=Straight+Offense&types=Initiated+Response' });
+  expect(response.statusCode).toBe(302);
+  const url=response.headers.location;
+  const id=url.split('/')[3];
+  expect((await movesRepo.findById(id)).types).toEqual(['Straight Offense','Initiated Response']);
+  let $=load((await app.inject({url,headers:{cookie}})).payload);
+  expect($('[name=types]:checked').map((i,el)=>$(el).val()).get()).toEqual(['Straight Offense','Initiated Response']);
+  const failed=await post(url,{name:'',types:['Offensive Defense','Initiated Response']});
+  expect(failed.statusCode).toBe(400);
+  $=load(failed.payload);
+  expect($('[name=types]:checked').map((i,el)=>$(el).val()).get()).toEqual(['Offensive Defense','Initiated Response']);
+  expect((await post(url,{name:'Typed',types:'Unknown'})).statusCode).toBe(400);
+  expect((await movesRepo.findById(id)).types).toEqual(['Straight Offense','Initiated Response']);
+  expect((await post(url,{name:'Typed',types:'Offensive Defense'})).statusCode).toBe(302);
+  expect((await movesRepo.findById(id)).types).toEqual(['Offensive Defense']);
+  await post(url,{name:'Typed'});
+  expect((await movesRepo.findById(id)).types).toEqual([]);
+});

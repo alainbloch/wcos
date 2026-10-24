@@ -676,3 +676,15 @@ textarea {
 
 .move-media-row { display: flex; flex-wrap: wrap; gap: .6rem; padding: 1rem; border: 1px solid #ccc; margin-bottom: .7rem; }
 [data-move-order] tr, .move-media-row { cursor: grab; }
+
+/* Shared Pages and Moves multiselect dropdown. */
+
+.dropdown-trigger { display:flex; justify-content:space-between; align-items:center; padding:11px 12px; border:1px solid #bac3ce; border-radius:7px; background:white; cursor:pointer; min-height:44px; }
+.dropdown-trigger:hover { background:#f8f9fb; }
+.dropdown-panel { display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #dde2e7; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.08); padding:8px; z-index:50; }
+.dropdown-panel.open { display:block; }
+.dropdown-option { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; cursor:pointer; font-size:14px; }
+.dropdown-option:hover { background:#f3f5f7; }
+.dropdown-option input { width:18px; height:18px; accent-color:#a82835; }
+
+.dropdown-trigger { width: 100%; color: inherit; text-align: left; font: inherit; }
