@@ -41,3 +41,11 @@ coverage/
 # Uploads (keep directory but ignore files)
 public/uploads/*
 !public/uploads/.gitkeep
+# Migration backups contain private application data
+data/*.backup-*
+
+# Local browser session files
+**/cookies.txt
+
+# Local WordPress database export
+/import.sql

@@ -12,14 +12,17 @@ const __dirname = path.dirname(__filename);
 // Load .env file
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+// Preview runners supply host/port flags; explicit environment settings still win.
+const cliValue = flag => { const index = process.argv.indexOf(flag); return index < 0 ? undefined : process.argv[index + 1]; };
+
 const config = {
   // Server
-  port: parseInt(process.env.PORT || '3000', 10),
-  host: process.env.HOST || '0.0.0.0',
+  port: parseInt(process.env.PORT || cliValue('--port') || '3000', 10),
+  host: process.env.HOST || cliValue('--host') || '0.0.0.0',
   nodeEnv: process.env.NODE_ENV || 'development',
 
   // Session
-  sessionSecret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
+  sessionSecret: process.env.SESSION_SECRET || 'development-session-secret-change-before-deploying',
   sessionCookieName: 'wcos_session',
 
   // Database

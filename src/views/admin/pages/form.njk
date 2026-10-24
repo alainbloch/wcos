@@ -10,12 +10,16 @@
 
     <div class="form-group">
       <label for="slug">Slug</label>
-      <input type="text" id="slug" name="slug" class="form-input" value="{{ page.slug if page else '' }}" required>
+      <input type="text" id="slug" name="slug" class="form-input" value="{{ page.slug if page else '' }}">
       <small class="text-muted">URL-friendly identifier (auto-generated from title if empty)</small>
     </div>
 
     <div class="form-group">
       <label for="content">Content</label>
+      {% if page and page.migrated %}
+      <p>Imported page layout: edit the HTML carefully to preserve the original design.</p>
+      <textarea id="content" name="content" rows="24" class="form-input">{{ page.content }}</textarea>
+      {% else %}
       <div class="rich-editor">
         <div class="editor-toolbar">
           <button type="button" class="editor-btn" data-format="bold" title="Bold"><strong>B</strong></button>
@@ -37,6 +41,7 @@
         <div class="editor-content" contenteditable="true"></div>
       </div>
       <textarea name="content" style="display: none;">{{ page.content if page else '' }}</textarea>
+      {% endif %}
     </div>
 
     <div class="form-group">

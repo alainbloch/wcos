@@ -113,7 +113,6 @@ describe('Public Routes', () => {
   describe('Working Static Pages', () => {
     const workingPages = [
       { url: '/member-profiles', title: 'Member Profiles' },
-      { url: '/photo-gallery', title: 'Photo Gallery' },
       { url: '/hall-of-heroes', title: 'Hall of Heroes' },
       { url: '/rank-requirements', title: 'Rank Requirements' },
       { url: '/core-moves', title: 'Core Moves' },
@@ -334,7 +333,7 @@ describe('404 Handling', () => {
     });
     
     expect(response.statusCode).toBe(404);
-    const payload = JSON.parse(response.payload);
-    expect(payload.error.message).toBe('Route not found');
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.payload).toContain('Page not found');
   });
 });

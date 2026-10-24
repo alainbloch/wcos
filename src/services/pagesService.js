@@ -27,7 +27,7 @@ export class PagesService {
   }
 
   async updatePage(id, data) {
-    if (data.title && !data.slug) {
+    if (data.title && data.slug === undefined) {
       data.slug = this.generateSlug(data.title);
     }
     return pagesRepo.update(id, data);

@@ -1,0 +1,10 @@
+div[id*="ajaxsearchlitesettings"].searchsettings .asl_option_inner label { font-size: 0px !important; color: rgba(0, 0, 0, 0); }
+div[id*="ajaxsearchlitesettings"].searchsettings .asl_option_inner label::after { position: absolute; top: 0px; left: 0px; z-index: 1; font-size: 11px !important; }
+.asl_w_container { width: 100%; margin: 0px; min-width: 200px; }
+div[id*="ajaxsearchlite"].asl_m { width: 100%; }
+div[id*="ajaxsearchliteres"].wpdreams_asl_results div.resdrg span.highlighted { font-weight: bold; color: rgb(217, 49, 43); background-color: rgb(238, 238, 238); }
+div[id*="ajaxsearchliteres"].wpdreams_asl_results .results img.asl_image { width: 70px; height: 70px; object-fit: cover; }
+div[id*="ajaxsearchlite"].asl_r .results { max-height: none; }
+div[id*="ajaxsearchlite"].asl_r { position: absolute; }
+div.asl_r.asl_w.vertical .results .item::after { display: block; position: absolute; bottom: 0px; content: ""; height: 1px; width: 100%; background: rgb(216, 216, 216); }
+div.asl_r.asl_w.vertical .results .item.asl_last_item::after { display: none; }

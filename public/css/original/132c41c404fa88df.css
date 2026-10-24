@@ -1,0 +1,24 @@
+.jeg-elementor-kit.jkit-accordion.style-box .card-wrapper .card-header .card-header-button::before { width: 12px !important; }
+.jeg-elementor-kit.jkit-accordion.style-box .card-wrapper .card-header .card-header-button { padding-left: 30px !important; }
+div#ajaxsearchlite1.asl_w, div#ajaxsearchlite2.asl_w { background: none transparent !important; border: 1px solid rgb(255, 0, 0) !important; border-radius: 0px !important; box-shadow: none !important; overflow: hidden !important; }
+div#ajaxsearchlite1.asl_w .probox, div#ajaxsearchlite2.asl_w .probox { background: none transparent !important; border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: none !important; box-shadow: none !important; height: 42px !important; }
+div#ajaxsearchlite1.asl_w .proinput, div#ajaxsearchlite2.asl_w .proinput { background: transparent !important; }
+div#ajaxsearchlite1.asl_w input.orig, div#ajaxsearchlite2.asl_w input.orig { background: transparent !important; color: rgb(255, 255, 255) !important; font-size: 15px !important; height: 42px !important; line-height: 42px !important; padding: 0px 12px !important; }
+div#ajaxsearchlite1.asl_w input.orig::placeholder, div#ajaxsearchlite2.asl_w input.orig::placeholder { color: rgba(255, 255, 255, 0.75) !important; }
+div#ajaxsearchlite1.asl_w input.autocomplete, div#ajaxsearchlite2.asl_w input.autocomplete { color: rgba(255, 255, 255, 0.35) !important; background: transparent !important; }
+div#ajaxsearchlite1.asl_w .promagnifier, div#ajaxsearchlite2.asl_w .promagnifier { background: none transparent !important; border-left: 1px solid rgb(255, 0, 0) !important; width: 42px !important; height: 42px !important; }
+div#ajaxsearchlite1.asl_w .promagnifier svg path, div#ajaxsearchlite2.asl_w .promagnifier svg path { fill: rgb(255, 255, 255) !important; }
+div#ajaxsearchlite1.asl_w .proclose svg polygon, div#ajaxsearchlite2.asl_w .proclose svg polygon { fill: rgb(255, 255, 255) !important; }
+div#ajaxsearchliteres1.asl_r, div[id*="ajaxsearchliteres"].asl_r, div#ajaxsearchliteres2.asl_r, div[id*="ajaxsearchliteres"].asl_r { background: none transparent !important; border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: none !important; box-shadow: none !important; padding: 0px !important; font-family: Roboto, sans-serif !important; }
+div#ajaxsearchliteres1 .results, div#ajaxsearchliteres2 .results, div[id*="ajaxsearchliteres"] .results { background: rgb(23, 23, 23) !important; border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: none !important; box-shadow: none !important; }
+div#ajaxsearchliteres1 .item, div#ajaxsearchliteres2 .item, div[id*="ajaxsearchliteres"] .item { background: rgba(0, 0, 0, 0.35) !important; border: 0px solid rgb(255, 255, 255) !important; box-shadow: none !important; padding: 10px !important; }
+div#ajaxsearchliteres1 .item h3 a, div#ajaxsearchliteres2 .item h3 a, div[id*="ajaxsearchliteres"] .item h3 a { font-family: Roboto, sans-serif !important; color: rgb(255, 255, 255) !important; font-size: 15px !important; font-weight: 500 !important; text-decoration: none !important; }
+div#ajaxsearchliteres1 .asl_desc, div#ajaxsearchliteres2 .asl_desc, div[id*="ajaxsearchliteres"] .asl_desc { font-family: Roboto, sans-serif !important; color: rgba(255, 255, 255, 0.75) !important; font-size: 13px !important; }
+div#ajaxsearchliteres1 .asl_content, div[id*="ajaxsearchliteres"] .asl_content { border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: none !important; box-shadow: none !important; }
+div#ajaxsearchliteres1 img.asl_image, div[id*="ajaxsearchliteres"] img.asl_image { border-width: medium !important; border-style: none !important; border-color: currentcolor !important; border-image: none !important; border-radius: 0px !important; }
+div#ajaxsearchliteres1 .item:hover, div[id*="ajaxsearchliteres"] .item:hover { background: rgba(255, 0, 0, 0.15) !important; }
+.proclose { margin-top: 5px !important; }
+.hfe-nav-menu__toggle + .hfe-nav-menu #menu-item-1331 { display: block; }
+@media (min-width: 1025px) {
+  #menu-item-1331 { display: none !important; }
+}
