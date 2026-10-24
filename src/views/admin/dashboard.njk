@@ -1,0 +1,39 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="stats-grid">
+    {% for key in stats %}
+    <div class="stat-card">
+      <div class="stat-icon">
+        {% if key == 'pages' %}📄
+        {% elif key == 'members' %}👥
+        {% elif key == 'champions' %}🏆
+        {% elif key == 'council' %}⚔️
+        {% elif key == 'classes' %}🥋
+        {% elif key == 'ranks' %}📜
+        {% elif key == 'coreMoves' %}📚
+        {% elif key == 'dalmaterColors' %}🎨
+        {% elif key == 'kaidens' %}👑
+        {% elif key == 'resources' %}🔗
+        {% elif key == 'dues' %}💰
+        {% else %}📦
+        {% endif %}
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats[key] }}</div>
+        <div class="stat-label">{{ key | capitalize }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="admin-card">
+    <h2>Quick Actions</h2>
+    <div class="flex gap-3" style="margin-top: var(--space-4);">
+      <a href="/admin/pages/new" class="btn btn-primary">New Page</a>
+      <a href="/admin/settings" class="btn btn-secondary">Site Settings</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

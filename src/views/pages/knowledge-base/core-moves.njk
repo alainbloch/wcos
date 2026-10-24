@@ -1,0 +1,82 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<div class="container">
+  <header class="page-header">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    {% if pageSubtitle %}
+    <p class="page-subtitle">{{ pageSubtitle }}</p>
+    {% endif %}
+  </header>
+
+  <!-- Move Types -->
+  <section class="section">
+    <h2 class="section-title">3 Types of Moves</h2>
+    <div class="grid grid-3">
+      {% for type in moveTypes %}
+      <article class="card move-type-card">
+        <div class="card-body">
+          <h3 class="move-type-name">{{ type.name }}</h3>
+          <p class="move-type-description">{{ type.description }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Core Moves by Category -->
+  <section class="section">
+    <h2 class="section-title">Core Moves</h2>
+
+    {% if movesByCategory %}
+    {% for category in movesByCategory %}
+    <div class="accordion-section mb-8">
+      <button class="accordion-trigger category-trigger" aria-expanded="false" style="width: 100%; text-align: left; padding: var(--space-4); background: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--font-size-lg); font-family: var(--font-heading); color: var(--color-primary);">
+        {{ category }} ({{ movesByCategory[category].length }})
+      </button>
+      <div class="accordion-panel" hidden>
+        <div class="grid grid-2" style="padding: var(--space-4);">
+          {% for move in movesByCategory[category] %}
+          <div class="move-item">
+            <h4 class="move-name">{{ move.name }}</h4>
+            {% if move.description %}
+            <p class="move-description">{{ move.description | markdown }}</p>
+            {% endif %}
+            {% if move.level %}
+            <span class="move-level">Level: {{ move.level }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-muted">No core moves defined.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Category accordions
+  document.querySelectorAll('.category-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const panel = trigger.nextElementSibling;
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+      trigger.setAttribute('aria-expanded', !isOpen);
+      panel.hidden = isOpen;
+
+      if (!isOpen) {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      } else {
+        panel.style.maxHeight = '0';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

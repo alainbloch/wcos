@@ -1,0 +1,31 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<div class="container">
+  <header class="page-header">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+  </header>
+
+  {% if photos and photos.length > 0 %}
+  <div class="photo-gallery grid grid-4">
+    {% for photo in photos %}
+    <figure class="photo-item">
+      <img src="{{ photo.image }}" alt="{{ photo.caption }}" loading="lazy">
+      {% if photo.caption %}
+      <figcaption>{{ photo.caption }}</figcaption>
+      {% endif %}
+    </figure>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <div class="mb-4" style="font-size: 4rem;">📸</div>
+    <h2>Photo Gallery Coming Soon</h2>
+    <p class="text-muted">Historical photos and event galleries will be displayed here.</p>
+    {% if user %}
+    <a href="/admin" class="btn btn-primary mt-4">Manage Photos</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

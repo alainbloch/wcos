@@ -1,0 +1,123 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-main-title">{{ pageTitle }}</h1>
+      <p class="hero-tagline">{{ pageSubtitle }}</p>
+    </div>
+  </div</section>
+
+<!-- Featured Members -->
+{% if featuredMembers and featuredMembers.length > 0 %}
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Featured Members</h2>
+    <div class="grid grid-4">
+      {% for member in featuredMembers %}
+      <article class="card member-card">
+        <div class="card-body">
+          <div class="member-level">{{ member.level }}</div>
+          <h3 class="member-name">{{ member.circleName }}</h3>
+          <p class="member-position">{{ member.position }}</p>
+          <p class="member-since">Member since: {{ member.memberSince }}</p>
+          <p class="member-region">{{ member.region }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-6">
+      <a href="/member-profiles" class="btn btn-primary">View All Members</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Latest Champions -->
+{% if latestChampions and latestChampions.length > 0 %}
+<section class="section">
+  <div class="container">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="section-title">Recent Champions</h2>
+      <a href="/hall-of-heroes" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="grid grid-3">
+      {% for champion in latestChampions %}
+      <article class="card champion-card">
+        <div class="card-body text-center">
+          <div class="champion-year">{{ champion.year }}</div>
+          <h3 class="champion-name">{{ champion.name }}</h3>
+          {% if champion.title %}
+          <p class="champion-title">{{ champion.title }}</p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Current Council -->
+{% if council and council.length > 0 %}
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Current Council</h2>
+    <div class="grid grid-3">
+      {% for member in council %}
+      <article class="card council-card">
+        <div class="card-body text-center">
+          {% if member.image %}
+          <img src="{{ member.image }}" alt="{{ member.name }}" class="council-image" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: var(--space-4); border: 3px solid var(--color-accent);">
+          {% else %}
+          <div class="council-placeholder" style="width: 150px; height: 150px; border-radius: 50%; background: var(--color-surface-alt); margin: 0 auto var(--space-4); display: flex; align-items: center; justify-content: center; font-size: 3rem;">⚔️</div>
+          {% endif %}
+          <h3 class="council-name">{{ member.name }}</h3>
+          <p class="council-title">{{ member.title }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Quick Links -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Quick Links</h2>
+    <div class="grid grid-4">
+      <a href="/classes" class="card quick-link">
+        <div class="card-body text-center">
+          <div class="quick-link-icon">🥋</div>
+          <h3>Classes</h3>
+          <p>Find a dojo near you</p>
+        </div>
+      </a>
+      <a href="/rank-requirements" class="card quick-link">
+        <div class="card-body text-center">
+          <div class="quick-link-icon">📜</div>
+          <h3>Rank Requirements</h3>
+          <p>Path to mastery</p>
+        </div>
+      </a>
+      <a href="/core-moves" class="card quick-link">
+        <div class="card-body text-center">
+          <div class="quick-link-icon">⚔️</div>
+          <h3>Core Moves</h3>
+          <p>Techniques & forms</p>
+        </div>
+      </a>
+      <a href="/dues" class="card quick-link">
+        <div class="card-body text-center">
+          <div class="quick-link-icon">💰</div>
+          <h3>Dues & Donations</h3>
+          <p>Support the circle</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
