@@ -21,11 +21,11 @@
 				</div>
 		<div class="elementor-element elementor-element-3b7507e e-con-full e-flex e-con e-child" data-id="3b7507e" data-element_type="container" data-e-type="container">
 				<div class="elementor-element elementor-element-d109b11 elementor-widget elementor-widget-image" data-id="d109b11" data-element_type="widget" data-e-type="widget" data-widget_type="image.default">
-															<img decoding="async" width="47" height="50" src="{{ member.image }}" class="attachment-full size-full wp-image-381" alt="{{ member.position }}" data-member-portrait="{{ member.position }}">															</div>
+															<img decoding="async" width="47" height="50" src="{{ member.thumbnail }}" class="attachment-full size-full wp-image-381" alt="{{ member.position }}" data-member-portrait="{{ member.position }}">															</div>
 				</div>
 		<div class="elementor-element elementor-element-11835d3 e-con-full e-flex e-con e-child" data-id="11835d3" data-element_type="container" data-e-type="container">
 				<div class="elementor-element elementor-element-3c38739 elementor-widget elementor-widget-heading" data-id="3c38739" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
-					<p class="elementor-heading-title elementor-size-default">{% if member.position == 'Gad' %}<a href="#member-gad" data-member-dialog="member-gad">{{ member.position }}</a>{% else %}{{ member.position }}{% endif %}</p>{% if member.biography %}<details><summary>Profile</summary><p>{{ member.biography }}</p></details>{% endif %}				</div>
+					<p class="elementor-heading-title elementor-size-default">{{ member.position }}</p>				</div>
 				</div>
 		<div class="elementor-element elementor-element-340db23 e-con-full e-flex e-con e-child" data-id="340db23" data-element_type="container" data-e-type="container">{% for merit in member.merits %}<div class="elementor-element elementor-element-c3764e0 elementor-widget elementor-widget-heading" data-id="c3764e0" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
 					<p class="elementor-heading-title elementor-size-default">{{ merit }}</p>				</div>{% endfor %}</div>

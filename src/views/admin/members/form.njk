@@ -87,6 +87,7 @@
         </div>
       </fieldset>
 
+<fieldset class="form-section form-section-full"><legend>Public profile details</legend><p>Optional details shown in the member’s profile modal. Leave unknown values blank.</p><div class="form-field"><label for="email">Public email</label><input type="email" id="email" name="email" value="{{ member.email or '' }}"></div><div class="form-field"><label for="yearsFought">Years fought</label><input type="text" id="yearsFought" name="yearsFought" value="{{ member.yearsFought or '' }}"></div><div class="form-field"><label for="battlesFought">Battles fought</label><input type="text" id="battlesFought" name="battlesFought" value="{{ member.battlesFought or '' }}"></div><div class="form-field"><label for="steelBattlesFought">Steel battles fought</label><input type="text" id="steelBattlesFought" name="steelBattlesFought" value="{{ member.steelBattlesFought or '' }}"></div><div class="form-field"><label for="opponentsFought">Opponents fought</label><input type="text" id="opponentsFought" name="opponentsFought" value="{{ member.opponentsFought or '' }}"></div><div class="form-field"><label for="weaponType">Weapon type</label><input type="text" id="weaponType" name="weaponType" value="{{ member.weaponType or '' }}"></div><div class="form-field"><label for="statsUpdated">Statistics last updated</label><input type="text" id="statsUpdated" name="statsUpdated" value="{{ member.statsUpdated or '' }}"></div></fieldset>
       <!-- Biography & Media -->
       <fieldset class="form-section form-section-full">
         <legend>Biography & Media</legend>
@@ -94,7 +95,7 @@
         <div class="form-field">
           <label for="biography">Biography</label>
           <textarea id="biography" name="biography" rows="6" placeholder="Member biography, achievements, history...">{{ member.biography or '' }}</textarea>
-          <small class="form-hint">Full biography for public profile. Markdown supported.</small>
+          <small class="form-hint">Shown in the click-to-open profile modal. Markdown supported.</small>
         </div>
 
         <div class="form-field">

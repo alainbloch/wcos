@@ -52,3 +52,9 @@ The admin area has its own responsive styles and a searchable Pages list. Open a
 Saving displays a one-time confirmation. Validation failures retain entered content, duplicate/reserved addresses are rejected, and the homepage keeps its empty address. Unsaved edits trigger a navigation warning. Member records are editable under Members; the Pages entry controls surrounding member-page content. Settings links to the homepage and contact editors rather than offering legacy controls that do not affect the migrated pages.
 
 Admin regression coverage includes server-side create/edit/load, publication state, validation, feedback, preview sanitization, and DOM-based visual/HTML editor synchronization. Full browser visual QA for this update could not run in the implementation environment: the cloud browser cannot reach its local server and the Chromium download failed.
+
+## Member profile modals
+
+Every roster row opens a profile modal by click, Enter, or Space. The modal uses the original portrait/statistics/biography arrangement, stacks on mobile, and closes through its close button, Escape, or backdrop. Focus returns to the triggering row. Member admin forms now save public email, battle statistics, weapon type, and statistics date alongside the biography and image. Markdown biographies are sanitized before rendering.
+
+Gad's captured historical biography and statistics are retained as defaults; saved member details override them. Other members display the information available in their records and an explicit empty biography message when none is provided. No missing biographies or battle statistics are invented.

@@ -72,7 +72,17 @@ describe("One public layout through category controllers", () => {
     await db.write();
     try {
       const original = await app.inject("/member-profiles");
-      expect(load(original.payload)("#content .table-row").length).toBeGreaterThan(10);
+      const originalDom = load(original.payload);
+      originalDom("#content .table-row")
+        .not("#list-header")
+        .each((_, row) => {
+          const id = originalDom(row).attr("data-member-dialog");
+          expect(id).toBeTruthy();
+          expect(originalDom(`dialog[id="${id}"]`).length).toBe(1);
+        });
+      expect(
+        load(original.payload)("#content .table-row").length,
+      ).toBeGreaterThan(10);
       await pagesRepo.update(page.id, {
         content:
           '<p id="cms-introduction">Managed member introduction</p>' +
@@ -86,6 +96,9 @@ describe("One public layout through category controllers", () => {
         memberSince: "Aug 1982",
         region: "Hayward, CA",
         biography: "<script>unsafe()</script>",
+        yearsFought: "30",
+        weaponType: "Longsword",
+        email: "member@example.org",
         active: "on",
       };
       const created = await post("/admin/members", fields);
@@ -95,6 +108,13 @@ describe("One public layout through category controllers", () => {
       const $ = load(response.payload);
       expect($("#cms-introduction").text()).toBe("Managed member introduction");
       expect($("#content .table-row").length).toBe(2);
+      expect($("#member-gad").is("dialog")).toBe(true);
+      expect($("#member-gad").text()).toContain("Longsword");
+      expect($('#member-gad a[href="mailto:member@example.org"]').length).toBe(
+        1,
+      );
+      expect($("[data-member-id]").attr("role")).toBe("button");
+      expect($("[data-member-id]").attr("tabindex")).toBe("0");
       const columns = $(`[data-member-id="${member.id}"]`).children();
       expect(columns.length).toBe(6);
       expect(columns.eq(2).text()).toContain("Gad");
@@ -103,7 +123,7 @@ describe("One public layout through category controllers", () => {
         "/images/gadthumb.jpg",
       );
       expect(response.payload).not.toContain("<script>unsafe()");
-      expect($('a[data-member-dialog="member-gad"]').length).toBeGreaterThan(0);
+      expect($(' [data-member-dialog="member-gad"]').length).toBeGreaterThan(0);
       for (const css of page.styles)
         expect($(`link[href="${css}"]`).length).toBeGreaterThan(0);
       const editForm = await app.inject({
