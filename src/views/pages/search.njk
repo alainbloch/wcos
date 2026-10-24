@@ -1,0 +1,9 @@
+{% extends 'layouts/reference.njk' %}
+{% block content %}
+<section class="utility-page">
+<h1>Search</h1>
+<form action="/search" class="reference-search"><label class="sr-only" for="page-search">Search query</label><input id="page-search" type="search" name="q" value="{{ query }}" placeholder="Search the circle" maxlength="200"><button type="submit">Search</button></form>
+{% if query %}<p>{{ results.length }} result{% if results.length != 1 %}s{% endif %} for “{{ query }}”</p>{% endif %}
+{% for result in results %}<article class="search-result"><h2><a href="{{ result.url }}">{{ result.title }}</a></h2><p>{{ result.excerpt }}</p></article>{% else %}<p>{% if query %}No matching pages. Try a name, rank, technique, or class location.{% else %}Enter a name, rank, technique, or class location.{% endif %}</p>{% endfor %}
+</section>
+{% endblock %}

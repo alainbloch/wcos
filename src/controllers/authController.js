@@ -3,6 +3,7 @@
  * Handles login, logout, registration
  */
 import { BaseController } from './baseController.js';
+import { originalPages } from '../services/referenceSiteService.js';
 import { authService } from '../services/authService.js';
 
 export class AuthController extends BaseController {
@@ -12,6 +13,7 @@ export class AuthController extends BaseController {
     }
     await this.render(request, reply, 'auth/login.njk', {
       pageTitle: 'Login',
+      page: originalPages.find(page => page.slug === ''),
     });
   }
 
@@ -49,6 +51,7 @@ export class AuthController extends BaseController {
     }
     await this.render(request, reply, 'auth/register.njk', {
       pageTitle: 'Register',
+      page: originalPages.find(page => page.slug === ''),
     });
   }
 

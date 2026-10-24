@@ -1,5 +1,6 @@
 export default {
   testEnvironment: 'node',
+  setupFiles: ['./tests/setup.cjs'],
   transform: {},
   moduleFileExtensions: ['js', 'mjs', 'cjs', 'json'],
   testMatch: [

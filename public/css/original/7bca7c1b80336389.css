@@ -1,0 +1,69 @@
+.elementor-widget-social-icons.elementor-grid-0 .elementor-widget-container, .elementor-widget-social-icons.elementor-grid-0:not(:has(.elementor-widget-container)), .elementor-widget-social-icons.elementor-grid-mobile-0 .elementor-widget-container, .elementor-widget-social-icons.elementor-grid-mobile-0:not(:has(.elementor-widget-container)), .elementor-widget-social-icons.elementor-grid-tablet-0 .elementor-widget-container, .elementor-widget-social-icons.elementor-grid-tablet-0:not(:has(.elementor-widget-container)) { font-size: 0px; line-height: 1; }
+.elementor-widget-social-icons:not(.elementor-grid-0):not(.elementor-grid-tablet-0):not(.elementor-grid-mobile-0) .elementor-grid { display: inline-grid; }
+.elementor-widget-social-icons .elementor-grid { column-gap: var(--grid-column-gap,5px); row-gap: var(--grid-row-gap,5px); grid-template-columns: var(--grid-template-columns); justify-content: var(--justify-content,center); justify-items: var(--justify-content,center); }
+.elementor-icon.elementor-social-icon { font-size: var(--icon-size,25px); height: calc(var(--icon-size, 25px) + 2 * var(--icon-padding, .5em)); line-height: var(--icon-size,25px); width: calc(var(--icon-size, 25px) + 2 * var(--icon-padding, .5em)); }
+.elementor-social-icon { --e-social-icon-icon-color: #fff; align-items: center; background-color: rgb(105, 114, 125); cursor: pointer; display: inline-flex; justify-content: center; text-align: center; }
+.elementor-social-icon i { color: var(--e-social-icon-icon-color); }
+.elementor-social-icon svg { fill: var(--e-social-icon-icon-color); }
+.elementor-social-icon:last-child { margin: 0px; }
+.elementor-social-icon:hover { color: rgb(255, 255, 255); opacity: 0.9; }
+.elementor-social-icon-android { background-color: rgb(164, 198, 57); }
+.elementor-social-icon-apple { background-color: rgb(153, 153, 153); }
+.elementor-social-icon-behance { background-color: rgb(23, 105, 255); }
+.elementor-social-icon-bitbucket { background-color: rgb(32, 80, 129); }
+.elementor-social-icon-codepen { background-color: rgb(0, 0, 0); }
+.elementor-social-icon-delicious { background-color: rgb(51, 153, 255); }
+.elementor-social-icon-deviantart { background-color: rgb(5, 204, 71); }
+.elementor-social-icon-digg { background-color: rgb(0, 91, 226); }
+.elementor-social-icon-dribbble { background-color: rgb(234, 76, 137); }
+.elementor-social-icon-elementor { background-color: rgb(211, 12, 92); }
+.elementor-social-icon-envelope { background-color: rgb(234, 67, 53); }
+.elementor-social-icon-facebook, .elementor-social-icon-facebook-f { background-color: rgb(59, 89, 152); }
+.elementor-social-icon-flickr { background-color: rgb(0, 99, 220); }
+.elementor-social-icon-foursquare { background-color: rgb(45, 91, 227); }
+.elementor-social-icon-free-code-camp, .elementor-social-icon-freecodecamp { background-color: rgb(0, 100, 0); }
+.elementor-social-icon-github { background-color: rgb(51, 51, 51); }
+.elementor-social-icon-gitlab { background-color: rgb(226, 67, 41); }
+.elementor-social-icon-globe { background-color: rgb(105, 114, 125); }
+.elementor-social-icon-google-plus, .elementor-social-icon-google-plus-g { background-color: rgb(221, 75, 57); }
+.elementor-social-icon-houzz { background-color: rgb(122, 193, 66); }
+.elementor-social-icon-instagram { background-color: rgb(38, 38, 38); }
+.elementor-social-icon-jsfiddle { background-color: rgb(72, 122, 162); }
+.elementor-social-icon-link { background-color: rgb(129, 138, 145); }
+.elementor-social-icon-linkedin, .elementor-social-icon-linkedin-in { background-color: rgb(0, 119, 181); }
+.elementor-social-icon-medium { background-color: rgb(0, 171, 107); }
+.elementor-social-icon-meetup { background-color: rgb(236, 28, 64); }
+.elementor-social-icon-mixcloud { background-color: rgb(39, 58, 75); }
+.elementor-social-icon-odnoklassniki { background-color: rgb(244, 115, 28); }
+.elementor-social-icon-pinterest { background-color: rgb(189, 8, 28); }
+.elementor-social-icon-product-hunt { background-color: rgb(218, 85, 47); }
+.elementor-social-icon-reddit { background-color: rgb(255, 69, 0); }
+.elementor-social-icon-rss { background-color: rgb(242, 101, 34); }
+.elementor-social-icon-shopping-cart { background-color: rgb(76, 175, 80); }
+.elementor-social-icon-skype { background-color: rgb(0, 175, 240); }
+.elementor-social-icon-slideshare { background-color: rgb(0, 119, 181); }
+.elementor-social-icon-snapchat { background-color: rgb(255, 252, 0); }
+.elementor-social-icon-soundcloud { background-color: rgb(255, 136, 0); }
+.elementor-social-icon-spotify { background-color: rgb(46, 189, 89); }
+.elementor-social-icon-stack-overflow { background-color: rgb(254, 122, 21); }
+.elementor-social-icon-steam { background-color: rgb(0, 173, 238); }
+.elementor-social-icon-stumbleupon { background-color: rgb(235, 73, 36); }
+.elementor-social-icon-telegram { background-color: rgb(44, 165, 224); }
+.elementor-social-icon-threads { background-color: rgb(0, 0, 0); }
+.elementor-social-icon-thumb-tack { background-color: rgb(26, 161, 216); }
+.elementor-social-icon-tripadvisor { background-color: rgb(88, 148, 66); }
+.elementor-social-icon-tumblr { background-color: rgb(53, 70, 92); }
+.elementor-social-icon-twitch { background-color: rgb(100, 65, 165); }
+.elementor-social-icon-twitter { background-color: rgb(29, 161, 242); }
+.elementor-social-icon-viber { background-color: rgb(102, 92, 172); }
+.elementor-social-icon-vimeo { background-color: rgb(26, 183, 234); }
+.elementor-social-icon-vk { background-color: rgb(69, 102, 142); }
+.elementor-social-icon-weibo { background-color: rgb(221, 36, 48); }
+.elementor-social-icon-weixin { background-color: rgb(49, 169, 24); }
+.elementor-social-icon-whatsapp { background-color: rgb(37, 211, 102); }
+.elementor-social-icon-wordpress { background-color: rgb(33, 117, 155); }
+.elementor-social-icon-x-twitter { background-color: rgb(0, 0, 0); }
+.elementor-social-icon-xing { background-color: rgb(2, 100, 102); }
+.elementor-social-icon-yelp { background-color: rgb(175, 6, 6); }
+.elementor-social-icon-youtube { background-color: rgb(205, 32, 31); }
+.elementor-social-icon-500px { background-color: rgb(0, 153, 229); }

@@ -16,6 +16,8 @@ import { setupViewEngine, renderView } from './utils/viewEngine.js';
 import { authService } from './services/authService.js';
 import { publicRoutes } from './routes/publicRoutes.js';
 import { adminRoutes } from './routes/adminRoutes.js';
+import { ensureReferencePages } from './services/referenceSiteService.js';
+import { referenceSiteController } from './controllers/referenceSiteController.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +25,8 @@ const __dirname = path.dirname(__filename);
 
 async function buildApp() {
   const fastify = Fastify({
+    ignoreTrailingSlash: true,
+    bodyLimit: 2 * 1024 * 1024,
     logger: config.nodeEnv !== 'test',
     disableRequestLogging: config.nodeEnv === 'production',
   });
@@ -49,6 +53,7 @@ async function buildApp() {
   await fastify.register(fastifyStatic, {
     root: path.resolve(__dirname, '../public'),
     prefix: '/',
+    wildcard: false,
   });
 
   // View engine
@@ -59,13 +64,14 @@ async function buildApp() {
 
   // Initialize database
   await initDatabase();
+  await ensureReferencePages();
 
   // Initialize admin user
   await authService.initializeAdmin();
 
   // Error handling
   fastify.setErrorHandler(errorHandler);
-  fastify.setNotFoundHandler(notFoundHandler);
+  fastify.setNotFoundHandler((request, reply) => request.url.startsWith('/api/') ? notFoundHandler(request, reply) : referenceSiteController.notFound(request, reply));
 
   // Health check
   fastify.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));

@@ -84,7 +84,7 @@ describe('Template Syntax Tests', () => {
       
       expect(response.statusCode).toBe(200);
       expect(response.payload).toContain('WCOS Council');
-      expect(response.payload).toContain('Historical Council Formations');
+      expect(response.payload).toContain('July 23, 2005');
     });
 
     it('should render kaidens with rules accordion', async () => {

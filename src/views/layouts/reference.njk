@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if pageTitle == page.title %}{{ page.seoTitle or pageTitle }}{% else %}{{ pageTitle }} | WCoS{% endif %}</title>
+  <meta name="description" content="{{ page.description or siteName }}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/fonts.css">
+  {% for stylesheet in page.styles %}<link rel="stylesheet" href="{{ stylesheet }}">{% endfor %}
+  <link rel="stylesheet" href="/css/reference.css">
+  <script src="/js/reference.js" defer></script>
+</head>
+<body class="{{ page.bodyClass }} reference-site">
+  <a class="skip-link" href="#content">Skip to content</a>
+  {% include 'partials/reference-header.njk' %}
+  <main id="content">{% block content %}{% endblock %}</main>
+  {% include 'partials/reference-footer.njk' %}
+  <dialog class="image-lightbox" aria-label="Image viewer"><button type="button" class="dialog-close" aria-label="Close image viewer">×</button><img alt=""></dialog>
+  {% include 'partials/member-dialog.njk' %}
+</body>
+</html>

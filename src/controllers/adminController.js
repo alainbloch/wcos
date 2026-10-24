@@ -57,7 +57,7 @@ export class AdminController extends BaseController {
 
   async createPage(request, reply) {
     try {
-      const page = await pagesService.createPage(request.body);
+      const page = await pagesService.createPage({ ...request.body, published: request.body.published === 'on' });
       request.flash = { success: 'Page created successfully' };
       reply.redirect(`/admin/pages/${page.id}/edit`);
     } catch (error) {
@@ -79,7 +79,7 @@ export class AdminController extends BaseController {
 
   async updatePage(request, reply) {
     try {
-      await pagesService.updatePage(request.params.id, request.body);
+      await pagesService.updatePage(request.params.id, { ...request.body, published: request.body.published === 'on' });
       request.flash = { success: 'Page updated successfully' };
       reply.redirect(`/admin/pages/${request.params.id}/edit`);
     } catch (error) {

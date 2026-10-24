@@ -1,0 +1,39 @@
+div.asl_w { width: 100%; height: auto; background: radial-gradient(rgb(225, 99, 92), rgb(225, 99, 92)) rgb(209, 234, 255); overflow: hidden; border: 0px rgb(141, 213, 239); border-radius: 0px; box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px; }
+#ajaxsearchlite1 .probox, div.asl_w .probox { margin: 0px; height: 34px; background-color: rgb(225, 99, 92); background-image: radial-gradient(rgb(225, 99, 92), rgb(225, 99, 92)); border: 0px solid rgb(104, 174, 199); border-radius: 0px; box-shadow: rgb(181, 181, 181) 0px 0px 0px 0px inset; }
+#ajaxsearchlite1 .probox .proinput, div.asl_w .probox .proinput { font-weight: normal; font-family: "Open Sans"; font-size: 12px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; color: rgb(255, 255, 255) !important; line-height: normal !important; }
+#ajaxsearchlite1 .probox .proinput input, div.asl_w .probox .proinput input { font-weight: normal; font-family: "Open Sans"; font-size: 12px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; border: 0px; box-shadow: none; height: 34px; color: rgb(255, 255, 255) !important; line-height: normal !important; }
+div.asl_w .probox .proinput input::-webkit-input-placeholder { font-weight: normal; font-family: "Open Sans"; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; color: rgb(255, 255, 255) !important; }
+div.asl_w .probox .proinput input.autocomplete { font-weight: normal; font-family: "Open Sans"; color: rgb(255, 255, 255); font-size: 12px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; line-height: normal !important; margin-top: -34px !important; }
+div.asl_w .probox .proloading, div.asl_w .probox .proclose, div.asl_w .probox .promagnifier, div.asl_w .probox .prosettings { width: 34px; height: 34px; }
+div.asl_w .probox .promagnifier .innericon svg { fill: rgb(255, 255, 255); }
+div.asl_w .probox .prosettings .innericon svg { fill: rgb(255, 255, 255); }
+div.asl_w .probox .promagnifier { width: 34px; height: 34px; background-color: rgb(190, 76, 70); background-image: linear-gradient(rgb(190, 76, 70), rgb(190, 76, 70)); border: 0px solid rgb(0, 0, 0); border-radius: 0px; box-shadow: rgba(255, 255, 255, 0.61) 0px 0px 0px 0px; background-size: 100% 100%; background-position: center center; background-repeat: no-repeat; cursor: pointer; }
+div.asl_w .probox div.prosettings { width: 34px; height: 34px; background-color: rgb(190, 76, 70); background-image: linear-gradient(185deg, rgb(190, 76, 70), rgb(190, 76, 70)); background-position: center center; background-repeat: no-repeat; float: right; border: 0px solid rgb(104, 174, 199); border-radius: 0px; box-shadow: rgba(255, 255, 255, 0.63) 0px 0px 0px 0px; cursor: pointer; background-size: 100% 100%; order: 7; }
+div.asl_r { position: absolute; z-index: 1100; }
+div.asl_r.vertical { padding: 4px; background: rgb(225, 99, 92); border: 0px rgb(0, 0, 0); border-radius: 0px; box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px; visibility: hidden; display: none; }
+div.asl_r.horizontal { background-image: -webkit-linear-gradient(60deg, rgba(19, 19, 19, 0.2), rgba(19, 19, 19, 0.2)); border: 0px solid rgb(219, 233, 238); border-radius: 0px; box-shadow: rgb(0, 0, 0) 0px 0px 4px -3px inset; margin-top: 12px; }
+div.asl_r .results .nores .keyword { padding: 0px 6px; cursor: pointer; font-family: "Open Sans"; color: rgb(74, 74, 74); font-size: 13px; line-height: 13px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; font-weight: bold; }
+div.asl_r .results .item { height: auto; background: rgb(255, 255, 255); }
+div.asl_r.vertical .results .item::after { background: rgb(204, 204, 204); }
+div.asl_r .results .item.hovered { background-color: rgb(245, 245, 245); background-image: radial-gradient(rgb(245, 245, 245), rgb(245, 245, 245)); }
+div.asl_r.horizontal .results .item { height: 174px; width: 150px; margin: 10px 8px; padding: 7px; float: left; background-color: rgb(255, 255, 255); background-image: radial-gradient(rgb(255, 255, 255), rgb(255, 255, 255)); border: 0px rgb(250, 250, 250); border-radius: 0px; box-shadow: rgb(0, 0, 0) 0px 0px 6px -3px; }
+div.asl_r.horizontal .results .item:hover { background-color: rgb(245, 245, 245); background-image: radial-gradient(rgb(245, 245, 245), rgb(245, 245, 245)); }
+div.asl_r .results .item .asl_image { width: 70px; height: 70px; }
+div.asl_r .results .item .asl_content { font-weight: normal; font-family: "Open Sans"; color: rgb(74, 74, 74); font-size: 12px; line-height: 18px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r.horizontal .results .item .asl_content h3 a { text-align: center; }
+div.asl_r .results .item .asl_content h3, div.asl_r .results .item .asl_content h3 a { margin: 0px; padding: 0px; font-weight: normal; font-family: "Open Sans"; color: rgb(20, 84, 169); font-size: 13px; line-height: 17px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r .results .item .asl_content h3 a:hover { font-weight: normal; font-family: "Open Sans"; color: rgb(46, 107, 188); font-size: 13px; line-height: 17px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r .results .item div.etc { padding: 0px; font-weight: bold; font-family: "Open Sans"; color: rgb(161, 161, 161); font-size: 12px; line-height: 13px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r .results .item .etc .asl_author { padding: 0px; font-weight: bold; font-family: "Open Sans"; color: rgb(161, 161, 161); font-size: 10px; line-height: 12px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r .results .item .etc .asl_date { margin: 0px 0px 0px 10px; padding: 0px; font-weight: normal; font-family: "Open Sans"; color: rgb(173, 173, 173); font-size: 10px; line-height: 12px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_r .mCSBap_scrollTools .mCSBap_dragger:active .mCSBap_dragger_bar, div.asl_r .mCSBap_scrollTools .mCSBap_dragger.mCSBap_dragger_onDrag .mCSBap_dragger_bar { }
+div.asl_r.horizontal .mCSBap_scrollTools .mCSBap_dragger .mCSBap_dragger_bar { background: rgb(250, 250, 250); opacity: 0.9; }
+div.asl_r.horizontal .mCSBap_scrollTools .mCSBap_dragger:hover .mCSBap_dragger_bar { background: rgb(250, 250, 250); }
+div.asl_r.horizontal .mCSBap_scrollTools .mCSBap_dragger:active .mCSBap_dragger_bar, div.asl_r.horizontal .mCSBap_scrollTools .mCSBap_dragger.mCSBap_dragger_onDrag .mCSBap_dragger_bar { background: rgb(250, 250, 250); }
+div.asl_r span.highlighted { font-weight: bold; color: rgb(217, 49, 43); background-color: rgb(238, 238, 238); }
+div.asl_r .group { background: rgb(246, 246, 246); border-radius: 3px 3px 0px 0px; border-top: 1px solid rgb(248, 248, 248); border-left: 1px solid rgb(248, 248, 248); border-right: 1px solid rgb(248, 248, 248); margin: 10px 0px -3px; padding: 7px 0px 7px 10px; position: relative; z-index: 1000; font-weight: bold; font-family: "Open Sans"; color: rgb(5, 94, 148); font-size: 11px; line-height: 13px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_s.searchsettings { background-color: rgb(190, 76, 70); background-image: -webkit-linear-gradient(185deg, rgb(190, 76, 70), rgb(190, 76, 70)); box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px; }
+div.asl_s.searchsettings .asl_option_label { font-weight: bold; font-family: "Open Sans"; color: rgb(255, 255, 255); font-size: 12px; line-height: 15px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }
+div.asl_s.searchsettings .asl_option_inner .asl_option_checkbox { background-color: rgb(34, 34, 34); background-image: -webkit-linear-gradient(180deg, rgb(34, 34, 34), rgb(54, 55, 58)); }
+div.asl_s.searchsettings fieldset .categoryfilter { max-height: 200px; overflow: auto; }
+div.asl_s.searchsettings fieldset legend { padding: 5px 0px 0px 10px; margin: 0px; font-weight: normal; font-family: "Open Sans"; color: rgb(31, 31, 31); font-size: 13px; line-height: 15px; text-shadow: rgba(255, 255, 255, 0) 0px 0px 0px; }

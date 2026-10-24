@@ -2,6 +2,10 @@
 
 A modern Node.js CMS application rebuilt from the original WordPress site at [vead.sg-host.com](https://vead.sg-host.com/).
 
+The completed conversion includes 24 original pages, local imagery/fonts/styles, responsive menus, native accordions and galleries, search, and an SMTP-backed contact form. See [conversion, migration, and deployment notes](docs/site-conversion.md).
+
+New databases are populated automatically. To replace the older sample page content in an existing installation, run `npm run migrate:site -- --replace` (a database backup is created first). Do not run it over edits you want to retain.
+
 ## 🎯 Design Overview
 
 ### Architecture
@@ -107,7 +111,7 @@ wcos/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js** ≥ 20.0.0
+- **Node.js** ≥ 22.12.0 (Node 24 LTS recommended)
 - **npm** ≥ 10.0.0 (or pnpm/yarn)
 
 ### Installation
@@ -118,7 +122,7 @@ git clone <repository-url>
 cd wcos
 
 # Install dependencies
-npm install
+npm ci
 
 # Copy environment template
 cp .env.example .env

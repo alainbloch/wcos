@@ -5,6 +5,7 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
+import { mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'url';
 import config from '../config/index.js';
 
@@ -72,8 +73,9 @@ let dbInstance = null;
  */
 export async function initDatabase() {
   const dbPath = path.resolve(config.dbPath);
+  await mkdir(path.dirname(dbPath), { recursive: true });
   const adapter = new JSONFile(dbPath);
-  dbInstance = new Low(adapter, defaultData);
+  dbInstance = new Low(adapter, structuredClone(defaultData));
   await dbInstance.read();
 
   // Initialize with default data if empty
@@ -82,6 +84,16 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  // Earlier versions seeded these two collections as objects even though their
+  // repositories use array operations. Normalize once without discarding values.
+  let normalized = false;
+  for (const key of ['siteSettings', 'navigation']) {
+    if (!Array.isArray(dbInstance.data[key])) {
+      dbInstance.data[key] = [{ id: key, ...(dbInstance.data[key] || defaultData[key]) }];
+      normalized = true;
+    }
+  }
+  if (normalized) await dbInstance.write();
   return dbInstance;
 }
 

@@ -1,0 +1,429 @@
+/* Compatibility layer for the exported design; no WordPress runtime is needed. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+body.reference-site {
+  background: #01030b;
+  color: #cbcbcb;
+  overflow-x: clip;
+}
+.reference-site main {
+  display: block;
+  min-height: 55vh;
+}
+.reference-site .elementor-invisible {
+  visibility: visible;
+}
+.reference-site .e-con {
+  min-width: 0;
+}
+.reference-site img {
+  max-width: 100%;
+}
+.sr-only,
+.contact-trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 10000;
+  padding: 1rem;
+  background: #fff;
+  color: #000;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+:focus-visible {
+  outline: 2px solid #eacb39 !important;
+  outline-offset: 4px;
+}
+.reference-search {
+  display: flex;
+  width: 100%;
+  max-width: 270px;
+  border: 1px solid #9c1717;
+  background: transparent;
+}
+.reference-search input {
+  border: 0 !important;
+  border-radius: 0 !important;
+  min-width: 0;
+  width: 100%;
+  color: #fff !important;
+  background: transparent !important;
+  padding: 12px !important;
+  font:
+    14px Roboto,
+    sans-serif;
+}
+.reference-search button {
+  border: 0;
+  border-radius: 0;
+  color: #fff;
+  background: transparent;
+  padding: 8px 12px;
+}
+.reference-search button:hover {
+  background: #b00000;
+}
+.reference-site .hfe-nav-menu .sub-menu {
+  background: #01030b;
+  z-index: 1000;
+}
+.reference-site .hfe-nav-menu li.menu-open > .sub-menu,
+.reference-site .hfe-nav-menu li:focus-within > .sub-menu {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+.reference-site .hfe-has-submenu-container {
+  cursor: pointer;
+}
+.reference-site .hfe-menu-toggle .fa:before {
+  content: "\f107";
+}
+.reference-accordion {
+  border: 1px solid #383838;
+  margin-bottom: 12px;
+  background: #38383845;
+  color: #cbcbcb;
+}
+.reference-accordion summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  cursor: pointer;
+  list-style: none;
+  color: #fff;
+  font:
+    500 21px/1.3 Anton,
+    sans-serif;
+  text-transform: uppercase;
+}
+.reference-accordion summary::-webkit-details-marker {
+  display: none;
+}
+.reference-accordion summary:after {
+  content: "+";
+  font:
+    26px Roboto,
+    sans-serif;
+  color: red;
+}
+.reference-accordion[open] summary:after {
+  content: "−";
+}
+.reference-accordion-body {
+  padding: 0 20px 20px;
+  line-height: 1.6;
+}
+.reference-site .swiper {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: #d22222 #151515;
+}
+.reference-site .swiper-wrapper {
+  display: flex !important;
+  transform: none !important;
+  height: auto !important;
+}
+.reference-site .swiper-slide {
+  flex: 0 0 100%;
+  width: 100% !important;
+  scroll-snap-align: start;
+  margin: 0 !important;
+}
+.reference-site .elementor-carousel-image {
+  background-size: contain !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 420px;
+  max-height: 65vh;
+}
+.reference-site .swiper-slide a {
+  display: block;
+}
+.reference-site .qodef-m-content {
+  animation: none !important;
+}
+.reference-site .elementor-element-34d8bcbc {
+  overflow: hidden;
+}
+.utility-page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 220px 24px 100px;
+  min-height: 70vh;
+}
+.utility-page h1 {
+  font:
+    clamp(36px, 6vw, 72px)/1.1 Anton,
+    sans-serif;
+  color: white;
+  text-transform: uppercase;
+}
+.utility-page h2 {
+  font:
+    28px Anton,
+    sans-serif;
+}
+.utility-page a {
+  color: #fff;
+}
+.search-result {
+  border-bottom: 1px solid #383838;
+  padding: 24px 0;
+}
+.utility-page .reference-search {
+  max-width: 600px;
+  margin: 30px 0;
+}
+.reference-site dialog {
+  color: #ddd;
+  background: #01030b;
+  border: 1px solid #555;
+  padding: 40px 24px 24px;
+  max-width: min(1000px, 94vw);
+  max-height: 90vh;
+  overflow: auto;
+}
+.reference-site dialog::backdrop {
+  background: #000c;
+}
+.dialog-close {
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  background: #151515;
+  color: #fff;
+  border: 0;
+  font: 30px sans-serif;
+  cursor: pointer;
+  z-index: 3;
+}
+.image-lightbox img {
+  max-height: 78vh;
+  width: auto;
+  object-fit: contain;
+}
+.member-dialog .e-con {
+  max-width: 100%;
+}
+.member-dialog img {
+  max-width: 230px;
+}
+.member-dialog .elementor-location-popup {
+  display: block !important;
+}
+.reference-site .contact-status {
+  padding: 10px 0;
+  color: #fff;
+}
+@media (max-width: 1024px) {
+  .reference-site .hfe-nav-menu__toggle {
+    display: flex !important;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+  }
+  .reference-site .hfe-nav-menu__layout-horizontal {
+    display: none !important;
+  }
+  .reference-site .hfe-nav-menu__layout-horizontal.mobile-open {
+    display: block !important;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    width: min(90vw, 420px);
+    background: #01030b;
+    max-height: 80vh;
+    overflow: auto;
+    z-index: 9999;
+    border: 1px solid #383838;
+  }
+  .reference-site .hfe-nav-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .reference-site .hfe-nav-menu > li {
+    width: 100%;
+  }
+  .reference-site .hfe-nav-menu a {
+    white-space: normal !important;
+  }
+  .reference-site .hfe-nav-menu .sub-menu {
+    position: static !important;
+    display: none !important;
+    visibility: hidden;
+    opacity: 0;
+    box-shadow: none !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .reference-site .hfe-has-submenu-container {
+    justify-content: space-between;
+  }
+  .reference-site .hfe-nav-menu .hfe-menu-item,
+  .reference-site .hfe-nav-menu .hfe-sub-menu-item {
+    padding: 14px 20px !important;
+  }
+}
+@media (max-width: 767px) {
+  .utility-page {
+    padding-top: 150px;
+  }
+  .reference-site .reference-search {
+    max-width: 100%;
+  }
+  .reference-site [data-elementor-type="header"] .e-con {
+    min-width: 0;
+  }
+  .reference-site .elementor-widget-heading h1 {
+    overflow-wrap: normal;
+  }
+  .reference-site .elementor-widget-heading h2 {
+    overflow-wrap: anywhere;
+  }
+  .reference-site .elementor-widget-text-editor {
+    overflow-wrap: anywhere;
+  }
+  .reference-site .elementor-carousel-image {
+    height: 320px;
+  }
+  .reference-site .reference-accordion summary {
+    font-size: 18px;
+    padding: 16px;
+  }
+  .reference-site .elementor-element-7b90f65 {
+    overflow-x: auto !important;
+  }
+  .reference-site .elementor-element-7b90f65 > .e-con-inner {
+    min-width: 900px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Retain the source's per-rank border colors and accordion typography. */
+.reference-site .reference-accordion {
+  background: transparent;
+  margin-bottom: 0;
+}
+.reference-site .reference-accordion summary {
+  display: block;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+.reference-site .reference-accordion summary:after {
+  content: none;
+}
+.reference-site .reference-accordion summary .card-header-button {
+  display: flex;
+  text-decoration: none;
+  cursor: pointer;
+}
+.reference-site .reference-accordion .card-expand {
+  display: block;
+}
+.reference-site .reference-accordion[open] .normal-icon {
+  display: none;
+}
+.reference-site .reference-accordion:not([open]) .active-icon {
+  display: none;
+}
+.reference-site .reference-accordion[open] .active-icon {
+  display: block;
+}
+@media (min-width: 1025px) {
+  .reference-site [data-elementor-type="header"] .reference-search {
+    width: 160px;
+    max-width: none;
+  }
+  .reference-site [data-elementor-type="header"] .elementor-widget-shortcode {
+    min-width: 160px;
+  }
+}
+@media (max-width: 1024px) {
+  .reference-site .hfe-nav-menu__layout-horizontal.mobile-open {
+    height: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .reference-site .hfe-nav-menu__layout-horizontal.mobile-open > ul {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+.reference-site .hfe-nav-menu li.menu-open > .sub-menu,
+.reference-site .hfe-nav-menu li:focus-within > .sub-menu {
+  height: auto !important;
+}
+.reference-site .dialog-close {
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  background: #171717 !important;
+  border: 1px solid #555 !important;
+  border-radius: 0 !important;
+  font: 30px sans-serif !important;
+}
+.auth-page {
+  max-width: 520px;
+}
+.auth-page label {
+  display: block;
+  margin: 18px 0 6px;
+}
+.auth-page input {
+  width: 100%;
+  background: #151720;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 12px;
+}
+.auth-page button[type="submit"] {
+  margin: 24px 0;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #555;
+  border-left: 2px solid red;
+  padding: 12px 24px;
+}
+.auth-page h1 {
+  font-size: 48px;
+}
+@media (min-width: 1025px) {
+  .reference-site [data-elementor-type="header"] .elementor-element-611929cb {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+  .reference-site [data-elementor-type="header"] .elementor-element-29eca914 {
+    flex: 0 0 160px;
+    width: 160px;
+  }
+}
