@@ -60,18 +60,8 @@ export class AdminController extends BaseController {
     );
 
     // If the page uses dynamic sources, resolve and inject them into preview
-    if (page && (page.dataSources || page.templatePartial)) {
+    if (page && page.dataSources && page.dataSources.length > 0) {
       const data = await dynamicPageService.resolveDataSources(page.dataSources || []);
-      if (page.templatePartial && request.server) {
-        const partialHtml = await dynamicPageService.renderPartial(
-          request.server,
-          page.templatePartial,
-          page.dataSources || [],
-        );
-        if (partialHtml !== null) {
-          content = partialHtml;
-        }
-      }
     }
 
     const html = await renderView(request.server, "admin/pages/preview.njk", {

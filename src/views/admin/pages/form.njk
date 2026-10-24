@@ -6,7 +6,6 @@
 <div class="form-group"><label for="title">Page title</label><input id="title" name="title" value="{{ page.title }}" required maxlength="180" placeholder="Give your page a clear title"></div>
 <div class="form-group"><label for="slug">Page address</label><input id="slug" name="slug" value="{{ page.slug }}" {% if page.id %}data-manually-edited="true"{% endif %} pattern="[a-z0-9]+(-[a-z0-9]+)*|" aria-describedby="slug-help"><small id="slug-help">{% if page.id and page.slug == '' %}This is your homepage. Leave the address empty to keep it at /.{% else %}Use lowercase words separated by hyphens, such as sword-training.{% endif %}</small></div>
 <div class="form-group"><label for="layout">Layout template</label><input id="layout" name="layout" value="{{ page.layout or '' }}" placeholder="pages/reference.njk"><small>Leave empty for default layout.</small></div>
-<div class="form-group"><label for="templatePartial">Template partial</label><input id="templatePartial" name="templatePartial" value="{{ page.templatePartial or '' }}" placeholder="partials/member-rows.njk"><small>Optional partial for dynamic rendering.</small></div>
 <div class="form-group dropdown-group" style="position:relative;">
 <label>Data sources</label>
 <div class="dropdown-trigger" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.dropdown-display').textContent = this.querySelector('.dropdown-display').dataset.selected || 'Select data sources...'" data-selected="{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% endif %}">

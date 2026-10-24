@@ -58,15 +58,6 @@ export class DynamicPageService {
     return result;
   }
 
-  async renderPartial(requestServer, templatePartial, dataSources) {
-    if (!templatePartial || !requestServer) return null;
-    try {
-      const data = await this.resolveDataSources(dataSources || []);
-      return await renderView(requestServer, templatePartial, data);
-    } catch (e) {
-      return null;
-    }
-  }
 }
 
 export const dynamicPageService = new DynamicPageService();

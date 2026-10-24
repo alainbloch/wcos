@@ -75,7 +75,6 @@ export class PagesService {
         }
         return existing?.dataSources || [];
       })(),
-      templatePartial: typeof data.templatePartial === "string" ? data.templatePartial : (existing?.templatePartial || null),
       layout: typeof data.layout === "string" ? data.layout : (existing?.layout || null),
       parentSlug: typeof data.parentSlug === "string" ? data.parentSlug : (existing?.parentSlug || null),
       styleOverrides: typeof data.styleOverrides === "string" ? data.styleOverrides : (existing?.styleOverrides || null),
