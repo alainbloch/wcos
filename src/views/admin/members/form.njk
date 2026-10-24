@@ -7,7 +7,7 @@
     <a href="/admin/members" class="btn btn-secondary">← Back to Members</a>
   </div>
 
-  <form method="POST" action="{% if member.id %}/admin/members/{{ member.id }}/edit{% else %}/admin/members{% endif %}" class="admin-form">
+  <form method="POST" action="{% if member.id %}/admin/members/{{ member.id }}/edit{% else %}/admin/members{% endif %}" class="admin-form" enctype="multipart/form-data">
     <div class="form-grid">
       <!-- Basic Info -->
       <fieldset class="form-section">
@@ -96,15 +96,15 @@
 
         <div class="form-field">
           <label for="image">Profile Image</label>
-          <input type="text" id="image" name="image" value="{{ member.image or '' }}" placeholder="/images/filename.jpg">
-          <small class="form-hint">Path to profile image in /public/images/ (e.g., /images/gad.jpg). Leave blank for no image.</small>
+          <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp,image/gif">
+          <small class="form-hint">Choose a JPEG, PNG, WebP, or GIF image. Leave blank to keep the current image.</small>
         </div>
 
         {% if member and member.image %}
         <div class="form-field">
           <label>Current Image Preview</label>
           <div class="image-preview">
-            <img src="{{ member.image }}" alt="{{ member.position }}" style="max-width: 150px; max-height: 150px;">
+            <img src="{{ member.image }}" alt="{{ member.circleName }}" style="max-width: 150px; max-height: 150px;">
           </div>
         </div>
         {% endif %}

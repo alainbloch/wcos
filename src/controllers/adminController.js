@@ -24,6 +24,8 @@ import { dynamicPageService } from "../services/dynamicPageService.js";
 
 import { readMemberForm, memberFormToRecord, memberRecordToForm } from "../utils/memberForm.js";
 
+import { memberImageService } from "../services/memberImageService.js";
+
 export class AdminController extends BaseController {
   async dashboard(request, reply) {
     const pages = await pagesService.getAllPages();
@@ -175,16 +177,24 @@ export class AdminController extends BaseController {
 
   async createMember(request, reply) {
     const form = readMemberForm(request.body);
+    form.image = "";
+    let uploadedImage;
     try {
-      const member = await memberService.createMember(memberFormToRecord(form));
+      const record = memberFormToRecord(form);
+      uploadedImage = await memberImageService.save(request.body?.image);
+      record.image = uploadedImage || "";
+      const member = await memberService.createMember(record);
       request.session.adminFlash = { success: "Member created successfully" };
       return reply.redirect(`/admin/members/${member.id}/edit`);
     } catch (error) {
+      if (uploadedImage) {
+        await memberImageService.discard(uploadedImage).catch(cleanupError => request.log.error(cleanupError));
+      }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "New Member",
         member: form,
-        flash: { error: error.message },
+        flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
       });
     }
   }
@@ -202,17 +212,25 @@ export class AdminController extends BaseController {
     const existing = await memberService.getMemberById(request.params.id);
     if (!existing) return reply.code(404).send("Member not found");
     const form = readMemberForm(request.body);
+    form.image = existing.image || "";
+    let uploadedImage;
     try {
-      const updated = await memberService.updateMember(request.params.id, memberFormToRecord(form));
-      if (!updated) return reply.code(404).send("Member not found");
+      const record = memberFormToRecord(form);
+      uploadedImage = await memberImageService.save(request.body?.image);
+      record.image = uploadedImage || form.image;
+      const updated = await memberService.updateMember(request.params.id, record);
+      if (!updated) throw new Error("Member not found");
       request.session.adminFlash = { success: "Member updated successfully" };
       return reply.redirect(`/admin/members/${request.params.id}/edit`);
     } catch (error) {
+      if (uploadedImage) {
+        await memberImageService.discard(uploadedImage).catch(cleanupError => request.log.error(cleanupError));
+      }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "Edit Member",
         member: { ...form, id: request.params.id },
-        flash: { error: error.message },
+        flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
       });
     }
   }

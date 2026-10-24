@@ -57,6 +57,13 @@ async function buildApp() {
     wildcard: false,
   });
 
+  // Register a wildcard route so newly uploaded files are served without restarting.
+  await fastify.register(fastifyStatic, {
+    root: path.resolve(config.uploadDir),
+    prefix: '/uploads/',
+    decorateReply: false,
+  });
+
   // View engine
   setupViewEngine(fastify);
 
