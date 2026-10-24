@@ -11,6 +11,15 @@
   </div>
 
   <div class="notice">Manage member records below. The public Member Profiles page displays active members grouped by level.</div>
+  <form method="GET" action="/admin/members" class="admin-form">
+    <label for="council-filter">Council service</label>
+    <select id="council-filter" name="council">
+      <option value="" {% if not councilFilter %}selected{% endif %}>All members</option>
+      <option value="all" {% if councilFilter == 'all' %}selected{% endif %}>All council members (past and current)</option>
+      <option value="current" {% if councilFilter == 'current' %}selected{% endif %}>Current council members</option>
+    </select>
+    <button type="submit" class="btn btn-secondary">Filter</button>
+  </form>
   {% if members and members.length > 0 %}
   <div class="admin-table-container">
     <table class="admin-table">
@@ -63,7 +72,7 @@
   </div>
   {% else %}
   <div class="text-center py-12">
-    <p class="text-muted">No members yet.</p>
+    <p class="text-muted">No members match this view.</p>
     <a href="/admin/members/new" class="btn btn-primary mt-4">+ Add First Member</a>
   </div>
   {% endif %}

@@ -6,7 +6,6 @@ import { BaseController } from "./baseController.js";
 import { pagesService } from "../services/pagesService.js";
 import { memberService } from "../services/memberService.js";
 import { championService } from "../services/championService.js";
-import { councilService } from "../services/councilService.js";
 import { classesService } from "../services/classesService.js";
 import { ranksService } from "../services/ranksService.js";
 import { coreMovesService } from "../services/coreMovesService.js";
@@ -160,9 +159,13 @@ export class AdminController extends BaseController {
 
   // Members management
   async listMembers(request, reply) {
-    const members = await memberService.getAllMembers();
+    const councilFilter = ["all", "current"].includes(request.query.council) ? request.query.council : "";
+    const members = councilFilter === "current" ? await memberService.getCurrentCouncilMembers()
+      : councilFilter === "all" ? await memberService.getCouncilMembers()
+      : await memberService.getAllMembers();
     await this.renderAdmin(request, reply, "admin/members/list.njk", {
       pageTitle: "Manage Members",
+      councilFilter,
       members,
       memberPage: await pagesService.getPageBySlug("member-profiles"),
     });
@@ -229,7 +232,7 @@ export class AdminController extends BaseController {
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "Edit Member",
-        member: { ...form, id: request.params.id },
+        member: { ...form, id: request.params.id, councilHistory: existing.councilHistory || [] },
         flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
       });
     }
@@ -312,75 +315,6 @@ export class AdminController extends BaseController {
     } catch (error) {
       request.session.adminFlash = { error: error.message };
       reply.redirect("/admin/champions");
-    }
-  }
-
-  // Council Members management
-  async listCouncilMembers(request, reply) {
-    const councilMembers = await councilService.getAllCouncilMembers();
-    await this.renderAdmin(request, reply, "admin/council/list.njk", {
-      pageTitle: "Manage Council Members",
-      councilMembers,
-    });
-  }
-
-  async newCouncilMember(request, reply) {
-    await this.renderAdmin(request, reply, "admin/council/form.njk", {
-      pageTitle: "New Council Member",
-      councilMember: null,
-    });
-  }
-
-  async createCouncilMember(request, reply) {
-    try {
-      const councilMember = await councilService.createCouncilMember(request.body);
-      request.session.adminFlash = { success: "Council member created successfully" };
-      reply.redirect(`/admin/council/${councilMember.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/council/form.njk", {
-        pageTitle: "New Council Member",
-        councilMember: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editCouncilMember(request, reply) {
-    const councilMember = await councilService.getCouncilMemberById(request.params.id);
-    if (!councilMember) {
-      return reply.code(404).send("Council member not found");
-    }
-    await this.renderAdmin(request, reply, "admin/council/form.njk", {
-      pageTitle: "Edit Council Member",
-      councilMember,
-    });
-  }
-
-  async updateCouncilMember(request, reply) {
-    try {
-      await councilService.updateCouncilMember(request.params.id, request.body);
-      request.session.adminFlash = { success: "Council member updated successfully" };
-      reply.redirect(`/admin/council/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await councilService.getCouncilMemberById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/council/form.njk", {
-        pageTitle: "Edit Council Member",
-        councilMember: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteCouncilMember(request, reply) {
-    try {
-      await councilService.deleteCouncilMember(request.params.id);
-      request.session.adminFlash = { success: "Council member deleted successfully" };
-      reply.redirect("/admin/council");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/council");
     }
   }
 

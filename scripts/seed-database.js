@@ -3,7 +3,7 @@
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, championsRepo, councilMembersRepo, classesRepo, ranksRepo, coreMovesRepo, dalmaterColorsRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, coreMovesRepo, dalmaterColorsRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -16,7 +16,6 @@ async function seed() {
   // db.data.pages = [];
   // db.data.members = [];
   // db.data.champions = [];
-  // db.data.councilMembers = [];
   // db.data.classes = [];
   // db.data.ranks = [];
   // db.data.coreMoves = [];
@@ -127,32 +126,6 @@ async function seed() {
       await championsRepo.create(c);
     }
     console.log('  ✓ Champions');
-  }
-
-  // Council Members
-  if ((await councilMembersRepo.findAll()).length === 0) {
-    const council = [
-      { name: 'Kaiden Steel Wind', title: 'Kaiden', current: true, image: null, historicalDate: null },
-      { name: 'Kaiden Ravenstar', title: 'Kaiden', current: true, image: null, historicalDate: null },
-      { name: 'Kaiden Severer', title: 'Kaiden', current: true, image: null, historicalDate: null },
-    ];
-    for (const c of council) {
-      await councilMembersRepo.create(c);
-    }
-    // Historical dates
-    const historical = [
-      { name: 'Council Formation', title: 'October 19, 2022', current: false, historicalDate: '2022-10-19' },
-      { name: 'Council Formation', title: 'August 31, 2021', current: false, historicalDate: '2021-08-31' },
-      { name: 'Council Formation', title: 'September 30, 2017', current: false, historicalDate: '2017-09-30' },
-      { name: 'Council Formation', title: 'September 26, 2015', current: false, historicalDate: '2015-09-26' },
-      { name: 'Council Formation', title: 'October 6, 2007', current: false, historicalDate: '2007-10-06' },
-      { name: 'Council Formation', title: 'April 1, 2006', current: false, historicalDate: '2006-04-01' },
-      { name: 'Council Formation', title: 'July 23, 2005', current: false, historicalDate: '2005-07-23' },
-    ];
-    for (const h of historical) {
-      await councilMembersRepo.create(h);
-    }
-    console.log('  ✓ Council Members');
   }
 
   // Classes

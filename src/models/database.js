@@ -5,7 +5,8 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { mergeCouncilMembers } from './migrations/mergeCouncilMembers.js';
 import { fileURLToPath } from 'url';
 import config from '../config/index.js';
 
@@ -17,7 +18,6 @@ export const defaultData = {
   pages: [],
   members: [],
   champions: [],
-  councilMembers: [],
   classes: [],
   ranks: [],
   coreMoves: [],
@@ -84,6 +84,16 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  // Back up before the one-time consolidation; migrate a copy so failures leave
+  // the loaded data intact. Lowdb persists the completed migration atomically.
+  if (Object.hasOwn(dbInstance.data, 'councilMembers')) {
+    await writeFile(`${dbPath}.backup-council-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    mergeCouncilMembers(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -111,7 +121,6 @@ export function getDatabase() {
 export { pagesRepo } from './pagesRepository.js';
 export { membersRepo } from './membersRepository.js';
 export { championsRepo } from './championsRepository.js';
-export { councilMembersRepo } from './councilMembersRepository.js';
 export { classesRepo } from './classesRepository.js';
 export { ranksRepo } from './ranksRepository.js';
 export { coreMovesRepo } from './coreMovesRepository.js';
@@ -129,7 +138,6 @@ export { BaseRepository } from './baseRepository.js';
 export { PagesRepository } from './pagesRepository.js';
 export { MembersRepository } from './membersRepository.js';
 export { ChampionsRepository } from './championsRepository.js';
-export { CouncilMembersRepository } from './councilMembersRepository.js';
 export { ClassesRepository } from './classesRepository.js';
 export { RanksRepository } from './ranksRepository.js';
 export { CoreMovesRepository } from './coreMovesRepository.js';

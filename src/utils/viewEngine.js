@@ -3,6 +3,7 @@
  * Configures Nunjucks template engine for Fastify
  */
 import nunjucks from 'nunjucks';
+import { councilMembers, currentCouncilMembers } from './councilMembership.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import config from '../config/index.js';
@@ -19,6 +20,9 @@ export function setupViewEngine(fastify) {
     watch: config.nodeEnv === 'development',
     noCache: config.nodeEnv === 'development',
   });
+
+  env.addFilter("councilMembers", councilMembers);
+  env.addFilter("currentCouncilMembers", currentCouncilMembers);
 
   // Add global filters
   env.addFilter('date', (value, format = 'MMM d, yyyy') => {

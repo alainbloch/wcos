@@ -35,7 +35,6 @@ wcos/
 │   │   ├── siteService.js
 │   │   ├── memberService.js
 │   │   ├── championService.js
-│   │   ├── councilService.js
 │   │   ├── classesService.js
 │   │   ├── ranksService.js
 │   │   ├── coreMovesService.js
@@ -447,3 +446,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 **Questions?** Check [CLAUDE.md](CLAUDE.md) for coding conventions or open an issue.
+
+Council service is maintained on member records. See [Council membership](docs/council-membership.md) for migration and CMS filter usage.

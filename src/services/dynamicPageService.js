@@ -5,7 +5,6 @@
 import {
   membersRepo,
   championsRepo,
-  councilMembersRepo,
   classesRepo,
   ranksRepo,
   coreMovesRepo,
@@ -19,12 +18,16 @@ import {
   usersRepo,
 } from "../models/database.js";
 
-import { renderView } from "../utils/viewEngine.js";
+import { memberService } from "./memberService.js";
 
 const repoMapping = {
   members: membersRepo,
   champions: championsRepo,
-  councilMembers: councilMembersRepo,
+  // Compatibility data-source names now query the unified members repository.
+  councilMembers: { findAll: () => memberService.getCouncilMembers() },
+  currentCouncilMembers: {
+    findAll: () => memberService.getCurrentCouncilMembers(),
+  },
   classes: classesRepo,
   ranks: ranksRepo,
   coreMoves: coreMovesRepo,
@@ -57,7 +60,6 @@ export class DynamicPageService {
     }
     return result;
   }
-
 }
 
 export const dynamicPageService = new DynamicPageService();

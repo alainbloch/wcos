@@ -49,3 +49,6 @@ data/*.backup-*
 
 # Local WordPress database export
 /import.sql
+
+# Council consolidation backups may be next to a custom database path
+*.backup-council-*
