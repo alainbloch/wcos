@@ -7,7 +7,7 @@ import { dynamicPageService } from "../services/dynamicPageService.js";
 
 /** All public controllers share the restored layout, CSS metadata and publication rules. */
 export class PublicPageController extends BaseController {
-  async renderPage(request, reply, slug, preparePage = (page) => page) {
+  async renderPage(request, reply, slug) {
     const page = await getPublicPage(slug);
     if (!page) return this.notFound(request, reply);
 
@@ -32,7 +32,7 @@ export class PublicPageController extends BaseController {
       }
     }
 
-    const preparedPage = await preparePage({ ...page, ...dynamicData, content: dynamicContent });
+    const preparedPage = { ...page, ...dynamicData, content: dynamicContent };
 
     return this.render(request, reply, "pages/reference.njk", {
       page: preparedPage,
