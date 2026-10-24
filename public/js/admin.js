@@ -524,3 +524,14 @@ function initImagePreview() {
 }
 
 initImagePreview();
+
+// Keep both values available when switching modes; the server validates only the chosen source.
+document.querySelectorAll('[data-dalmater-fields]').forEach(section => {
+  const mode = section.querySelector('[name="dalmaterMode"]');
+  const update = () => {
+    section.querySelector('[data-dalmater-kaiden]').hidden = mode.value !== 'kaiden';
+    section.querySelector('[data-dalmater-custom]').hidden = mode.value !== 'custom';
+  };
+  mode.addEventListener('change', update);
+  update();
+});

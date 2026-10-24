@@ -38,7 +38,6 @@ wcos/
 │   │   ├── classesService.js
 │   │   ├── ranksService.js
 │   │   ├── coreMovesService.js
-│   │   ├── dalmaterColorsService.js
 │   │   ├── kaidensService.js
 │   │   ├── resourcesService.js
 │   │   ├── duesService.js

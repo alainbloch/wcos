@@ -6,6 +6,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { mergeDalmaterColors } from './migrations/mergeDalmaterColors.js';
 import { mergeCouncilMembers } from './migrations/mergeCouncilMembers.js';
 import { fileURLToPath } from 'url';
 import config from '../config/index.js';
@@ -21,7 +22,6 @@ export const defaultData = {
   classes: [],
   ranks: [],
   coreMoves: [],
-  dalmaterColors: [],
   kaidens: [],
   kaidenRules: [],
   resources: [],
@@ -94,6 +94,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (Object.hasOwn(dbInstance.data, 'dalmaterColors')) {
+    await writeFile(`${dbPath}.backup-dalmater-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    mergeDalmaterColors(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -124,7 +132,6 @@ export { championsRepo } from './championsRepository.js';
 export { classesRepo } from './classesRepository.js';
 export { ranksRepo } from './ranksRepository.js';
 export { coreMovesRepo } from './coreMovesRepository.js';
-export { dalmaterColorsRepo } from './dalmaterColorsRepository.js';
 export { kaidensRepo } from './kaidensRepository.js';
 export { kaidenRulesRepo } from './kaidenRulesRepository.js';
 export { resourcesRepo } from './resourcesRepository.js';
@@ -141,7 +148,6 @@ export { ChampionsRepository } from './championsRepository.js';
 export { ClassesRepository } from './classesRepository.js';
 export { RanksRepository } from './ranksRepository.js';
 export { CoreMovesRepository } from './coreMovesRepository.js';
-export { DalmaterColorsRepository } from './dalmaterColorsRepository.js';
 export { KaidensRepository } from './kaidensRepository.js';
 export { KaidenRulesRepository } from './kaidenRulesRepository.js';
 export { ResourcesRepository } from './resourcesRepository.js';

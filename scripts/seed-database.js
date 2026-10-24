@@ -3,7 +3,7 @@
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, coreMovesRepo, dalmaterColorsRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, coreMovesRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -19,7 +19,6 @@ async function seed() {
   // db.data.classes = [];
   // db.data.ranks = [];
   // db.data.coreMoves = [];
-  // db.data.dalmaterColors = [];
   // db.data.kaidens = [];
   // db.data.kaidenRules = [];
   // db.data.resources = [];
@@ -205,35 +204,6 @@ async function seed() {
       await coreMovesRepo.create(m);
     }
     console.log('  ✓ Core Moves');
-  }
-
-  // Dalmater Colors
-  if ((await dalmaterColorsRepo.findAll()).length === 0) {
-    const colors = [
-      { kaiden: 'Head Kaiden Gad', color: 'Jade Green', kaidenOrder: 1, isRedDalmater: false },
-      { kaiden: 'Kaiden Joseph (retired)', color: 'Jade Green', kaidenOrder: 2, isRedDalmater: false },
-      { kaiden: 'Kaiden Nikon', color: 'Black', kaidenOrder: 3, isRedDalmater: false },
-      { kaiden: 'Kaiden Storm (retired)', color: 'Cobalt Blue', kaidenOrder: 4, isRedDalmater: false },
-      { kaiden: 'Kaiden Charles', color: 'Wasp Yellow', kaidenOrder: 5, isRedDalmater: false },
-      { kaiden: 'Kaiden Hedge (retired)', color: 'Shadow Grey', kaidenOrder: 6, isRedDalmater: false },
-      { kaiden: 'Kaiden David', color: 'Shadow Grey', kaidenOrder: 7, isRedDalmater: false },
-      { kaiden: 'Kaiden Kris (retired)', color: 'White', kaidenOrder: 8, isRedDalmater: false },
-      { kaiden: 'Kaiden Severer', color: 'White', kaidenOrder: 9, isRedDalmater: false },
-      { kaiden: 'Kaiden Eric', color: 'Forest Green', kaidenOrder: 10, isRedDalmater: false },
-      { kaiden: 'Kaiden Vea Ravenstar', color: 'Nile Blue', kaidenOrder: 11, isRedDalmater: false },
-      { kaiden: 'Honorary Kaiden Dominique', color: 'Nile Blue', kaidenOrder: 12, isRedDalmater: false },
-      { kaiden: 'Kaiden Blight (retired)', color: 'Dark Purple', kaidenOrder: 13, isRedDalmater: false },
-      { kaiden: 'Kaiden Umbra', color: 'Bronze', kaidenOrder: 14, isRedDalmater: false },
-      { kaiden: 'Honorary Kaiden Dalton', color: 'Bronze', kaidenOrder: 15, isRedDalmater: false },
-      { kaiden: 'Kaiden Brokkr (retired)', color: 'Amethyst', kaidenOrder: 16, isRedDalmater: false },
-      { kaiden: 'Kaiden Daniel', color: 'Royal Blue', kaidenOrder: 17, isRedDalmater: false },
-      { kaiden: 'Kaiden Requiem', color: 'Tornado Blue', kaidenOrder: 18, isRedDalmater: false },
-      { kaiden: 'Red Dalmater', color: 'Red', kaidenOrder: 99, isRedDalmater: true, requirements: ['Be at least Crimson Chain', 'Petition Council and Head Kaiden', 'Inform your Kaiden', 'Take one month contract', 'Tour Trials of Swordsmanship (optional)', 'Complete One Hour Non-Stop Battle', 'Witnessed by Silver Chain+ Kaiden', 'Filmed when possible', 'Awarded Red Dalmater and script'] },
-    ];
-    for (const c of colors) {
-      await dalmaterColorsRepo.create(c);
-    }
-    console.log('  ✓ Dalmater Colors');
   }
 
   // Kaidens

@@ -99,6 +99,32 @@
         </ul></details>
         {% endif %}
       </fieldset>
+      <fieldset class="form-section form-section-full" data-dalmater-fields>
+        <legend>Dalmater Color</legend>
+        <div class="form-field">
+          <label for="dalmaterMode">Color source</label>
+          <select id="dalmaterMode" name="dalmaterMode">
+            <option value="" {% if not member.dalmaterMode %}selected{% endif %}>No color assigned</option>
+            <option value="kaiden" {% if member.dalmaterMode == 'kaiden' %}selected{% endif %}>Choose a Kaiden's color</option>
+            <option value="custom" {% if member.dalmaterMode == 'custom' %}selected{% endif %}>Custom color</option>
+          </select>
+        </div>
+        <div class="form-field" data-dalmater-kaiden>
+          <label for="dalmaterKaidenId">Kaiden color</label>
+          <select id="dalmaterKaidenId" name="dalmaterKaidenId">
+            <option value="">Select a Kaiden</option>
+            {% if member.dalmaterMode == 'kaiden' and member.dalmaterKaidenId %}<option value="{{ member.dalmaterKaidenId }}" selected>Saved selection: {{ member.dalmaterColorName or 'Kaiden color' }} {{ member.dalmaterColorHex }}</option>{% endif %}
+            {% for option in kaidenColorOptions %}<option value="{{ option.id }}">{{ option.name }} — {{ option.colorName }} ({{ option.colorHex }})</option>{% endfor %}
+          </select>
+          <small class="form-hint">Includes Kaiden, Head Kaiden, and Honorary Kaiden merits with a complete color. The selection copies their color when saved; later changes to the Kaiden do not change yours.</small>
+        </div>
+        <div data-dalmater-custom>
+          <div class="form-field"><label for="dalmaterColorName">Color name</label><input id="dalmaterColorName" name="dalmaterColorName" type="text" value="{{ member.dalmaterColorName or '' }}" placeholder="Jade Green"></div>
+          <div class="form-field"><label for="dalmaterColorHex">Hex color</label><input id="dalmaterColorHex" name="dalmaterColorHex" type="text" value="{{ member.dalmaterColorHex or '' }}" placeholder="#RRGGBB" spellcheck="false"><small class="form-hint">Enter #RRGGBB or #RGB.</small></div>
+        </div>
+        {% if member.dalmaterColorName and not member.dalmaterColorHex %}<p class="notice">This migrated color has a name but no recorded hex value. Add the correct shade when known. It cannot be offered in the Kaiden dropdown until then.</p>{% endif %}
+        {% if member.dalmaterLegacyRecords.length %}<details><summary>Imported color history</summary><ul>{% for color in member.dalmaterLegacyRecords %}<li>{{ color.kaiden }}: {{ color.colorName or color.color }} {{ color.colorHex }}{% if color.description %} — {{ color.description }}{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+      </fieldset>
       <!-- Biography & Media -->
       <fieldset class="form-section form-section-full">
         <legend>Biography & Media</legend>

@@ -49,6 +49,15 @@ export function readMemberForm(body = {}) {
   const form = Object.fromEntries(
     textFields.map((key) => [key, textValue(body?.[key])]),
   );
+  if (body && Object.hasOwn(body, "dalmaterMode")) {
+    for (const field of [
+      "dalmaterMode",
+      "dalmaterKaidenId",
+      "dalmaterColorName",
+      "dalmaterColorHex",
+    ])
+      form[field] = textValue(body[field]);
+  }
   form.councilCurrent =
     body?.councilCurrent === true || textValue(body?.councilCurrent) === "on";
   form.merits = normalizeMerits(body?.merits);
@@ -81,6 +90,7 @@ export function memberRecordToForm(member) {
     ...readMemberForm(member),
     id: member.id,
     councilHistory: member.councilHistory || [],
+    dalmaterLegacyRecords: member.dalmaterLegacyRecords || [],
     circleName: textValue(member.position),
     position: merits[0] || "",
     merits,
