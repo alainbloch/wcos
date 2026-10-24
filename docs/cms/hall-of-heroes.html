@@ -1,0 +1,219 @@
+<div data-elementor-type="wp-page" data-elementor-id="323" class="elementor elementor-323" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-e01e3c4 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="e01e3c4" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-c1c1d69 e-con-full e-flex e-con e-child" data-id="c1c1d69" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-165dac8 e-con-full e-flex e-con e-child" data-id="165dac8" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-1b2ca78 elementor-widget elementor-widget-heading" data-id="1b2ca78" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">hall of heroes</h1>				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-71f6eb5 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="71f6eb5" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-6e78b76 e-con-full e-flex e-con e-child" data-id="6e78b76" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-51dfe9c e-con-full e-flex e-con e-child" data-id="51dfe9c" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-085370e e-con-full e-flex e-con e-child" data-id="085370e" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-86eb769 e-con-full e-flex e-con e-child" data-id="86eb769" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-0dda7d1 elementor-widget elementor-widget-heading" data-id="0dda7d1" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">Best of the Best Competition Champions
+</h2>				</div>
+				<div class="elementor-element elementor-element-6de9cc6 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="6de9cc6" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				<div class="elementor-element elementor-element-16043e8 elementor-widget elementor-widget-text-editor" data-id="16043e8" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>Best of Best competition champions – This is a yearly competition run by the Head Kaiden to determine who is the best fighter in the Western Circle through a series of one on one duels. During these matches only the cleanest kills are accepted and each match is watched and judged by 3 Kaidens.</p>								</div><p>2006: No Champion.</p>
+				<div class="elementor-element elementor-element-7ba67f6 elementor-widget elementor-widget-heading" data-id="7ba67f6" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h3 class="elementor-heading-title elementor-size-default">Champions</h3>				</div>
+				<div class="elementor-element elementor-element-d3e2f2b elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="d3e2f2b" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+		{% for group in champions | batch(4) %}<div class="elementor-element elementor-element-5a873a9 e-con-full e-flex e-con e-child" data-id="5a873a9" data-element_type="container" data-e-type="container">{% for honor in group %}<div class="elementor-element elementor-element-25b9dda e-con-full e-flex e-con e-child" data-id="25b9dda" data-element_type="container" data-e-type="container" data-modal-target="hero-{{ honor.member.id }}" role="button" tabindex="0">
+				<div class="elementor-element elementor-element-36d927e9 elementor-widget elementor-widget-jkit_team" data-id="36d927e9" data-element_type="widget" data-e-type="widget" data-widget_type="jkit_team.default">
+					<div class="jeg-elementor-kit jkit-team style-title-horizontal  jeg_module_323__6adbbd537efa6"><div class="profile-card"><img decoding="async" src="{{ honor.member.image or '/images/colourful-night-starry-sky-in-dark-blue-colors-so-2025-02-25-13-12-07-utc.jpg' }}" class="attachment-full size-full" alt="{{ honor.member.position }}"><div class="profile-body">
+                <div class="title-wrapper">
+					<p class="profile-designation ">{{ honor.member.position }}</p>
+					
+				</div>
+				<div class="name-wrapper">
+					<h2 class="profile-title">{{ honor.year }} Champion{% if honor.note %} ({{ honor.note }}){% endif %}</h2>
+					<ul class="social-list"></ul>
+				</div>
+            </div></div></div>				</div>
+				</div>{% endfor %}</div>{% endfor %}
+		
+		
+		
+		
+		
+				<div class="elementor-element elementor-element-4c6641b elementor-widget elementor-widget-heading" data-id="4c6641b" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h3 class="elementor-heading-title elementor-size-default">Champions</h3>				</div>
+				<div class="elementor-element elementor-element-b50b30b elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="b50b30b" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+		{% for group in champions | batch(4) %}<div class="elementor-element elementor-element-bce4c6e e-con-full e-flex e-con e-child" data-id="bce4c6e" data-element_type="container" data-e-type="container">{% for honor in group %}<div class="elementor-element elementor-element-1349d68 e-con-full e-flex e-con e-child" data-id="1349d68" data-element_type="container" data-e-type="container" data-modal-target="hero-{{ honor.member.id }}" role="button" tabindex="0">
+				<div class="elementor-element elementor-element-1da473b elementor-widget elementor-widget-heading" data-id="1da473b" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">{{ honor.year }} Champion{% if honor.note %} ({{ honor.note }}){% endif %}</h2>				</div>
+				<div class="elementor-element elementor-element-43cf709 elementor-widget elementor-widget-heading" data-id="43cf709" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">{{ honor.member.position }}</h2>				</div>
+				</div>{% endfor %}</div>{% endfor %}
+		
+		
+		
+		
+		
+				</div>
+				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-7526099 e-flex e-con-boxed e-con e-parent" data-id="7526099" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-c8b0408 e-con-full e-flex e-con e-child" data-id="c8b0408" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-a1d01c6 e-con-full e-flex e-con e-child" data-id="a1d01c6" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-12230f1 e-con-full e-flex e-con e-child" data-id="12230f1" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-9cbf5da e-con-full e-flex e-con e-child" data-id="9cbf5da" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-48d3d07 elementor-widget elementor-widget-heading" data-id="48d3d07" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">Fallen Heroes</h2>				</div>
+				<div class="elementor-element elementor-element-b1e1bbf elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="b1e1bbf" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				<div class="elementor-element elementor-element-8f9e33b elementor-widget__width-initial elementor-widget elementor-widget-text-editor" data-id="8f9e33b" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>These are individuals who were members of the Western Circle until the day they died. They were people of honor and are greatly missed.</p>								</div>
+		{% for group in fallenHeroes | batch(4) %}<div class="elementor-element elementor-element-aa3c0dc e-con-full e-flex e-con e-child" data-id="aa3c0dc" data-element_type="container" data-e-type="container">{% for member in group %}<div class="elementor-element elementor-element-163dee7 e-con-full e-flex e-con e-child" data-id="163dee7" data-element_type="container" data-e-type="container" data-modal-target="hero-{{ member.id }}" role="button" tabindex="0">
+				<div class="elementor-element elementor-element-d31e00c elementor-widget elementor-widget-jkit_team" data-id="d31e00c" data-element_type="widget" data-e-type="widget" data-widget_type="jkit_team.default">
+					<div class="jeg-elementor-kit jkit-team style-title-horizontal  jeg_module_323_21_6adbbd538752a"><div class="profile-card"><img loading="lazy" decoding="async" src="{{ member.image or '/images/colourful-night-starry-sky-in-dark-blue-colors-so-2025-02-25-13-12-07-utc.jpg' }}" class="attachment-full size-full" alt="{{ member.position }}"><div class="profile-body">
+                <div class="title-wrapper">
+					<p class="profile-designation "></p>
+					
+				</div>
+				<div class="name-wrapper">
+					<h2 class="profile-title">{{ member.position }}</h2>
+					<ul class="social-list"></ul>
+				</div>
+            </div></div></div>				</div>
+				</div>{% endfor %}</div>{% endfor %}
+		
+				</div>
+				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-4041c06 e-flex e-con-boxed e-con e-parent" data-id="4041c06" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-8cc5db9 e-con-full e-flex e-con e-child" data-id="8cc5db9" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-bffcafd e-con-full e-flex e-con e-child" data-id="bffcafd" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-09ede65 e-con-full e-flex e-con e-child" data-id="09ede65" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-c38d2d0 e-con-full e-flex e-con e-child" data-id="c38d2d0" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-f25ce1a elementor-widget elementor-widget-heading" data-id="f25ce1a" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">Supporters of the Western Circle</h2>				</div>
+				<div class="elementor-element elementor-element-7d8c449 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="7d8c449" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				<div class="elementor-element elementor-element-70f0704 elementor-widget elementor-widget-heading" data-id="70f0704" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h3 class="elementor-heading-title elementor-size-default">The following non-members have gone far beyond the call of duty to show true support to the Western Circle.</h3>				</div>
+		<div class="elementor-element elementor-element-a06373d e-con-full e-flex e-con e-child" data-id="a06373d" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-4354c12 e-con-full e-flex e-con e-child" data-id="4354c12" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-1218831 elementor-widget elementor-widget-text-editor" data-id="1218831" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>Jim N. (Father of&nbsp;<a href="https://westerncircle.org/members/nicole.html" target="_blank" rel="noopener noreferrer">Nicole</a>)</p>								</div>
+				<div class="elementor-element elementor-element-0282e16 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="0282e16" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-7589861 e-con-full e-flex e-con e-child" data-id="7589861" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-b34c925 elementor-widget elementor-widget-text-editor" data-id="b34c925" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>Chris (of the Arata’s Farm)</p>								</div>
+				<div class="elementor-element elementor-element-505823a elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="505823a" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				</div>
+		<div class="elementor-element elementor-element-536ffd7 e-con-full e-flex e-con e-child" data-id="536ffd7" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-3c4f2ae elementor-widget elementor-widget-text-editor" data-id="3c4f2ae" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>Wolfie (of Shadow Wood)</p>								</div>
+				<div class="elementor-element elementor-element-450b668 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="450b668" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				</div>
+				</div>
+				</div>
+				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-6a083bc e-flex e-con-boxed e-con e-parent" data-id="6a083bc" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-219f2d3 e-con-full e-flex e-con e-child" data-id="219f2d3" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-76fb898 e-con-full e-flex e-con e-child" data-id="76fb898" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-5bf99a0 e-con-full e-flex e-con e-child" data-id="5bf99a0" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-0494e04 e-con-full e-flex e-con e-child" data-id="0494e04" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-454336c elementor-widget elementor-widget-heading" data-id="454336c" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">The Way of the&nbsp;Contract</h2>				</div>
+				<div class="elementor-element elementor-element-e75684d elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="e75684d" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+				<div class="elementor-element elementor-element-cf977df elementor-widget elementor-widget-text-editor" data-id="cf977df" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>All of those that have taken a contract swore an oath of completion, had a mentor, and had to train from 3 to 24 consecutive months to complete them. They are designed to help increase discipline and guide people to their next levels. They are not easy and you must have the support of your Kaiden before beginning one.<br><span style="color:#ffffff"><br></span></p><ul><li>The Black Braid (Kaidens Joseph, Gad, Vea Ravenstar)</li><li>The Black Chain (Kaidens Joseph and Gad)</li><li>The Black Ring (Kaidens Joseph and Gad)</li><li>The Black Triad (Kaiden Gad)</li><li>True Studentship Contract (6 months) – (Kaiden Nikon, Kaiden Storm, Protector, Kaiden Steel Wind, Red Shadow, Razorwind, Luma, Kaiden Hedge, Kaiden Bonefinder, Kaiden Umbra, Kaiden Blight, Dominique, and Kaiden Vea Ravenstar)</li><li>Red Rope Contract (Kaidens Sal and Ravenstar)</li><li>Silver Chain Contract (Kaidens Kris and Storm)</li><li>The Shard (Kaiden Steel Wind, Head Kaiden Gad, Kaiden Vea Ravenstar, Razorwind, Ross, and Bradley)</li><li>The Winter Path (Head Kaiden Gad)</li><li>The Way of The Evening Blade (Head Kaiden Gad)</li><li>The Hand of Control (Kaiden Steel Wind)</li><li>The Edge of The Blade (Kaiden Joseph)</li><li>The Ronin (Kaidens Joseph, Gad and Steelwind and Razorwind)</li></ul><p><span style="color:#ffffff"><br></span>None who has failed to fulfil a contract in their Kaiden’s eyes have been listed above. For more information, contact your Kaiden directly.</p>								</div>
+				</div>
+				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+				</div>{% for member in members %}{% if member.fallenHero or member.championships.length %}<template id="hero-{{ member.id }}" data-modal-variant="profile">
+  <div class="profile-modal-grid">
+    <div>
+      {% if member.image %}<img class="profile-portrait" src="{{ member.image }}" alt="{{ member.position }}" loading="lazy">{% endif %}
+      <h2 data-modal-title="">{{ member.position }}</h2>
+      <p>{% if member.merits is string %}{{ member.merits }}{% else %}{{ (member.merits or []) | join(' · ') }}{% endif %}</p>
+    </div>
+    <div>
+      
+          {% for label, value in [
+            ['Level', member.level], ['Steel Rank', member.steelRank],
+            ['Years Fought', member.yearsFought], ['Battles Fought', member.battlesFought],
+            ['Steel Battles Fought', member.steelBattlesFought], ['Opponents Fought', member.opponentsFought],
+            ['Weapon Type', member.weaponType], ['Member Since', member.memberSince], ['Region', member.region]
+          ] %}
+            {% if value %}{% endif %}
+          {% endfor %}
+        <table class="profile-statistics">
+        <caption>Battle Ratings and Stats{% if member.statsUpdated %}<small>Updated {{ member.statsUpdated }}</small>{% endif %}</caption>
+        <tbody><tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr></tbody>
+      </table>
+      {% if member.email %}<p class="profile-email">Email address: <a href="mailto:{{ member.email }}">{{ member.email }}</a></p>{% endif %}
+    </div>
+  </div>
+  <section class="profile-biography" aria-label="Biography">
+    {% if member.biography %}<p class="biography-text">{{ member.biography }}</p>{% else %}<p>A biography has not been added for this member yet.</p>{% endif %}
+  </section>
+</template>{% endif %}{% endfor %}

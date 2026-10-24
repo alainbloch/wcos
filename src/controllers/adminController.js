@@ -1,4 +1,4 @@
-import { movesRepo, membersRepo } from '../models/database.js';
+import { movesRepo, membersRepo, getDatabase } from '../models/database.js';
 import { uploadMoveMedia } from '../services/moveMediaService.js';
 /**
  * Admin Controller
@@ -7,7 +7,6 @@ import { uploadMoveMedia } from '../services/moveMediaService.js';
 import { BaseController } from "./baseController.js";
 import { pagesService } from "../services/pagesService.js";
 import { memberService } from "../services/memberService.js";
-import { championService } from "../services/championService.js";
 import { readClassForm, classesService } from "../services/classesService.js";
 import { MOVE_TYPES, readMoveForm, movesService } from "../services/movesService.js";
 import { resourcesService } from "../services/resourcesService.js";
@@ -164,6 +163,7 @@ export class AdminController extends BaseController {
     await this.renderAdmin(request, reply, "admin/members/list.njk", {
       pageTitle: "Manage Members",
       councilFilter,
+      honorsReview: getDatabase().data.honorsMigrationReview || [],
       members,
       memberPage: await pagesService.getPageBySlug("member-profiles"),
     });
@@ -219,7 +219,7 @@ export class AdminController extends BaseController {
     form.image = existing.image || "";
     let uploadedImage;
     try {
-      const record = memberFormToRecord(form);
+      const record = memberFormToRecord(form, existing.importedFrom === "hall-of-heroes" && !existing.level);
       uploadedImage = await memberImageService.save(request.body?.image);
       record.image = uploadedImage || form.image;
       const updated = await memberService.updateMember(request.params.id, record);
@@ -234,7 +234,7 @@ export class AdminController extends BaseController {
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
       kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
         pageTitle: "Edit Member",
-        member: { ...form, id: request.params.id, councilHistory: existing.councilHistory || [], dalmaterLegacyRecords: existing.dalmaterLegacyRecords || [] },
+        member: { ...form, importedFrom: existing.importedFrom, id: request.params.id, councilHistory: existing.councilHistory || [], dalmaterLegacyRecords: existing.dalmaterLegacyRecords || [] },
         flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
       });
     }
@@ -248,75 +248,6 @@ export class AdminController extends BaseController {
     } catch (error) {
       request.session.adminFlash = { error: error.message };
       reply.redirect("/admin/members");
-    }
-  }
-
-  // Champions management
-  async listChampions(request, reply) {
-    const champions = await championService.getAllChampions();
-    await this.renderAdmin(request, reply, "admin/champions/list.njk", {
-      pageTitle: "Manage Champions",
-      champions,
-    });
-  }
-
-  async newChampion(request, reply) {
-    await this.renderAdmin(request, reply, "admin/champions/form.njk", {
-      pageTitle: "New Champion",
-      champion: null,
-    });
-  }
-
-  async createChampion(request, reply) {
-    try {
-      const champion = await championService.createChampion(request.body);
-      request.session.adminFlash = { success: "Champion created successfully" };
-      reply.redirect(`/admin/champions/${champion.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/champions/form.njk", {
-        pageTitle: "New Champion",
-        champion: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editChampion(request, reply) {
-    const champion = await championService.getChampionById(request.params.id);
-    if (!champion) {
-      return reply.code(404).send("Champion not found");
-    }
-    await this.renderAdmin(request, reply, "admin/champions/form.njk", {
-      pageTitle: "Edit Champion",
-      champion,
-    });
-  }
-
-  async updateChampion(request, reply) {
-    try {
-      await championService.updateChampion(request.params.id, request.body);
-      request.session.adminFlash = { success: "Champion updated successfully" };
-      reply.redirect(`/admin/champions/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await championService.getChampionById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/champions/form.njk", {
-        pageTitle: "Edit Champion",
-        champion: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteChampion(request, reply) {
-    try {
-      await championService.deleteChampion(request.params.id);
-      request.session.adminFlash = { success: "Champion deleted successfully" };
-      reply.redirect("/admin/champions");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/champions");
     }
   }
 

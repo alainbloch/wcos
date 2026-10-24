@@ -60,3 +60,5 @@ data/*.backup-*
 *.backup-classes-*
 
 *.backup-glossary-*
+
+*.backup-honors-*

@@ -59,23 +59,6 @@ export async function adminRoutes(fastify) {
     adminController.deleteMember.bind(adminController),
   );
 
-  // Champions
-  fastify.get("/champions", adminController.listChampions.bind(adminController));
-  fastify.get("/champions/new", adminController.newChampion.bind(adminController));
-  fastify.post("/champions", adminController.createChampion.bind(adminController));
-  fastify.get(
-    "/champions/:id/edit",
-    adminController.editChampion.bind(adminController),
-  );
-  fastify.post(
-    "/champions/:id/edit",
-    adminController.updateChampion.bind(adminController),
-  );
-  fastify.post(
-    "/champions/:id/delete",
-    adminController.deleteChampion.bind(adminController),
-  );
-
   // Classes
   fastify.get("/classes", adminController.listClasses.bind(adminController));
   fastify.get("/classes/new", adminController.newClass.bind(adminController));
