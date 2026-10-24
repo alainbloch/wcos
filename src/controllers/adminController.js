@@ -22,6 +22,8 @@ import {
 import { renderView } from "../utils/viewEngine.js";
 import { dynamicPageService } from "../services/dynamicPageService.js";
 
+import { readMemberForm, memberFormToRecord, memberRecordToForm } from "../utils/memberForm.js";
+
 export class AdminController extends BaseController {
   async dashboard(request, reply) {
     const pages = await pagesService.getAllPages();
@@ -172,35 +174,16 @@ export class AdminController extends BaseController {
   }
 
   async createMember(request, reply) {
+    const form = readMemberForm(request.body);
     try {
-      const merits = request.body.merits
-        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
-        : [];
-
-      // Build circleName from level and steelRank (e.g., "L7 - steel")
-      const level = request.body.level;
-      const steelRank = request.body.steelRank || level;
-      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
-
-      const member = await memberService.createMember({
-        level,
-        steelRank,
-        circleName, // Level display name (e.g., "L7 - steel")
-        position: request.body.circleName, // Member's circle name (from form's circleName field)
-        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
-        memberSince: request.body.memberSince || "",
-        region: request.body.region || "",
-        biography: request.body.biography || "",
-        image: request.body.image || "",
-        active: request.body.active === "on",
-      });
+      const member = await memberService.createMember(memberFormToRecord(form));
       request.session.adminFlash = { success: "Member created successfully" };
-      reply.redirect(`/admin/members/${member.id}/edit`);
+      return reply.redirect(`/admin/members/${member.id}/edit`);
     } catch (error) {
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "New Member",
-        member: { ...request.body, merits: request.body.merits },
+        member: form,
         flash: { error: error.message },
       });
     }
@@ -208,103 +191,27 @@ export class AdminController extends BaseController {
 
   async editMember(request, reply) {
     const member = await memberService.getMemberById(request.params.id);
-    if (!member) {
-      return reply.code(404).send("Member not found");
-    }
-    // Prepare member data for form (map database fields to form fields)
-    const formMember = {
-      ...member,
-      circleName: member.position, // Form's circleName = member's circle name
-      position: (member.merits?.[0] || ""), // Form's position = first merit (position/title)
-      merits: Array.isArray(member.merits) ? member.merits : (member.merits ? String(member.merits).split("\n").filter(Boolean) : []),
-    };
-    await this.renderAdmin(request, reply, "admin/members/form.njk", {
+    if (!member) return reply.code(404).send("Member not found");
+    return this.renderAdmin(request, reply, "admin/members/form.njk", {
       pageTitle: "Edit Member",
-      member: formMember,
+      member: memberRecordToForm(member),
     });
   }
 
   async updateMember(request, reply) {
-    /**
-     * Normalize merits into an array.
-     *
-     * Supports:
-     * - Arrays
-     * - JSON-encoded arrays
-     * - Newline-separated strings
-     * - Empty or missing values
-     */
-    const normalizeMerits = (value) => {
-      if (Array.isArray(value)) {
-        return value
-          .map((merit) => String(merit).trim())
-          .filter(Boolean);
-      }
-
-      if (typeof value === "string") {
-        const trimmed = value.trim();
-
-        if (!trimmed) return [];
-
-        // Handle JSON-encoded arrays stored in the database.
-        try {
-          const parsed = JSON.parse(trimmed);
-
-          if (Array.isArray(parsed)) {
-            return parsed
-              .map((merit) => String(merit).trim())
-              .filter(Boolean);
-          }
-        } catch {
-          // Not JSON; interpret as newline-separated text.
-        }
-
-        return trimmed
-          .split(/\r?\n/)
-          .map((merit) => merit.trim())
-          .filter(Boolean);
-      }
-
-      return [];
-    };
-
+    const existing = await memberService.getMemberById(request.params.id);
+    if (!existing) return reply.code(404).send("Member not found");
+    const form = readMemberForm(request.body);
     try {
-      // Build circleName from level and steelRank
-      const level = request.body.level;
-      const steelRank = request.body.steelRank || level;
-      const merits = normalizeMerits(request.body.merits);
-
-      await memberService.updateMember(request.params.id, {
-        level,
-        steelRank,
-        circleName: request.body.circleName, // Level display name
-        position: request.body.position, // Member's circle name
-        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
-        memberSince: request.body.memberSince || "",
-        region: request.body.region || "",
-        biography: request.body.biography || "",
-        image: request.body.image || "",
-        active: request.body.active === "on",
-      });
+      const updated = await memberService.updateMember(request.params.id, memberFormToRecord(form));
+      if (!updated) return reply.code(404).send("Member not found");
       request.session.adminFlash = { success: "Member updated successfully" };
-      reply.redirect(`/admin/members/${request.params.id}/edit`);
+      return reply.redirect(`/admin/members/${request.params.id}/edit`);
     } catch (error) {
-      const existing = await memberService.getMemberById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      // Prepare member data for form
-      const body = request.body || {};
-      console.log("\n\n\nHEY!!!\n\n\n", body);
-      const formMember = {
-        ...existing,
-        ...body,
-        id: request.params.id,
-        circleName: body.circleName,
-        position: body.position,
-        merits: normalizeMerits(body.merits),
-      };
+      reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
         pageTitle: "Edit Member",
-        member: formMember,
+        member: { ...form, id: request.params.id },
         flash: { error: error.message },
       });
     }

@@ -3,15 +3,11 @@
 {% block content %}
 <div class="admin-content">
   <div class="flex justify-between items-center mb-6">
-    <h2>{% if member %}Edit Member{% else %}New Member{% endif %}</h2>
+    <h2>{% if member.id %}Edit Member{% else %}New Member{% endif %}</h2>
     <a href="/admin/members" class="btn btn-secondary">← Back to Members</a>
   </div>
 
-  {% if flash %}
-  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
-  {% endif %}
-
-  <form method="POST" action="{% if member %}/admin/members/{{ member.id }}/edit{% else %}/admin/members{% endif %}" class="admin-form" enctype="multipart/form-data">
+  <form method="POST" action="{% if member.id %}/admin/members/{{ member.id }}/edit{% else %}/admin/members{% endif %}" class="admin-form">
     <div class="form-grid">
       <!-- Basic Info -->
       <fieldset class="form-section">
@@ -116,7 +112,7 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary">{% if member %}Update Member{% else %}Create Member{% endif %}</button>
+      <button type="submit" class="btn btn-primary">{% if member.id %}Update Member{% else %}Create Member{% endif %}</button>
       <a href="/admin/members" class="btn btn-secondary">Cancel</a>
     </div>
   </form>
