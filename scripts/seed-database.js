@@ -1,9 +1,10 @@
+import { seedCoreMoves } from './seed-core-moves.js';
 /**
  * Database Seeding Script
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, coreMovesRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -18,7 +19,7 @@ async function seed() {
   // db.data.champions = [];
   // db.data.classes = [];
   // db.data.ranks = [];
-  // db.data.coreMoves = [];
+  // db.data.moves = [];
   // db.data.kaidens = [];
   // db.data.kaidenRules = [];
   // db.data.resources = [];
@@ -177,34 +178,8 @@ async function seed() {
     console.log('  ✓ Ranks (Primary + Steel)');
   }
 
-  // Core Moves (sample categories)
-  if ((await coreMovesRepo.findAll()).length === 0) {
-    const moveTypes = [
-      { category: 'Initiated Response', name: 'Initiated Response', description: 'An Offensive attack that creates an opening in which you take advantage of.' },
-      { category: 'Straight Offense', name: 'Straight Offense', description: 'A single attack to a predetermined target that is usually left open.' },
-      { category: 'Offensive Defense', name: 'Offensive Defense', description: 'An initial defensive action that directly leads to an offensive attack.' },
-    ];
-    for (const m of moveTypes) {
-      await coreMovesRepo.create(m);
-    }
-
-    const coreMoves = [
-      { category: 'Core Moves', name: 'Jumping Tiger', description: 'A leaping attack with full extension' },
-      { category: 'Core Moves', name: 'Jumping Tiger II', description: 'Advanced version with double kick' },
-      { category: 'Core Moves', name: "The 'I' Move", description: 'Straight thrust with body alignment' },
-      { category: 'Core Moves', name: 'The Tradition', description: 'Classic form sequence' },
-      { category: 'Core Moves', name: 'Thorn', description: 'Rapid multi-angle attack' },
-      { category: 'Core Moves', name: 'Akira', description: 'Flowing combination' },
-      { category: 'Core Moves', name: 'Double Thrust / Triple Thrust', description: 'Rapid successive thrusts' },
-      { category: 'Core Moves', name: 'Illusion', description: 'Feint-based deceptive attack' },
-      { category: 'Core Moves', name: 'Mantis', description: 'Hooking and trapping technique' },
-      { category: 'Core Moves', name: 'Whispering Wind', description: 'Fast, quiet footwork entry' },
-    ];
-    for (const m of coreMoves) {
-      await coreMovesRepo.create(m);
-    }
-    console.log('  ✓ Core Moves');
-  }
+  // Actual core moves extracted from the supplied page.
+  await seedCoreMoves();
 
   // Kaidens
   if ((await kaidensRepo.findAll()).length === 0) {

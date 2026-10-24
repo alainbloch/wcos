@@ -12,6 +12,7 @@ export function sanitizePageContent(content) {
   return sanitizeHtml(content || "", {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
       "img",
+      "video",
       "details",
       "summary",
       "button",
@@ -46,6 +47,7 @@ export function sanitizePageContent(content) {
         "hidden",
       ],
       a: ["href", "target", "rel"],
+      video: ["src", "controls", "preload", "poster"],
       img: ["src", "alt", "width", "height", "loading", "decoding"],
       form: ["action", "method"],
       input: [

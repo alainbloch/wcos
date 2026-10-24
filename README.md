@@ -37,7 +37,7 @@ wcos/
 │   │   ├── championService.js
 │   │   ├── classesService.js
 │   │   ├── ranksService.js
-│   │   ├── coreMovesService.js
+│   │   ├── movesService.js
 │   │   ├── kaidensService.js
 │   │   ├── resourcesService.js
 │   │   ├── duesService.js

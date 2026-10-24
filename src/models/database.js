@@ -2,6 +2,7 @@
  * Database Service
  * Lowdb JSON file database with repository pattern
  */
+import { renameMoves } from './migrations/renameMoves.js';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
@@ -21,7 +22,7 @@ export const defaultData = {
   champions: [],
   classes: [],
   ranks: [],
-  coreMoves: [],
+  moves: [],
   kaidens: [],
   kaidenRules: [],
   resources: [],
@@ -102,6 +103,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (Object.hasOwn(dbInstance.data, 'coreMoves')) {
+    await writeFile(`${dbPath}.backup-moves-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    renameMoves(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -131,7 +140,7 @@ export { membersRepo } from './membersRepository.js';
 export { championsRepo } from './championsRepository.js';
 export { classesRepo } from './classesRepository.js';
 export { ranksRepo } from './ranksRepository.js';
-export { coreMovesRepo } from './coreMovesRepository.js';
+export { movesRepo } from './movesRepository.js';
 export { kaidensRepo } from './kaidensRepository.js';
 export { kaidenRulesRepo } from './kaidenRulesRepository.js';
 export { resourcesRepo } from './resourcesRepository.js';
@@ -147,7 +156,7 @@ export { MembersRepository } from './membersRepository.js';
 export { ChampionsRepository } from './championsRepository.js';
 export { ClassesRepository } from './classesRepository.js';
 export { RanksRepository } from './ranksRepository.js';
-export { CoreMovesRepository } from './coreMovesRepository.js';
+export { MovesRepository } from './movesRepository.js';
 export { KaidensRepository } from './kaidensRepository.js';
 export { KaidenRulesRepository } from './kaidenRulesRepository.js';
 export { ResourcesRepository } from './resourcesRepository.js';

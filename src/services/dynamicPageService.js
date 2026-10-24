@@ -7,7 +7,7 @@ import {
   championsRepo,
   classesRepo,
   ranksRepo,
-  coreMovesRepo,
+  movesRepo,
   kaidensRepo,
   kaidenRulesRepo,
   resourcesRepo,
@@ -29,7 +29,8 @@ const repoMapping = {
   },
   classes: classesRepo,
   ranks: ranksRepo,
-  coreMoves: coreMovesRepo,
+  moves: movesRepo,
+  coreMoves: { findAll: async () => (await movesRepo.findAll()).filter(move => move.core) },
   dalmaterColors: {
     findAll: async () =>
       (await memberService.getAllMembers()).filter(
