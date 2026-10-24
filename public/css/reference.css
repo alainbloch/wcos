@@ -521,3 +521,10 @@ body.reference-site {
 .reference-site .page-modal:not(.profile-modal) { width: min(800px, 94vw); padding: 48px 28px 28px; }
 .page-modal [data-modal-content] { overflow-wrap: anywhere; }
 .profile-biography .biography-text { white-space: pre-line; }
+
+/* Native details keeps glossary entries usable without plugin JavaScript. */
+.glossary-entry > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.glossary-entry > summary::-webkit-details-marker { display: none; }
+.glossary-entry > summary::after { content: '+'; margin-left: 1rem; }
+.glossary-entry[open] > summary::after { content: '−'; }
+.glossary-entry > .card-body { white-space: normal; }

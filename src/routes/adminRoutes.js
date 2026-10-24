@@ -1,3 +1,4 @@
+import { glossaryController } from '../controllers/glossaryController.js';
 /**
  * Admin Routes
  * CMS administration routes
@@ -8,6 +9,13 @@ import { authMiddleware, requireRole } from "../middleware/auth.js";
 export async function adminRoutes(fastify) {
   // Apply auth middleware to all admin routes
   fastify.addHook("preHandler", authMiddleware);
+
+  fastify.get('/glossary', glossaryController.list.bind(glossaryController));
+  fastify.get('/glossary/new', glossaryController.newItem.bind(glossaryController));
+  fastify.post('/glossary', glossaryController.create.bind(glossaryController));
+  fastify.get('/glossary/:id/edit', glossaryController.edit.bind(glossaryController));
+  fastify.post('/glossary/:id/edit', glossaryController.update.bind(glossaryController));
+  fastify.post('/glossary/:id/delete', glossaryController.delete.bind(glossaryController));
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));

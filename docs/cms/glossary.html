@@ -1,0 +1,25 @@
+<div data-elementor-type="wp-page" data-elementor-id="317" class="elementor elementor-317" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-7a00151 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="7a00151" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-756e777 e-con-full e-flex e-con e-child" data-id="756e777" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-20f46e5 e-con-full e-flex e-con e-child" data-id="20f46e5" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-1585c28 elementor-widget elementor-widget-heading" data-id="1585c28" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">Glossary</h1>				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-ac7b67c e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="ac7b67c" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-57a2d95 e-con-full e-flex e-con e-child" data-id="57a2d95" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-ba402e6 e-con-full e-flex e-con e-child" data-id="ba402e6" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-d3caf58 e-grid e-con-full e-con e-child" data-id="d3caf58" data-element_type="container" data-e-type="container">{% for letter, items in glossary | groupby('letter') %}<div class="elementor-element elementor-element-01eac8d e-con-full e-flex e-con e-child"><div class="elementor-element elementor-element-3ac4ef7 elementor-widget elementor-widget-heading"><h2 class="elementor-heading-title elementor-size-default"><a href="#glossary-{{ letter }}">{{ letter }}</a></h2></div></div>{% endfor %}</div>
+				</div>
+		<div class="elementor-element elementor-element-19f571c e-con-full e-flex e-con e-child" data-id="19f571c" data-element_type="container" data-e-type="container">{% for letter, items in glossary | groupby('letter') %}
+<div class="elementor-element elementor-element-9f164e8 elementor-widget elementor-widget-heading" id="glossary-{{ letter }}"><h2 class="elementor-heading-title elementor-size-default">{{ letter }}</h2></div>
+{% for item in items %}<div class="elementor-element elementor-element-e84c2fc elementor-widget elementor-widget-jkit_accordion"><div class="jeg-elementor-kit jkit-accordion style-default"><details class="card-wrapper glossary-entry" id="glossary-item-{{ item.id }}"><summary class="card-header card-header-button"><span class="title">{{ item.name }}</span></summary><div class="card-body">{{ item.definition | safe }}</div></details></div></div>{% endfor %}
+{% else %}<p>No glossary entries yet.</p>{% endfor %}</div>
+				</div>
+					</div>
+				</div>
+				</div>

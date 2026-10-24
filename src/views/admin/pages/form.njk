@@ -13,6 +13,7 @@
   <span aria-hidden="true">▼</span>
 </div>
 <div class="dropdown-panel">
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="glossary" {% if page.dataSources and 'glossary' in page.dataSources %}checked{% endif %}> glossary</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="members" {% if page.dataSources and 'members' in page.dataSources %}checked{% endif %}> members</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="champions" {% if page.dataSources and 'champions' in page.dataSources %}checked{% endif %}> champions</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="councilMembers" {% if page.dataSources and 'councilMembers' in page.dataSources %}checked{% endif %}> Council members (filtered members)</label>

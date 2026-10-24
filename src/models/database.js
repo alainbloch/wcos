@@ -1,3 +1,5 @@
+import { seedGlossary } from './migrations/seedGlossary.js';
+import { existsSync } from 'node:fs';
 import { migrateClasses, retiredCollections } from './migrations/classesInstructors.js';
 /**
  * Database Service
@@ -22,6 +24,7 @@ export const defaultData = {
   members: [],
   champions: [],
   classes: [],
+  glossary: [],
   moves: [],
   resources: [],
   siteSettings: {
@@ -116,6 +119,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (!dbInstance.data.migrations?.glossary) {
+    if (existsSync(dbPath)) await writeFile(`${dbPath}.backup-glossary-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated=structuredClone(dbInstance.data);
+    seedGlossary(migrated);
+    dbInstance.data=migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -161,3 +172,4 @@ export { ResourcesRepository } from './resourcesRepository.js';
 export { SiteSettingsRepository } from './siteSettingsRepository.js';
 export { NavigationRepository } from './navigationRepository.js';
 export { UsersRepository } from './usersRepository.js';
+export { glossaryRepo, GlossaryRepository } from './glossaryRepository.js';

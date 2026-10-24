@@ -1,0 +1,8 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<div class="admin-content"><h2>Glossary</h2><a href="/admin/glossary/new" class="btn btn-primary">Add glossary item</a>
+<table class="admin-table"><thead><tr><th>Name</th><th>Letter</th><th>Actions</th></tr></thead><tbody>
+{% for item in items %}<tr><td>{{ item.name }}</td><td>{{ item.letter }}</td><td><a href="/admin/glossary/{{ item.id }}/edit">Edit</a> <form class="inline-form" method="POST" action="/admin/glossary/{{ item.id }}/delete"><button type="submit" class="btn btn-sm btn-danger" data-confirm-delete="Delete this glossary item?">Delete</button></form></td></tr>
+{% else %}<tr><td colspan="3">No glossary entries yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}
