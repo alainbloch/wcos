@@ -6,7 +6,6 @@ import { classesService } from './classesService.js';
  */
 import {
   membersRepo,
-  championsRepo,
   movesRepo,
   resourcesRepo,
   siteSettingsRepo,
@@ -19,7 +18,8 @@ import { memberService } from "./memberService.js";
 const repoMapping = {
   glossary: { findAll: () => glossaryService.getAll() },
   members: membersRepo,
-  champions: championsRepo,
+  champions: { findAll: () => memberService.getChampions() },
+  fallenHeroes: { findAll: () => memberService.getFallenHeroes() },
   // Compatibility data-source names now query the unified members repository.
   councilMembers: { findAll: () => memberService.getCouncilMembers() },
   currentCouncilMembers: {

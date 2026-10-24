@@ -1,6 +1,7 @@
 {% extends 'layouts/admin.njk' %}
 
 {% block content %}
+{% if honorsReview.length %}<details class="notice"><summary>Hall of Heroes migration: {{ honorsReview.length }} records need review</summary><ul>{% for issue in honorsReview %}<li>{{ issue.reason }} — {{ issue.record.name }}{% if issue.record.year %} ({{ issue.record.year }}){% endif %}</li>{% endfor %}</ul><p>The original records are retained in the migration backup.</p></details>{% endif %}
 <div class="admin-content">
   <div class="flex justify-between items-center mb-6">
     <h2>Member records</h2>

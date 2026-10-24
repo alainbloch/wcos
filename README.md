@@ -34,7 +34,6 @@ wcos/
 │   ├── services/              # Business logic (zero HTTP knowledge)
 │   │   ├── siteService.js
 │   │   ├── memberService.js
-│   │   ├── championService.js
 │   │   ├── classesService.js
 │   │   ├── movesService.js
 │   │   ├── resourcesService.js

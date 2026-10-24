@@ -41,3 +41,7 @@ it('uses instructor names rather than member IDs in a preselected shared dropdow
  w.document.querySelector('[value=member-2]').click();expect(display.textContent).toBe('Teacher One, Teacher Two');
  w.document.querySelectorAll('input').forEach(input=>input.click());expect(display.textContent).toBe('Select instructors...');dom.window.close();
 });
+it('edits repeatable championship years and notes without losing values',async()=>{
+ const dom=new JSDOM('<fieldset data-member-honors><input name="championships"><div data-championship-rows></div><button data-add-championship>Add</button><p data-honors-status></p></fieldset>',{runScripts:'outside-only'});const w=dom.window,input=w.document.querySelector('[name=championships]');input.value=JSON.stringify([{year:2010,note:'Champions Edition'}]);w.eval(fs.readFileSync('public/js/admin.js','utf8'));await tick();
+ expect(w.document.querySelector('[data-year]').value).toBe('2010');w.document.querySelector('[data-add-championship]').click();const years=w.document.querySelectorAll('[data-year]');years[1].value='2012';years[1].dispatchEvent(new w.Event('input',{bubbles:true}));expect(JSON.parse(input.value)).toEqual([{year:'2010',note:'Champions Edition'},{year:'2012',note:''}]);w.document.querySelector('[data-championship-rows] button').click();expect(JSON.parse(input.value)).toEqual([{year:'2012',note:''}]);dom.window.close();
+});

@@ -1,3 +1,4 @@
+import { prepareHonors, memberChampions, fallenHeroes } from '../utils/memberHonors.js';
 /**
  * Member Service
  * Handles member profiles and rankings
@@ -10,6 +11,9 @@ import {
 } from "../utils/memberDalmater.js";
 
 export class MemberService {
+  async getChampions() { return memberChampions(await membersRepo.findAll()); }
+  async getFallenHeroes() { return fallenHeroes(await membersRepo.findAll()); }
+
   async getKaidenColorOptions(excludeId) {
     return kaidenColorOptions(await membersRepo.findAll(), excludeId);
   }
@@ -55,12 +59,14 @@ export class MemberService {
   }
 
   async createMember(data) {
+    data = prepareHonors(data, await membersRepo.findAll());
     data = prepareDalmater(data, await membersRepo.findAll());
     await this.markRosterManaged();
     return membersRepo.create(data);
   }
 
   async updateMember(id, data) {
+    data = prepareHonors(data, await membersRepo.findAll(), id);
     data = prepareDalmater(data, await membersRepo.findAll(), id);
     await this.markRosterManaged();
     return membersRepo.update(id, data);

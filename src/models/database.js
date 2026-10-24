@@ -1,3 +1,4 @@
+import { mergeMemberHonors } from './migrations/mergeMemberHonors.js';
 import { seedGlossary } from './migrations/seedGlossary.js';
 import { existsSync } from 'node:fs';
 import { migrateClasses, retiredCollections } from './migrations/classesInstructors.js';
@@ -22,7 +23,6 @@ const __dirname = path.dirname(__filename);
 export const defaultData = {
   pages: [],
   members: [],
-  champions: [],
   classes: [],
   glossary: [],
   moves: [],
@@ -127,6 +127,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (Object.hasOwn(dbInstance.data, 'champions') || (!dbInstance.data.migrations?.memberHonors && dbInstance.data.members?.length)) {
+    if (existsSync(dbPath)) await writeFile(`${dbPath}.backup-honors-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated=structuredClone(dbInstance.data);
+    mergeMemberHonors(migrated);
+    dbInstance.data=migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -153,7 +161,6 @@ export function getDatabase() {
 // Re-export all repositories from their individual files
 export { pagesRepo } from './pagesRepository.js';
 export { membersRepo } from './membersRepository.js';
-export { championsRepo } from './championsRepository.js';
 export { classesRepo } from './classesRepository.js';
 export { movesRepo } from './movesRepository.js';
 export { resourcesRepo } from './resourcesRepository.js';
@@ -165,7 +172,6 @@ export { usersRepo } from './usersRepository.js';
 export { BaseRepository } from './baseRepository.js';
 export { PagesRepository } from './pagesRepository.js';
 export { MembersRepository } from './membersRepository.js';
-export { ChampionsRepository } from './championsRepository.js';
 export { ClassesRepository } from './classesRepository.js';
 export { MovesRepository } from './movesRepository.js';
 export { ResourcesRepository } from './resourcesRepository.js';

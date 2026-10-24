@@ -1,0 +1,158 @@
+{
+  "champions": [
+    {
+      "name": "\"Hairy\" Dave",
+      "year": 2000,
+      "note": "",
+      "image": "/images/colourful-night-starry-sky-in-dark-blue-colors-so-2025-02-25-13-12-07-utc.jpg"
+    },
+    {
+      "name": "Joseph",
+      "year": 2001,
+      "note": "",
+      "image": "/images/joseph.jpg"
+    },
+    {
+      "name": "Wulfgar",
+      "year": 2002,
+      "note": "",
+      "image": "/images/wulfgar.jpg"
+    },
+    {
+      "name": "Abrian",
+      "year": 2003,
+      "note": "",
+      "image": "/images/abrian.jpg"
+    },
+    {
+      "name": "Kaiden Nikon",
+      "year": 2004,
+      "note": "",
+      "image": "/images/nikon.jpg"
+    },
+    {
+      "name": "Kaiden Eric",
+      "year": 2005,
+      "note": "",
+      "image": "/images/aaron.jpg"
+    },
+    {
+      "name": "Kaiden Charles",
+      "year": 2007,
+      "note": "",
+      "image": "/images/charles.jpg"
+    },
+    {
+      "name": "Kaiden Brennan",
+      "year": 2008,
+      "note": "",
+      "image": "/images/brennan.jpg"
+    },
+    {
+      "name": "Kaiden Steel Wind",
+      "year": 2009,
+      "note": "",
+      "image": "/images/steelwind.jpg"
+    },
+    {
+      "name": "Head Kaiden Gad",
+      "year": 2010,
+      "note": "Champions Edition",
+      "image": "/images/gad.jpg"
+    },
+    {
+      "name": "Kaiden Vea Ravenstar",
+      "year": 2011,
+      "note": "",
+      "image": "/images/vea.jpg"
+    },
+    {
+      "name": "Head Kaiden Gad",
+      "year": 2012,
+      "note": "",
+      "image": "/images/gad.jpg"
+    },
+    {
+      "name": "Kaiden Kris",
+      "year": 2013,
+      "note": "",
+      "image": "/images/kris1-e1769176590747.jpg"
+    },
+    {
+      "name": "Kaiden Steel Wind",
+      "year": 2014,
+      "note": "",
+      "image": "/images/steelwind.jpg"
+    },
+    {
+      "name": "Kaiden Blight",
+      "year": 2015,
+      "note": "",
+      "image": "/images/ben-e1769176723119.jpg"
+    },
+    {
+      "name": "Master Gemini",
+      "year": 2016,
+      "note": "",
+      "image": "/images/gemini.jpg"
+    },
+    {
+      "name": "The Protector",
+      "year": 2017,
+      "note": "",
+      "image": "/images/roberta-e1769176818921.jpg"
+    },
+    {
+      "name": "Kaiden Nikon",
+      "year": 2018,
+      "note": "",
+      "image": "/images/nikon.jpg"
+    },
+    {
+      "name": "Head Kaiden Gad",
+      "year": 2019,
+      "note": "",
+      "image": "/images/gad.jpg"
+    },
+    {
+      "name": "Master Gemini",
+      "year": 2021,
+      "note": "",
+      "image": "/images/gemini.jpg"
+    }
+  ],
+  "fallenHeroes": [
+    {
+      "name": "Ron",
+      "image": "/images/ron.jpg"
+    },
+    {
+      "name": "Behr",
+      "image": "/images/colourful-night-starry-sky-in-dark-blue-colors-so-2025-02-25-13-12-07-utc.jpg"
+    },
+    {
+      "name": "Beth",
+      "image": "/images/beth-e1769177808867.jpg"
+    },
+    {
+      "name": "Donalan",
+      "image": "/images/colourful-night-starry-sky-in-dark-blue-colors-so-2025-02-25-13-12-07-utc.jpg"
+    },
+    {
+      "name": "Blight",
+      "image": "/images/ben-e1769176723119.jpg"
+    },
+    {
+      "name": "Kristobal",
+      "image": "/images/kristobal-e1769177879741.gif"
+    },
+    {
+      "name": "Wulfgar",
+      "image": "/images/wulfgar.jpg"
+    },
+    {
+      "name": "Joel",
+      "image": ""
+    }
+  ]
+}

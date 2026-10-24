@@ -1,3 +1,4 @@
+import { prepareHonors } from '../utils/memberHonors.js';
 /**
  * Members Repository
  * Handles member profiles and rankings
@@ -14,7 +15,17 @@ export class MembersRepository extends BaseRepository {
     super("members");
   }
 
+  async create(data) {
+    data = prepareHonors(data, this.collection);
+    const record = { ...data, id: this.generateId(), createdAt: new Date().toISOString() };
+    JSON.stringify(record);
+    this.collection.push(record);
+    try { await this.db.write(); return record; }
+    catch (error) { const index=this.collection.indexOf(record); if(index!==-1)this.collection.splice(index,1); throw error; }
+  }
+
   async update(id, data) {
+    data = prepareHonors(data, this.collection, id);
     const index = this.collection?.findIndex((item) => item.id === id);
     if (index === undefined || index === -1) return null;
     const previous = this.collection[index];

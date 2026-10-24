@@ -58,6 +58,10 @@ export function readMemberForm(body = {}) {
     ])
       form[field] = textValue(body[field]);
   }
+  if (body && (Object.hasOwn(body, 'honorsPresent') || Object.hasOwn(body, 'championships') || Object.hasOwn(body, 'fallenHero'))) {
+    form.fallenHero = body.fallenHero === true || textValue(body.fallenHero) === 'on';
+    form.championships = Array.isArray(body.championships) ? JSON.stringify(body.championships) : textValue(body.championships) || '[]';
+  }
   form.councilCurrent =
     body?.councilCurrent === true || textValue(body?.councilCurrent) === "on";
   form.merits = normalizeMerits(body?.merits);
@@ -65,11 +69,11 @@ export function readMemberForm(body = {}) {
   return form;
 }
 
-export function memberFormToRecord(form) {
+export function memberFormToRecord(form, allowUnknownLevel = false) {
   if (!form.circleName.trim()) throw new Error("Circle name is required");
-  if (!/^L[1-7]$/.test(form.level)) throw new Error("Select a valid level");
+  if (!(allowUnknownLevel && !form.level) && !/^L[1-7]$/.test(form.level)) throw new Error("Select a valid level");
   const steelRank = form.steelRank || form.level;
-  if (!/^L[1-7]$/.test(steelRank)) throw new Error("Select a valid steel rank");
+  if (!(allowUnknownLevel && !steelRank) && !/^L[1-7]$/.test(steelRank)) throw new Error("Select a valid steel rank");
   const { position, ...fields } = form;
   return {
     ...fields,
@@ -89,6 +93,7 @@ export function memberRecordToForm(member) {
   return {
     ...readMemberForm(member),
     id: member.id,
+    importedFrom: member.importedFrom,
     councilHistory: member.councilHistory || [],
     dalmaterLegacyRecords: member.dalmaterLegacyRecords || [],
     circleName: textValue(member.position),

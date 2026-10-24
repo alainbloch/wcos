@@ -8,6 +8,16 @@
   </div>
 
   <form method="POST" action="{% if member.id %}/admin/members/{{ member.id }}/edit{% else %}/admin/members{% endif %}" class="admin-form" enctype="multipart/form-data">
+    <fieldset class="form-section" data-member-honors>
+      <legend>Hall of Heroes</legend>
+      <input type="hidden" name="honorsPresent" value="1">
+      <label><input type="checkbox" name="fallenHero" {% if member.fallenHero %}checked{% endif %}> Fallen Hero</label>
+      <p>Best of the Best championships. Add each winning year once; notes are optional.</p>
+      <input type="hidden" name="championships" value="{{ member.championships or '[]' }}">
+      <div data-championship-rows></div>
+      <button type="button" data-add-championship>Add championship</button>
+      <p data-honors-status role="status"></p>
+    </fieldset>
     <div class="form-grid">
       <!-- Basic Info -->
       <fieldset class="form-section">
@@ -21,7 +31,7 @@
 
         <div class="form-field">
           <label for="level">Level <span class="required">*</span></label>
-          <select id="level" name="level" required>
+          <select id="level" name="level" {% if member.importedFrom != "hall-of-heroes" %}required{% endif %}>
             <option value="">Select Level</option>
             <option value="L7" {% if member.level == 'L7' %}selected{% endif %}>L7</option>
             <option value="L6" {% if member.level == 'L6' %}selected{% endif %}>L6</option>

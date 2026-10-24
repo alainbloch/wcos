@@ -1,3 +1,4 @@
+import { mergeMemberHonors } from '../src/models/migrations/mergeMemberHonors.js';
 import { seedClasses } from './seed-classes.js';
 import { seedCoreMoves } from './seed-core-moves.js';
 /**
@@ -5,7 +6,7 @@ import { seedCoreMoves } from './seed-core-moves.js';
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, championsRepo, resourcesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, resourcesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -17,7 +18,6 @@ async function seed() {
   // Clear existing data (optional - comment out to keep existing)
   // db.data.pages = [];
   // db.data.members = [];
-  // db.data.champions = [];
   // db.data.classes = [];
   // db.data.moves = [];
   // db.data.resources = [];
@@ -94,38 +94,8 @@ async function seed() {
     console.log('  ✓ Members');
   }
 
-  // Champions
-  if ((await championsRepo.findAll()).length === 0) {
-    const champions = [
-      { year: 2000, name: '"Hairy" Dave', title: '2000 CHAMPION' },
-      { year: 2001, name: 'Joseph', title: '2001 CHAMPION' },
-      { year: 2002, name: 'Wulfgar', title: '2002 CHAMPION' },
-      { year: 2003, name: 'Abrian', title: '2003 CHAMPION' },
-      { year: 2004, name: 'Kaiden Nikon', title: '2004 CHAMPION' },
-      { year: 2005, name: 'Kaiden Eric', title: '2005 CHAMPION' },
-      { year: 2006, name: 'No Champion', title: '2006 CHAMPION' },
-      { year: 2007, name: 'Kaiden Charles', title: '2007 CHAMPION' },
-      { year: 2008, name: 'Kaiden Brennan', title: '2008 CHAMPION' },
-      { year: 2009, name: 'Kaiden Steel Wind', title: '2009 CHAMPION' },
-      { year: 2010, name: 'Head Kaiden Gad', title: '2010 CHAMPION (Champions Edition)' },
-      { year: 2011, name: 'Kaiden Vea Ravenstar', title: '2011 CHAMPION' },
-      { year: 2012, name: 'Head Kaiden Gad', title: '2012 CHAMPION' },
-      { year: 2013, name: 'Kaiden Kris', title: '2013 CHAMPION' },
-      { year: 2014, name: 'Kaiden Steel Wind', title: '2014 CHAMPION' },
-      { year: 2015, name: 'Kaiden Blight', title: '2015 CHAMPION' },
-      { year: 2016, name: 'Master Gemini', title: '2016 CHAMPION' },
-      { year: 2017, name: 'The Protector', title: '2017 CHAMPION' },
-      { year: 2018, name: 'Kaiden Nikon', title: '2018 CHAMPION' },
-      { year: 2019, name: 'Head Kaiden Gad', title: '2019 CHAMPION' },
-      { year: 2021, name: 'Master Gemini', title: '2021 CHAMPION' },
-    ];
-    for (const c of champions) {
-      await championsRepo.create(c);
-    }
-    console.log('  ✓ Champions');
-  }
-
   await seedClasses();
+  if (!db.data.migrations?.memberHonors) mergeMemberHonors(db.data);
 
   // Actual core moves extracted from the supplied page.
   await seedCoreMoves();
