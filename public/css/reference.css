@@ -522,9 +522,10 @@ body.reference-site {
 .page-modal [data-modal-content] { overflow-wrap: anywhere; }
 .profile-biography .biography-text { white-space: pre-line; }
 
-/* Native details keeps glossary entries usable without plugin JavaScript. */
-.glossary-entry > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+/* Preserve the original JKit descendants so its typography and padding apply.
+   Native details supplies disclosure behavior; [open] mirrors JKit's expand state. */
+.glossary-entry > summary { cursor: pointer; list-style: none; }
 .glossary-entry > summary::-webkit-details-marker { display: none; }
-.glossary-entry > summary::after { content: '+'; margin-left: 1rem; }
-.glossary-entry[open] > summary::after { content: '−'; }
-.glossary-entry > .card-body { white-space: normal; }
+.elementor-317 .elementor-element.elementor-element-e84c2fc .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .card-header:not(.background-gradient) .card-header-button { background-color: rgba(56, 56, 56, 0.46); }
+.elementor-317 .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .right-icon-group .normal-icon { display: none; }
+.elementor-317 .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .right-icon-group .active-icon { display: block; }
