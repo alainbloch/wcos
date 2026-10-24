@@ -535,3 +535,19 @@ document.querySelectorAll('[data-dalmater-fields]').forEach(section => {
   mode.addEventListener('change', update);
   update();
 });
+
+// The text field remains authoritative: never replace blank or invalid edits with black.
+document.querySelectorAll('[data-dalmater-picker]').forEach(picker => {
+  const hex = picker.closest('[data-dalmater-fields]').querySelector('[name="dalmaterColorHex"]');
+  const syncPicker = () => {
+    let value = hex.value.trim();
+    if (/^#[0-9a-f]{3}$/i.test(value)) value = '#' + [...value.slice(1)].map(c => c + c).join('');
+    if (/^#[0-9a-f]{6}$/i.test(value)) picker.value = value;
+  };
+  const syncHex = () => { hex.value = picker.value.toUpperCase(); };
+  hex.addEventListener('input', syncPicker);
+  hex.addEventListener('change', syncPicker);
+  picker.addEventListener('input', syncHex);
+  picker.addEventListener('change', syncHex);
+  syncPicker();
+});

@@ -120,7 +120,7 @@
         </div>
         <div data-dalmater-custom>
           <div class="form-field"><label for="dalmaterColorName">Color name</label><input id="dalmaterColorName" name="dalmaterColorName" type="text" value="{{ member.dalmaterColorName or '' }}" placeholder="Jade Green"></div>
-          <div class="form-field"><label for="dalmaterColorHex">Hex color</label><input id="dalmaterColorHex" name="dalmaterColorHex" type="text" value="{{ member.dalmaterColorHex or '' }}" placeholder="#RRGGBB" spellcheck="false"><small class="form-hint">Enter #RRGGBB or #RGB.</small></div>
+          <div class="form-field"><label for="dalmaterColorHex">Hex color</label><div class="color-input-pair"><input type="color" id="dalmaterColorPicker" data-dalmater-picker aria-label="Choose dalmater color" value="#000000"><input id="dalmaterColorHex" name="dalmaterColorHex" type="text" value="{{ member.dalmaterColorHex or '' }}" placeholder="#RRGGBB" spellcheck="false"></div><small class="form-hint">Enter #RRGGBB or #RGB.</small></div>
         </div>
         {% if member.dalmaterColorName and not member.dalmaterColorHex %}<p class="notice">This migrated color has a name but no recorded hex value. Add the correct shade when known. It cannot be offered in the Kaiden dropdown until then.</p>{% endif %}
         {% if member.dalmaterLegacyRecords.length %}<details><summary>Imported color history</summary><ul>{% for color in member.dalmaterLegacyRecords %}<li>{{ color.kaiden }}: {{ color.colorName or color.color }} {{ color.colorHex }}{% if color.description %} — {{ color.description }}{% endif %}</li>{% endfor %}</ul></details>{% endif %}

@@ -669,3 +669,7 @@ textarea {
     gap: 20px;
   }
 }
+
+.color-input-pair { display: flex; align-items: center; gap: 10px; }
+.color-input-pair input[type="color"] { flex: 0 0 48px; width: 48px; height: 42px; padding: 3px; cursor: pointer; }
+.color-input-pair input[type="text"] { flex: 1; min-width: 0; }
