@@ -16,6 +16,10 @@
   {% include 'partials/reference-header.njk' %}
   <main id="content">{% block content %}{% endblock %}</main>
   {% include 'partials/reference-footer.njk' %}
+  <dialog id="page-modal" class="page-modal" aria-label="Details">
+    <button type="button" class="dialog-close" aria-label="Close dialog" autofocus>×</button>
+    <div data-modal-content></div>
+  </dialog>
   <dialog class="image-lightbox" aria-label="Image viewer"><button type="button" class="dialog-close" aria-label="Close image viewer">×</button><img alt=""></dialog>
   {% if page.memberProfiles is defined %}{% include 'partials/member-profiles.njk' %}{% else %}{% include 'partials/member-dialog.njk' %}{% endif %}
 </body>

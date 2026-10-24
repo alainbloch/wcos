@@ -31,6 +31,7 @@ export function sanitizePageContent(content) {
       "g",
       "use",
       "dialog",
+      "template",
     ]),
     allowedAttributes: {
       "*": [
@@ -63,6 +64,7 @@ export function sanitizePageContent(content) {
       label: ["for"],
       button: ["type", "name", "value", "disabled"],
       details: ["open"],
+      th: ["scope", "colspan", "rowspan"],
       svg: ["viewBox", "width", "height", "fill", "xmlns"],
       path: ["d", "fill"],
       use: ["href"],
