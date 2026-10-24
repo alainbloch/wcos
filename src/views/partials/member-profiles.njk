@@ -1,0 +1,10 @@
+{% for member in page.memberProfiles %}
+<dialog id="{{ member.dialogId }}" class="member-dialog profile-modal" aria-labelledby="{{ member.dialogId }}-title">
+  <button type="button" class="dialog-close" aria-label="Close member profile" autofocus>×</button>
+  <div class="profile-modal-grid">
+    <div>{% if member.image %}<img class="profile-portrait" src="{{ member.image }}" alt="{{ member.position }}" loading="lazy">{% endif %}<h2 id="{{ member.dialogId }}-title">{{ member.position }}</h2>{% if member.merits.length %}<p>{{ member.merits | join(' · ') }}</p>{% endif %}</div>
+    <div><table class="profile-statistics"><caption>Battle Ratings and Stats{% if member.statsUpdated %}<small>Updated {{ member.statsUpdated }}</small>{% endif %}</caption><tbody>{% for stat in member.stats %}<tr><th scope="row">{{ stat.label }}</th><td>{{ stat.value }}</td></tr>{% endfor %}{% if member.memberSince %}<tr><th scope="row">Member Since</th><td>{{ member.memberSince }}</td></tr>{% endif %}{% if member.region %}<tr><th scope="row">Region</th><td>{{ member.region }}</td></tr>{% endif %}</tbody></table>{% if member.email %}<p class="profile-email">Email address: <a href="mailto:{{ member.email }}">{{ member.email }}</a></p>{% endif %}</div>
+  </div>
+  <section class="profile-biography" aria-label="Biography">{% if member.biographyHtml %}{{ member.biographyHtml | safe }}{% else %}<p>A biography has not been added for this member yet.</p>{% endif %}</section>
+</dialog>
+{% endfor %}

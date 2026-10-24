@@ -148,24 +148,41 @@ export class AdminController extends BaseController {
   async createMember(request, reply) {
     try {
       const merits = request.body.merits
-        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
+        ? request.body.merits
+            .split("\n")
+            .map((m) => m.trim())
+            .filter(Boolean)
         : [];
 
       // Build circleName from level and steelRank (e.g., "L7 - steel")
       const level = request.body.level;
       const steelRank = request.body.steelRank || level;
-      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
+      const circleName =
+        level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
 
       const member = await memberService.createMember({
         level,
         steelRank,
         circleName, // Level display name (e.g., "L7 - steel")
         position: request.body.circleName, // Member's circle name (from form's circleName field)
-        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
+        merits:
+          merits.length > 0
+            ? merits
+            : request.body.position
+              ? [request.body.position]
+              : [],
         memberSince: request.body.memberSince || "",
         region: request.body.region || "",
         biography: request.body.biography || "",
         image: request.body.image || "",
+        email: request.body.email || "",
+        yearsFought: request.body.yearsFought || "",
+        battlesFought: request.body.battlesFought || "",
+        steelBattlesFought: request.body.steelBattlesFought || "",
+        opponentsFought: request.body.opponentsFought || "",
+        weaponType: request.body.weaponType || "",
+        statsUpdated: request.body.statsUpdated || "",
+
         active: request.body.active === "on",
       });
       request.session.adminFlash = { success: "Member created successfully" };
@@ -200,24 +217,41 @@ export class AdminController extends BaseController {
   async updateMember(request, reply) {
     try {
       const merits = request.body.merits
-        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
+        ? request.body.merits
+            .split("\n")
+            .map((m) => m.trim())
+            .filter(Boolean)
         : [];
 
       // Build circleName from level and steelRank
       const level = request.body.level;
       const steelRank = request.body.steelRank || level;
-      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
+      const circleName =
+        level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
 
       await memberService.updateMember(request.params.id, {
         level,
         steelRank,
         circleName, // Level display name
         position: request.body.circleName, // Member's circle name
-        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
+        merits:
+          merits.length > 0
+            ? merits
+            : request.body.position
+              ? [request.body.position]
+              : [],
         memberSince: request.body.memberSince || "",
         region: request.body.region || "",
         biography: request.body.biography || "",
         image: request.body.image || "",
+        email: request.body.email || "",
+        yearsFought: request.body.yearsFought || "",
+        battlesFought: request.body.battlesFought || "",
+        steelBattlesFought: request.body.steelBattlesFought || "",
+        opponentsFought: request.body.opponentsFought || "",
+        weaponType: request.body.weaponType || "",
+        statsUpdated: request.body.statsUpdated || "",
+
         active: request.body.active === "on",
       });
       request.session.adminFlash = { success: "Member updated successfully" };

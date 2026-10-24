@@ -70,15 +70,22 @@ document
       lightbox.showModal();
     }),
   );
-document.querySelectorAll("[data-member-dialog]").forEach((link) =>
-  link.addEventListener("click", (event) => {
-    const dialog = document.getElementById(link.dataset.memberDialog);
-    if (dialog) {
-      event.preventDefault();
-      dialog.showModal();
-    }
-  }),
-);
+document.querySelectorAll("[data-member-dialog]").forEach((trigger) => {
+  const openProfile = (event) => {
+    const dialog = document.getElementById(trigger.dataset.memberDialog);
+    if (!dialog || dialog.open) return;
+    event.preventDefault();
+    dialog.showModal();
+    dialog.scrollTop = 0;
+    // Return focus to the initiating member, including after Escape/backdrop close.
+    dialog.addEventListener("close", () => trigger.focus(), { once: true });
+  };
+  trigger.addEventListener("click", openProfile);
+  trigger.addEventListener("keydown", (event) => {
+    if (event.target === trigger && ["Enter", " "].includes(event.key))
+      openProfile(event);
+  });
+});
 document.querySelectorAll("dialog").forEach((dialog) => {
   dialog
     .querySelector(".dialog-close")

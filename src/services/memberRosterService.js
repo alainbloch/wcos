@@ -1,6 +1,30 @@
 import { load } from "cheerio";
 
 export const memberRosterService = {
+  attachProfileLinks(content, profiles) {
+    const $ = load(content, null, false);
+    $(".table-row")
+      .not("#list-header")
+      .each((_, row) => {
+        const name = $(row).children().eq(2).find("p").first().text().trim();
+        const memberId = $(row).attr("data-member-id");
+        const profile = profiles.find((item) =>
+          memberId ? item.id === memberId : item.position === name,
+        );
+        if (!profile) return;
+        // The entire row is a keyboard-operable trigger, not just one special name.
+        $(row).attr({
+          "data-member-dialog": profile.dialogId,
+          tabindex: "0",
+          role: "button",
+          "aria-haspopup": "dialog",
+          "aria-controls": profile.dialogId,
+          "aria-label": `View ${profile.position}'s profile`,
+        });
+        if (row.tagName === "a") $(row).attr("href", `#${profile.dialogId}`);
+      });
+    return $.html();
+  },
   replaceRows(content, rows) {
     // Replace only the roster rows: CMS edits to headings, introductory content,
     // surrounding layout, and the original column widths remain authoritative.
