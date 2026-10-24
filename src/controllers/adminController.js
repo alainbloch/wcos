@@ -20,6 +20,7 @@ import {
   sanitizePageContent,
 } from "../services/referenceSiteService.js";
 import { renderView } from "../utils/viewEngine.js";
+import { dynamicPageService } from "../services/dynamicPageService.js";
 
 export class AdminController extends BaseController {
   async dashboard(request, reply) {
@@ -53,10 +54,18 @@ export class AdminController extends BaseController {
       ? await pagesService.getPageById(request.body.id)
       : null;
     const source = originalPages.find((item) => item.slug === page?.slug);
+
+    let content = sanitizePageContent(
+      typeof request.body.content === "string" ? request.body.content : "",
+    );
+
+    // If the page uses dynamic sources, resolve and inject them into preview
+    if (page && page.dataSources && page.dataSources.length > 0) {
+      const data = await dynamicPageService.resolveDataSources(page.dataSources || []);
+    }
+
     const html = await renderView(request.server, "admin/pages/preview.njk", {
-      content: sanitizePageContent(
-        typeof request.body.content === "string" ? request.body.content : "",
-      ),
+      content,
       styles: source?.styles || [],
       bodyClass: source?.bodyClass || "",
     });
@@ -67,9 +76,11 @@ export class AdminController extends BaseController {
   }
 
   async newPage(request, reply) {
+    const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
       pageTitle: "New Page",
       page: null,
+      pages,
     });
   }
 
@@ -83,9 +94,11 @@ export class AdminController extends BaseController {
       reply.redirect(`/admin/pages/${page.id}/edit`);
     } catch (error) {
       reply.code(400);
+      const pages = await pagesService.getAllPages();
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
         pageTitle: "New Page",
         page: { ...request.body, published: request.body.published === "on" },
+        pages,
         flash: { error: error.message },
       });
     }
@@ -96,9 +109,11 @@ export class AdminController extends BaseController {
     if (!page) {
       return reply.code(404).send("Page not found");
     }
+    const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
       pageTitle: "Edit Page",
       page,
+      pages,
     });
   }
 
@@ -112,6 +127,7 @@ export class AdminController extends BaseController {
       reply.redirect(`/admin/pages/${request.params.id}/edit`);
     } catch (error) {
       const existing = await pagesService.getPageById(request.params.id);
+      const pages = await pagesService.getAllPages();
       reply.code(existing ? 400 : 404);
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
         pageTitle: "Edit Page",
@@ -121,6 +137,7 @@ export class AdminController extends BaseController {
           id: request.params.id,
           published: request.body.published === "on",
         },
+        pages,
         flash: { error: error.message },
       });
     }

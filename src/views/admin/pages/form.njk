@@ -5,6 +5,51 @@
 <div class="editor-layout"><section class="admin-card">
 <div class="form-group"><label for="title">Page title</label><input id="title" name="title" value="{{ page.title }}" required maxlength="180" placeholder="Give your page a clear title"></div>
 <div class="form-group"><label for="slug">Page address</label><input id="slug" name="slug" value="{{ page.slug }}" {% if page.id %}data-manually-edited="true"{% endif %} pattern="[a-z0-9]+(-[a-z0-9]+)*|" aria-describedby="slug-help"><small id="slug-help">{% if page.id and page.slug == '' %}This is your homepage. Leave the address empty to keep it at /.{% else %}Use lowercase words separated by hyphens, such as sword-training.{% endif %}</small></div>
+<div class="form-group"><label for="layout">Layout template</label><input id="layout" name="layout" value="{{ page.layout or '' }}" placeholder="pages/reference.njk"><small>Leave empty for default layout.</small></div>
+<div class="form-group dropdown-group" style="position:relative;">
+<label>Data sources</label>
+<div class="dropdown-trigger" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.dropdown-display').textContent = this.querySelector('.dropdown-display').dataset.selected || 'Select data sources...'" data-selected="{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% endif %}">
+  <span class="dropdown-display" data-selected="{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% endif %}">{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% else %}Select data sources...{% endif %}</span>
+  <span aria-hidden="true">▼</span>
+</div>
+<div class="dropdown-panel">
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="members" {% if page.dataSources and 'members' in page.dataSources %}checked{% endif %}> members</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="champions" {% if page.dataSources and 'champions' in page.dataSources %}checked{% endif %}> champions</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="councilMembers" {% if page.dataSources and 'councilMembers' in page.dataSources %}checked{% endif %}> councilMembers</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="classes" {% if page.dataSources and 'classes' in page.dataSources %}checked{% endif %}> classes</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="ranks" {% if page.dataSources and 'ranks' in page.dataSources %}checked{% endif %}> ranks</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="coreMoves" {% if page.dataSources and 'coreMoves' in page.dataSources %}checked{% endif %}> coreMoves</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="dalmaterColors" {% if page.dataSources and 'dalmaterColors' in page.dataSources %}checked{% endif %}> dalmaterColors</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="kaidens" {% if page.dataSources and 'kaidens' in page.dataSources %}checked{% endif %}> kaidens</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="kaidenRules" {% if page.dataSources and 'kaidenRules' in page.dataSources %}checked{% endif %}> kaidenRules</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="resources" {% if page.dataSources and 'resources' in page.dataSources %}checked{% endif %}> resources</label>
+  <label class="dropdown-option"><input type="checkbox" name="dataSources" value="dues" {% if page.dataSources and 'dues' in page.dataSources %}checked{% endif %}> dues</label>
+</div>
+</div>
+<style>
+.dropdown-trigger { display:flex; justify-content:space-between; align-items:center; padding:11px 12px; border:1px solid #bac3ce; border-radius:7px; background:white; cursor:pointer; min-height:44px; }
+.dropdown-trigger:hover { background:#f8f9fb; }
+.dropdown-panel { display:none; position:absolute; top:calc(100% + 6px); left:0; right:0; background:white; border:1px solid #dde2e7; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.08); padding:8px; z-index:50; }
+.dropdown-panel.open { display:block; }
+.dropdown-option { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; cursor:pointer; font-size:14px; }
+.dropdown-option:hover { background:#f3f5f7; }
+.dropdown-option input { width:18px; height:18px; accent-color:#a82835; }
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.dropdown-option input').forEach(function(box){
+    box.addEventListener('change', function(){
+      var parent = box.closest('.dropdown-group');
+      var checked = parent.querySelectorAll('.dropdown-option input:checked');
+      var names = Array.from(checked).map(function(c){ return c.value; });
+      parent.querySelector('.dropdown-display').textContent = names.length ? names.join(', ') : 'Select data sources...';
+      parent.querySelector('.dropdown-display').dataset.selected = names.join(', ');
+    });
+  });
+})();
+</script>
+<div class="form-group"><label for="parentSlug">Parent page</label><select id="parentSlug" name="parentSlug"><option value="" {% if not page.parentSlug %}selected{% endif %}>— None (root) —</option>{% for p in pages %}{% if p.id != page.id %}<option value="{{ p.slug }}" {% if page.parentSlug == p.slug %}selected{% endif %}>{{ p.title }} ({{ p.slug }})</option>{% endif %}{% endfor %}</select><small>Leave empty for root pages.</small></div>
+<div class="form-group"><label for="styleOverrides">Style overrides</label><textarea id="styleOverrides" name="styleOverrides" rows="3" placeholder="Optional CSS snippet">{{ page.styleOverrides or '' }}</textarea><small>Optional custom CSS for this page.</small></div>
 <h2>Page content</h2>
 {% if page.slug == "member-profiles" %}<div class="notice">Member names, rankings, and profiles are managed in <a href="/admin/members">Members</a>. Use this editor for the page heading and surrounding content; keep the roster header in place.</div>{% endif %}
 <div class="editor-modes" aria-label="Editor mode"><button type="button" class="editor-btn" data-editor-mode="visual" aria-pressed="false">Visual editor</button><button type="button" class="editor-btn" data-editor-mode="source" aria-pressed="true">HTML source</button></div>
