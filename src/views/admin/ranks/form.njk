@@ -1,0 +1,61 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>{% if rank %}Edit Rank{% else %}New Rank{% endif %}</h2>
+    <a href="/admin/ranks" class="btn btn-secondary">← Back to Ranks</a>
+  </div>
+
+  {% if flash %}
+  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
+  {% endif %}
+
+  <form method="POST" action="{% if rank %}/admin/ranks/{{ rank.id }}/edit{% else %}/admin/ranks{% endif %}" class="admin-form">
+    <div class="form-grid">
+      <fieldset class="form-section">
+        <legend>Rank Information</legend>
+
+        <div class="form-field">
+          <label for="type">Rank Type <span class="required">*</span></label>
+          <select id="type" name="type" required>
+            <option value="">Select Type</option>
+            <option value="primary" {% if rank.type == 'primary' %}selected{% endif %}>Primary (Level)</option>
+            <option value="steel" {% if rank.type == 'steel' %}selected{% endif %}>Steel (Dalmater)</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="level">Level <span class="required">*</span></label>
+          <select id="level" name="level" required>
+            <option value="">Select Level</option>
+            <option value="L1" {% if rank.level == 'L1' %}selected{% endif %}>L1</option>
+            <option value="L2" {% if rank.level == 'L2' %}selected{% endif %}>L2</option>
+            <option value="L3" {% if rank.level == 'L3' %}selected{% endif %}>L3</option>
+            <option value="L4" {% if rank.level == 'L4' %}selected{% endif %}>L4</option>
+            <option value="L5" {% if rank.level == 'L5' %}selected{% endif %}>L5</option>
+            <option value="L6" {% if rank.level == 'L6' %}selected{% endif %}>L6</option>
+            <option value="L7" {% if rank.level == 'L7' %}selected{% endif %}>L7</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" value="{{ rank.name or '' }}" placeholder="e.g., Novice, Apprentice, Expert, Master">
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="requirements">Requirements <span class="required">*</span></label>
+          <textarea id="requirements" name="requirements" rows="6" required placeholder="List requirements, one per line...">{{ rank.requirements or '' }}</textarea>
+          <small class="form-hint">Requirements for this rank, one per line. Markdown supported.</small>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if rank %}Update Rank{% else %}Create Rank{% endif %}</button>
+      <a href="/admin/ranks" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

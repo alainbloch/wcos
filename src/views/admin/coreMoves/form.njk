@@ -1,0 +1,48 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>{% if coreMove %}Edit Core Move{% else %}New Core Move{% endif %}</h2>
+    <a href="/admin/core-moves" class="btn btn-secondary">← Back to Core Moves</a>
+  </div>
+
+  {% if flash %}
+  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
+  {% endif %}
+
+  <form method="POST" action="{% if coreMove %}/admin/core-moves/{{ coreMove.id }}/edit{% else %}/admin/core-moves{% endif %}" class="admin-form">
+    <div class="form-grid">
+      <fieldset class="form-section">
+        <legend>Core Move Information</legend>
+
+        <div class="form-field">
+          <label for="name">Name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" value="{{ coreMove.name or '' }}" required placeholder="e.g., Overhead Cut, Thrust, Parry">
+        </div>
+
+        <div class="form-field">
+          <label for="category">Category <span class="required">*</span></label>
+          <input type="text" id="category" name="category" value="{{ coreMove.category or '' }}" required placeholder="e.g., Cuts, Thrusts, Guards, Footwork">
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="4" placeholder="Description of the move, key points...">{{ coreMove.description or '' }}</textarea>
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="details">Details / Instructions</label>
+          <textarea id="details" name="details" rows="6" placeholder="Detailed instructions, variations, common mistakes...">{{ coreMove.details or '' }}</textarea>
+          <small class="form-hint">Full details for the knowledge base. Markdown supported.</small>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if coreMove %}Update Core Move{% else %}Create Core Move{% endif %}</button>
+      <a href="/admin/core-moves" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

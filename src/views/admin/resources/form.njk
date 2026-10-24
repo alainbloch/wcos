@@ -1,0 +1,47 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>{% if resource %}Edit Resource{% else %}New Resource{% endif %}</h2>
+    <a href="/admin/resources" class="btn btn-secondary">← Back to Resources</a>
+  </div>
+
+  {% if flash %}
+  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
+  {% endif %}
+
+  <form method="POST" action="{% if resource %}/admin/resources/{{ resource.id }}/edit{% else %}/admin/resources{% endif %}" class="admin-form">
+    <div class="form-grid">
+      <fieldset class="form-section">
+        <legend>Resource Information</legend>
+
+        <div class="form-field">
+          <label for="title">Title <span class="required">*</span></label>
+          <input type="text" id="title" name="title" value="{{ resource.title or '' }}" required placeholder="e.g., HEMA Alliance, Wikipedia - Swordsmanship">
+        </div>
+
+        <div class="form-field">
+          <label for="category">Category <span class="required">*</span></label>
+          <input type="text" id="category" name="category" value="{{ resource.category or '' }}" required placeholder="e.g., Organizations, Reference, Equipment, Training">
+        </div>
+
+        <div class="form-field">
+          <label for="url">URL <span class="required">*</span></label>
+          <input type="url" id="url" name="url" value="{{ resource.url or '' }}" required placeholder="https://example.com">
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="3" placeholder="Brief description of the resource...">{{ resource.description or '' }}</textarea>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if resource %}Update Resource{% else %}Create Resource{% endif %}</button>
+      <a href="/admin/resources" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

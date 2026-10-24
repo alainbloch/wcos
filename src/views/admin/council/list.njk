@@ -1,0 +1,56 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>WCOS Council Members</h2>
+    <a href="/admin/council/new" class="btn btn-primary">+ Add Council Member</a>
+  </div>
+
+  <div class="notice">Manage WCOS Council members. Current council members are displayed on the public council page.</div>
+  {% if councilMembers and councilMembers.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Term Start</th>
+          <th>Term End</th>
+          <th>Current</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member in councilMembers %}
+        <tr>
+          <td>{{ member.name }}</td>
+          <td>{{ member.position }}</td>
+          <td>{{ member.termStart or '-' }}</td>
+          <td>{{ member.termEnd or '-' }}</td>
+          <td>
+            {% if member.current %}
+            <span class="badge badge-success">Current</span>
+            {% else %}
+            <span class="badge badge-muted">Past</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="/admin/council/{{ member.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/council/{{ member.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ member.name }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No council members yet.</p>
+    <a href="/admin/council/new" class="btn btn-primary mt-4">+ Add First Council Member</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

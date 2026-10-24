@@ -1,0 +1,46 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Kaiden Rules</h2>
+    <a href="/admin/kaiden-rules/new" class="btn btn-primary">+ Add Rule</a>
+  </div>
+
+  <div class="notice">Manage Kaiden rules. Rules are displayed in order on the Kaidens page.</div>
+  {% if kaidenRules and kaidenRules.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Title</th>
+          <th>Content</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rule in kaidenRules %}
+        <tr>
+          <td>{{ rule.order }}</td>
+          <td><strong>{{ rule.title }}</strong></td>
+          <td>{{ rule.content ? rule.content.substring(0, 80) + '...' : '-' }}</td>
+          <td class="actions-cell">
+            <a href="/admin/kaiden-rules/{{ rule.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/kaiden-rules/{{ rule.id }}/delete" class="inline-form" onsubmit="return confirm('Delete rule #{{ rule.order }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No kaiden rules yet.</p>
+    <a href="/admin/kaiden-rules/new" class="btn btn-primary mt-4">+ Add First Rule</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

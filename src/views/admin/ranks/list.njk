@@ -1,0 +1,50 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Rank Requirements</h2>
+    <a href="/admin/ranks/new" class="btn btn-primary">+ Add Rank</a>
+  </div>
+
+  <div class="notice">Manage rank requirements for Primary and Steel ranks. These define the requirements for each level.</div>
+  {% if ranks and ranks.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Level</th>
+          <th>Name</th>
+          <th>Requirements</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rank in ranks %}
+        <tr>
+          <td>
+            <span class="badge badge-{{ rank.type === 'primary' ? 'primary' : 'secondary' }}">{{ rank.type }}</span>
+          </td>
+          <td><strong>{{ rank.level }}</strong></td>
+          <td>{{ rank.name or '-' }}</td>
+          <td>{{ rank.requirements ? rank.requirements.substring(0, 80) + '...' : '-' }}</td>
+          <td class="actions-cell">
+            <a href="/admin/ranks/{{ rank.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/ranks/{{ rank.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ rank.type }} {{ rank.level }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No ranks yet.</p>
+    <a href="/admin/ranks/new" class="btn btn-primary mt-4">+ Add First Rank</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

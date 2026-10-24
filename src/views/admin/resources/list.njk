@@ -1,0 +1,46 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Links & Resources</h2>
+    <a href="/admin/resources/new" class="btn btn-primary">+ Add Resource</a>
+  </div>
+
+  <div class="notice">Manage links and resources. Organized by category on the public page.</div>
+  {% if resources and resources.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>URL</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for resource in resources %}
+        <tr>
+          <td><strong>{{ resource.title }}</strong></td>
+          <td>{{ resource.category or '-' }}</td>
+          <td>{{ resource.url ? resource.url.substring(0, 50) + '...' : '-' }}</td>
+          <td class="actions-cell">
+            <a href="/admin/resources/{{ resource.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/resources/{{ resource.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ resource.title }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No resources yet.</p>
+    <a href="/admin/resources/new" class="btn btn-primary mt-4">+ Add First Resource</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

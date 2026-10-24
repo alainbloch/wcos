@@ -1,0 +1,58 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Classes & Locations</h2>
+    <a href="/admin/classes/new" class="btn btn-primary">+ Add Class</a>
+  </div>
+
+  <div class="notice">Manage training classes and locations. Active classes are displayed on the public classes page.</div>
+  {% if classes and classes.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Instructor</th>
+          <th>Location</th>
+          <th>Region</th>
+          <th>Schedule</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cls in classes %}
+        <tr>
+          <td>{{ cls.name }}</td>
+          <td>{{ cls.instructor or '-' }}</td>
+          <td>{{ cls.location or '-' }}</td>
+          <td>{{ cls.region or '-' }}</td>
+          <td>{{ cls.schedule or '-' }}</td>
+          <td>
+            {% if cls.active %}
+            <span class="badge badge-success">Active</span>
+            {% else %}
+            <span class="badge badge-muted">Inactive</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="/admin/classes/{{ cls.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/classes/{{ cls.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ cls.name }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No classes yet.</p>
+    <a href="/admin/classes/new" class="btn btn-primary mt-4">+ Add First Class</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -23,6 +23,16 @@
           <li><a href="/admin" {% if request.path == '/admin' %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">01</span> Overview</a></li>
           <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">02</span> Pages</a></li>
           <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Members</a></li>
+          <li><a href="/admin/council" {% if request.path.startsWith('/admin/council') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Council</a></li>
+          <li><a href="/admin/kaidens" {% if request.path.startsWith('/admin/kaidens') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Kaidens</a></li>
+          <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Classes</a></li>
+          <li><a href="/admin/champions" {% if request.path.startsWith('/admin/champions') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Champions</a></li>
+
+<!--           <li><a href="/admin/ranks" {% if request.path.startsWith('/admin/ranks') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Ranks</a></li>
+          <li><a href="/admin/dues" {% if request.path.startsWith('/admin/dues') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Dues</a></li>
+          <li><a href="/admin/resources" {% if request.path.startsWith('/admin/resources') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">03</span> Resources</a></li>
+ -->
+
           {% if user and user.role === 'admin' %}
           <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true">04</span> Settings</a></li>
           {% endif %}

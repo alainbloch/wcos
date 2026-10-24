@@ -1,0 +1,62 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>{% if class %}Edit Class{% else %}New Class{% endif %}</h2>
+    <a href="/admin/classes" class="btn btn-secondary">← Back to Classes</a>
+  </div>
+
+  {% if flash %}
+  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
+  {% endif %}
+
+  <form method="POST" action="{% if class %}/admin/classes/{{ class.id }}/edit{% else %}/admin/classes{% endif %}" class="admin-form">
+    <div class="form-grid">
+      <fieldset class="form-section">
+        <legend>Class Information</legend>
+
+        <div class="form-field">
+          <label for="name">Class Name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" value="{{ class.name or '' }}" required placeholder="e.g., Beginner Sword Class, Advanced Steel Training">
+        </div>
+
+        <div class="form-field">
+          <label for="instructor">Instructor</label>
+          <input type="text" id="instructor" name="instructor" value="{{ class.instructor or '' }}" placeholder="Instructor's name">
+        </div>
+
+        <div class="form-field">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" value="{{ class.location or '' }}" placeholder="Venue name, address">
+        </div>
+
+        <div class="form-field">
+          <label for="region">Region</label>
+          <input type="text" id="region" name="region" value="{{ class.region or '' }}" placeholder="e.g., Bay Area, Seattle, Portland">
+        </div>
+
+        <div class="form-field">
+          <label for="schedule">Schedule</label>
+          <input type="text" id="schedule" name="schedule" value="{{ class.schedule or '' }}" placeholder="e.g., Tuesdays 7-9pm, Saturdays 10am-12pm">
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="4" placeholder="Class description, what to expect, prerequisites...">{{ class.description or '' }}</textarea>
+        </div>
+
+        <div class="form-field checkbox-field">
+          <input type="checkbox" id="active" name="active" {% if class.active != false %}checked{% endif %}>
+          <label for="active">Active Class</label>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if class %}Update Class{% else %}Create Class{% endif %}</button>
+      <a href="/admin/classes" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

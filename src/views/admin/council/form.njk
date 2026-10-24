@@ -1,0 +1,63 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>{% if councilMember %}Edit Council Member{% else %}New Council Member{% endif %}</h2>
+    <a href="/admin/council" class="btn btn-secondary">← Back to Council</a>
+  </div>
+
+  {% if flash %}
+  <div class="flash flash-{{ flash.type }} mb-4">{{ flash.message }}</div>
+  {% endif %}
+
+  <form method="POST" action="{% if councilMember %}/admin/council/{{ councilMember.id }}/edit{% else %}/admin/council{% endif %}" class="admin-form">
+    <div class="form-grid">
+      <fieldset class="form-section">
+        <legend>Council Member Information</legend>
+
+        <div class="form-field">
+          <label for="name">Name <span class="required">*</span></label>
+          <input type="text" id="name" name="name" value="{{ councilMember.name or '' }}" required placeholder="Member's name">
+        </div>
+
+        <div class="form-field">
+          <label for="position">Position <span class="required">*</span></label>
+          <input type="text" id="position" name="position" value="{{ councilMember.position or '' }}" required placeholder="e.g., President, Vice President, Secretary">
+        </div>
+
+        <div class="form-field">
+          <label for="termStart">Term Start</label>
+          <input type="text" id="termStart" name="termStart" value="{{ councilMember.termStart or '' }}" placeholder="e.g., 2024, January 2024">
+        </div>
+
+        <div class="form-field">
+          <label for="termEnd">Term End</label>
+          <input type="text" id="termEnd" name="termEnd" value="{{ councilMember.termEnd or '' }}" placeholder="e.g., 2026, December 2026">
+        </div>
+
+        <div class="form-field checkbox-field">
+          <input type="checkbox" id="current" name="current" {% if councilMember.current %}checked{% endif %}>
+          <label for="current">Current Council Member</label>
+        </div>
+
+        <div class="form-field form-section-full">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="4" placeholder="Brief biography">{{ councilMember.bio or '' }}</textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="image">Image</label>
+          <input type="text" id="image" name="image" value="{{ councilMember.image or '' }}" placeholder="/images/council-member.jpg">
+          <small class="form-hint">Path to image in /public/images/</small>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if councilMember %}Update Council Member{% else %}Create Council Member{% endif %}</button>
+      <a href="/admin/council" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

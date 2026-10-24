@@ -1,0 +1,46 @@
+{% extends 'layouts/admin.njk' %}
+
+{% block content %}
+<div class="admin-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2>Kaidens</h2>
+    <a href="/admin/kaidens/new" class="btn btn-primary">+ Add Kaiden</a>
+  </div>
+
+  <div class="notice">Manage Kaiden sections for the knowledge base. Sections include: theWay, documents, etc.</div>
+  {% if kaidens and kaidens.length > 0 %}
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Section</th>
+          <th>Slug</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for kaiden in kaidens %}
+        <tr>
+          <td><strong>{{ kaiden.title }}</strong></td>
+          <td>{{ kaiden.section or '-' }}</td>
+          <td>{{ kaiden.slug or '-' }}</td>
+          <td class="actions-cell">
+            <a href="/admin/kaidens/{{ kaiden.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/kaidens/{{ kaiden.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ kaiden.title }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-12">
+    <p class="text-muted">No kaidens yet.</p>
+    <a href="/admin/kaidens/new" class="btn btn-primary mt-4">+ Add First Kaiden</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
