@@ -84,6 +84,21 @@
       </fieldset>
 
 <fieldset class="form-section form-section-full"><legend>Public profile details</legend><p>Optional details shown in the member’s profile modal. Leave unknown values blank.</p><div class="form-field"><label for="email">Public email</label><input type="email" id="email" name="email" value="{{ member.email or '' }}"></div><div class="form-field"><label for="yearsFought">Years fought</label><input type="text" id="yearsFought" name="yearsFought" value="{{ member.yearsFought or '' }}"></div><div class="form-field"><label for="battlesFought">Battles fought</label><input type="text" id="battlesFought" name="battlesFought" value="{{ member.battlesFought or '' }}"></div><div class="form-field"><label for="steelBattlesFought">Steel battles fought</label><input type="text" id="steelBattlesFought" name="steelBattlesFought" value="{{ member.steelBattlesFought or '' }}"></div><div class="form-field"><label for="opponentsFought">Opponents fought</label><input type="text" id="opponentsFought" name="opponentsFought" value="{{ member.opponentsFought or '' }}"></div><div class="form-field"><label for="weaponType">Weapon type</label><input type="text" id="weaponType" name="weaponType" value="{{ member.weaponType or '' }}"></div><div class="form-field"><label for="statsUpdated">Statistics last updated</label><input type="text" id="statsUpdated" name="statsUpdated" value="{{ member.statsUpdated or '' }}"></div></fieldset>
+      <fieldset class="form-section form-section-full">
+        <legend>Council Service</legend>
+        <p>Keep shared biography and image details in the member profile. Record the latest council term here; dates may be approximate. Current status is set explicitly, independently of Active Member.</p>
+        <div class="form-field"><label for="councilPosition">Council position</label><input type="text" id="councilPosition" name="councilPosition" value="{{ member.councilPosition or '' }}" placeholder="President, Secretary, Council member"></div>
+        <div class="form-field"><label for="councilTitle">Council title</label><input type="text" id="councilTitle" name="councilTitle" value="{{ member.councilTitle or '' }}" placeholder="Kaiden"></div>
+        <div class="form-field"><label for="councilTermStart">Term start</label><input type="text" id="councilTermStart" name="councilTermStart" value="{{ member.councilTermStart or '' }}" placeholder="2024 or January 2024"></div>
+        <div class="form-field"><label for="councilTermEnd">Term end</label><input type="text" id="councilTermEnd" name="councilTermEnd" value="{{ member.councilTermEnd or '' }}" placeholder="2026 or December 2026"></div>
+        <div class="form-field"><label for="councilHistoricalDate">Historical council date</label><input type="text" id="councilHistoricalDate" name="councilHistoricalDate" value="{{ member.councilHistoricalDate or '' }}" placeholder="2022-10-19"></div>
+        <div class="form-field checkbox-field"><input type="checkbox" id="councilCurrent" name="councilCurrent" {% if member.councilCurrent %}checked{% endif %}><label for="councilCurrent">Current council member</label></div>
+        {% if member.councilHistory.length %}
+        <details><summary>Imported council history</summary><p>Original terms preserved during consolidation. Edit current details above.</p><ul>
+          {% for term in member.councilHistory %}<li>{{ term.councilPosition or term.councilTitle or 'Council service' }}: {{ term.councilTermStart or term.councilHistoricalDate or 'Start unknown' }} — {{ term.councilTermEnd or 'End unknown' }}{% if term.councilCurrent %} (marked current when imported){% endif %}</li>{% endfor %}
+        </ul></details>
+        {% endif %}
+      </fieldset>
       <!-- Biography & Media -->
       <fieldset class="form-section form-section-full">
         <legend>Biography & Media</legend>

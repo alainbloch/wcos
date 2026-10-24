@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { initDatabase, getDatabase } from '../../src/models/database.js';
 import { buildApp } from '../../src/app.js';
-import { siteSettingsRepo, navigationRepo, pagesRepo, councilMembersRepo } from '../../src/models/database.js';
+import { siteSettingsRepo, navigationRepo, pagesRepo } from '../../src/models/database.js';
 import { authService } from '../../src/services/authService.js';
 
 describe('Template Syntax Tests', () => {
@@ -62,13 +62,7 @@ describe('Template Syntax Tests', () => {
       published: true,
     });
     
-    // Create council members with historical dates
-    await councilMembersRepo.create({
-      name: 'Test Council',
-      title: 'Test Formation',
-      historicalDate: '2023-01-15',
-      description: 'Test description',
-    });
+
   });
 
   afterAll(async () => {

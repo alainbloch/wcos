@@ -23,6 +23,11 @@ export function normalizeMerits(value) {
 }
 
 const textFields = [
+  "councilPosition",
+  "councilTitle",
+  "councilTermStart",
+  "councilTermEnd",
+  "councilHistoricalDate",
   "circleName",
   "level",
   "steelRank",
@@ -44,6 +49,8 @@ export function readMemberForm(body = {}) {
   const form = Object.fromEntries(
     textFields.map((key) => [key, textValue(body?.[key])]),
   );
+  form.councilCurrent =
+    body?.councilCurrent === true || textValue(body?.councilCurrent) === "on";
   form.merits = normalizeMerits(body?.merits);
   form.active = body?.active === true || textValue(body?.active) === "on";
   return form;
@@ -73,6 +80,7 @@ export function memberRecordToForm(member) {
   return {
     ...readMemberForm(member),
     id: member.id,
+    councilHistory: member.councilHistory || [],
     circleName: textValue(member.position),
     position: merits[0] || "",
     merits,

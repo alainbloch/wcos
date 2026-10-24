@@ -4,6 +4,11 @@
  */
 import { BaseRepository } from "./baseRepository.js";
 
+import {
+  councilMembers,
+  currentCouncilMembers,
+} from "../utils/councilMembership.js";
+
 export class MembersRepository extends BaseRepository {
   constructor() {
     super("members");
@@ -29,6 +34,13 @@ export class MembersRepository extends BaseRepository {
       if (this.collection[index] === updated) this.collection[index] = previous;
       throw error;
     }
+  }
+
+  async findCouncilMembers() {
+    return councilMembers(await this.findAll());
+  }
+  async findCurrentCouncilMembers() {
+    return currentCouncilMembers(await this.findAll());
   }
 
   async findByLevel(level) {

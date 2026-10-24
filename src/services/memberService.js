@@ -9,6 +9,13 @@ export class MemberService {
     return membersRepo.findAll();
   }
 
+  async getCouncilMembers() {
+    return membersRepo.findCouncilMembers();
+  }
+  async getCurrentCouncilMembers() {
+    return membersRepo.findCurrentCouncilMembers();
+  }
+
   async getMemberById(id) {
     return membersRepo.findById(id);
   }
