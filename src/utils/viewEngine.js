@@ -51,6 +51,12 @@ export function setupViewEngine(fastify) {
       .replace(/\n/g, '<br>');
   });
 
+  // Convert object to array of {key, value} for iteration
+  env.addFilter('entries', (obj) => {
+    if (!obj || typeof obj !== 'object') return [];
+    return Object.entries(obj).map(([key, value]) => ({ key, value }));
+  });
+
   // Add global variables
   env.addGlobal('siteName', config.siteName);
   env.addGlobal('siteUrl', config.siteUrl);

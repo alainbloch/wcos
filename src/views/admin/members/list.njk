@@ -4,32 +4,58 @@
 <div class="admin-content">
   <div class="flex justify-between items-center mb-6">
     <h2>Member records</h2>
-    {% if memberPage %}<a href="/admin/pages/{{ memberPage.id }}/edit" class="btn btn-primary">Edit public member profiles</a>{% endif %}
+    <div class="flex gap-2">
+      {% if memberPage %}<a href="/admin/pages/{{ memberPage.id }}/edit" class="btn btn-secondary">Edit public member profiles page</a>{% endif %}
+      <a href="/admin/members/new" class="btn btn-primary">+ Add Member</a>
+    </div>
   </div>
 
-  <div class="notice">Public profiles are managed on the Member Profiles page. The records below are a read-only reference from the earlier import.</div>
+  <div class="notice">Manage member records below. The public Member Profiles page displays active members grouped by level.</div>
   {% if members and members.length > 0 %}
   <div class="admin-table-container">
     <table class="admin-table">
       <thead>
         <tr>
           <th>Level</th>
+          <th>Steel Rank</th>
           <th>Circle Name</th>
-          <th>Position & Merits</th>
+          <th>Position</th>
+          <th>Merits</th>
           <th>Member Since</th>
           <th>Region</th>
-
+          <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for member in members %}
         <tr>
           <td><strong>{{ member.level }}</strong></td>
-          <td>{{ member.circleName }}</td>
+          <td>{{ member.steelRank or '-' }}</td>
           <td>{{ member.position }}</td>
-          <td>{{ member.memberSince }}</td>
-          <td>{{ member.region }}</td>
-
+          <td>{{ member.circleName }}</td>
+          <td>
+            {% if member.merits and member.merits.length > 0 %}
+              <span class="merits-list">{{ member.merits.join(', ') }}</span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>{{ member.memberSince or '-' }}</td>
+          <td>{{ member.region or '-' }}</td>
+          <td>
+            {% if member.active %}
+              <span class="badge badge-success">Active</span>
+            {% else %}
+              <span class="badge badge-muted">Inactive</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <a href="/admin/members/{{ member.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <form method="POST" action="/admin/members/{{ member.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ member.position }}? This cannot be undone.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+            </form>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -38,7 +64,7 @@
   {% else %}
   <div class="text-center py-12">
     <p class="text-muted">No members yet.</p>
-
+    <a href="/admin/members/new" class="btn btn-primary mt-4">+ Add First Member</a>
   </div>
   {% endif %}
 </div>

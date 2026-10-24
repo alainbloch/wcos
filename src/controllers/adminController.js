@@ -138,6 +138,121 @@ export class AdminController extends BaseController {
     });
   }
 
+  async newMember(request, reply) {
+    await this.renderAdmin(request, reply, "admin/members/form.njk", {
+      pageTitle: "New Member",
+      member: null,
+    });
+  }
+
+  async createMember(request, reply) {
+    try {
+      const merits = request.body.merits
+        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
+        : [];
+
+      // Build circleName from level and steelRank (e.g., "L7 - steel")
+      const level = request.body.level;
+      const steelRank = request.body.steelRank || level;
+      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
+
+      const member = await memberService.createMember({
+        level,
+        steelRank,
+        circleName, // Level display name (e.g., "L7 - steel")
+        position: request.body.circleName, // Member's circle name (from form's circleName field)
+        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
+        memberSince: request.body.memberSince || "",
+        region: request.body.region || "",
+        biography: request.body.biography || "",
+        image: request.body.image || "",
+        active: request.body.active === "on",
+      });
+      request.session.adminFlash = { success: "Member created successfully" };
+      reply.redirect(`/admin/members/${member.id}/edit`);
+    } catch (error) {
+      reply.code(400);
+      return this.renderAdmin(request, reply, "admin/members/form.njk", {
+        pageTitle: "New Member",
+        member: { ...request.body, merits: request.body.merits },
+        flash: { error: error.message },
+      });
+    }
+  }
+
+  async editMember(request, reply) {
+    const member = await memberService.getMemberById(request.params.id);
+    if (!member) {
+      return reply.code(404).send("Member not found");
+    }
+    // Prepare member data for form (map database fields to form fields)
+    const formMember = {
+      ...member,
+      circleName: member.position, // Form's circleName = member's circle name
+      position: member.merits?.[0] || "", // Form's position = first merit (position/title)
+    };
+    await this.renderAdmin(request, reply, "admin/members/form.njk", {
+      pageTitle: "Edit Member",
+      member: formMember,
+    });
+  }
+
+  async updateMember(request, reply) {
+    try {
+      const merits = request.body.merits
+        ? request.body.merits.split("\n").map((m) => m.trim()).filter(Boolean)
+        : [];
+
+      // Build circleName from level and steelRank
+      const level = request.body.level;
+      const steelRank = request.body.steelRank || level;
+      const circleName = level === steelRank ? level : `${level} - ${steelRank.toLowerCase()}`;
+
+      await memberService.updateMember(request.params.id, {
+        level,
+        steelRank,
+        circleName, // Level display name
+        position: request.body.circleName, // Member's circle name
+        merits: merits.length > 0 ? merits : (request.body.position ? [request.body.position] : []),
+        memberSince: request.body.memberSince || "",
+        region: request.body.region || "",
+        biography: request.body.biography || "",
+        image: request.body.image || "",
+        active: request.body.active === "on",
+      });
+      request.session.adminFlash = { success: "Member updated successfully" };
+      reply.redirect(`/admin/members/${request.params.id}/edit`);
+    } catch (error) {
+      const existing = await memberService.getMemberById(request.params.id);
+      reply.code(existing ? 400 : 404);
+      // Prepare member data for form
+      const formMember = {
+        ...existing,
+        ...request.body,
+        id: request.params.id,
+        circleName: request.body.circleName,
+        position: request.body.position,
+        merits: request.body.merits,
+      };
+      return this.renderAdmin(request, reply, "admin/members/form.njk", {
+        pageTitle: "Edit Member",
+        member: formMember,
+        flash: { error: error.message },
+      });
+    }
+  }
+
+  async deleteMember(request, reply) {
+    try {
+      await memberService.deleteMember(request.params.id);
+      request.session.adminFlash = { success: "Member deleted successfully" };
+      reply.redirect("/admin/members");
+    } catch (error) {
+      request.session.adminFlash = { error: error.message };
+      reply.redirect("/admin/members");
+    }
+  }
+
   // Settings
   async settings(request, reply) {
     const siteSettings = await siteService.getSiteSettings();

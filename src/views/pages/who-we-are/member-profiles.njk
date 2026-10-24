@@ -1,48 +1,98 @@
-{% extends 'layouts/base.njk' %}
+{% extends 'layouts/reference.njk' %}
 
 {% block content %}
-<div class="container">
-  <header class="page-header">
-    <h1 class="page-title">{{ pageTitle }}</h1>
-  </header>
-
-  {% if membersGrouped %}
-  {% for level in membersGrouped %}
-  <section class="section">
-    <h2 class="section-title">{{ level }}</h2>
-    <div class="table-container">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Level</th>
-            <th>Circle Name</th>
-            <th>Position & Merits</th>
-            <th>Member Since</th>
-            <th>Region</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for member in membersGrouped[level] %}
-          <tr>
-            <td><strong>{{ member.level }}</strong></td>
-            <td>{{ member.circleName }}</td>
-            <td>{{ member.position }}</td>
-            <td>{{ member.memberSince }}</td>
-            <td>{{ member.region }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<div data-elementor-type="wp-page" data-elementor-id="312" class="elementor elementor-312" data-elementor-post-type="page">
+  <div class="elementor-element elementor-element-8c122a8 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="8c122a8" data-element_type="container" data-e-type="container">
+    <div class="e-con-inner">
+      <div class="elementor-element elementor-element-6ec6e46 e-con-full e-flex e-con e-child" data-id="6ec6e46" data-element_type="container" data-e-type="container">
+        <div class="elementor-element elementor-element-ae992a9 e-con-full e-flex e-con e-child" data-id="ae992a9" data-element_type="container" data-e-type="container">
+          <div class="elementor-element elementor-element-44c4cf0 animated-slow elementor-widget elementor-widget-heading animated fadeIn" data-id="44c4cf0" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+            <h1 class="elementor-heading-title elementor-size-default">Member profiles</h1>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
-  {% endfor %}
-  {% else %}
-  <div class="text-center py-12">
-    <p class="text-muted">No members found.</p>
-    {% if user %}
-    <a href="/admin/members" class="btn btn-primary mt-4">Add Members</a>
-    {% endif %}
   </div>
-  {% endif %}
+
+  <div class="elementor-element elementor-element-e2c84b4 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="e2c84b4" data-element_type="container" data-e-type="container">
+    <div class="e-con-inner">
+      <div class="elementor-element elementor-element-7b90f65 e-con-full e-flex e-con e-child" data-id="7b90f65" data-element_type="container" data-e-type="container">
+        <div class="elementor-element elementor-element-3d6cf14 e-con-full table-scroll e-flex e-con e-child" data-id="3d6cf14" data-element_type="container" data-e-type="container">
+          <div class="elementor-element elementor-element-4f9d3fa e-con-full table-row  e-flex e-con e-child" data-id="4f9d3fa" data-element_type="container" data-e-type="container" id="list-header">
+            <div class="elementor-element elementor-element-a19891b e-con-full e-flex e-con e-child" data-id="a19891b" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-0fb322d elementor-widget elementor-widget-heading" data-id="0fb322d" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                <p class="elementor-heading-title elementor-size-default">Levels</p>
+              </div>
+            </div>
+            <div class="elementor-element elementor-element-28ccd36 e-con-full e-flex e-con e-child" data-id="28ccd36" data-element_type="container" data-e-type="container"></div>
+            <div class="elementor-element elementor-element-2e985f7 e-con-full e-flex e-con e-child" data-id="2e985f7" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-440204b elementor-widget elementor-widget-heading" data-id="440204b" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                <p class="elementor-heading-title elementor-size-default">Circle Name</p>
+              </div>
+            </div>
+            <div class="elementor-element elementor-element-ca3b994 e-con-full e-flex e-con e-child" data-id="ca3b994" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-46c6819 elementor-widget elementor-widget-heading" data-id="46c6819" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                <p class="elementor-heading-title elementor-size-default">Position & Merits</p>
+              </div>
+            </div>
+            <div class="elementor-element elementor-element-4542e8c e-con-full e-flex e-con e-child" data-id="4542e8c" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-cc979ca elementor-widget elementor-widget-heading" data-id="cc979ca" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                <p class="elementor-heading-title elementor-size-default">Member Since</p>
+              </div>
+            </div>
+            <div class="elementor-element elementor-element-d75670b e-con-full e-flex e-con e-child" data-id="d75670b" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-be291d4 elementor-widget elementor-widget-heading" data-id="be291d4" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                <p class="elementor-heading-title elementor-size-default">Region</p>
+              </div>
+            </div>
+          </div>
+
+          {% if membersGrouped %}
+          {% for entry in membersGrouped | entries %}
+            {% set level = entry.key %}
+            {% set members = entry.value %}
+            {% for member in members %}
+            {% if member.active %}
+            <div class="elementor-element elementor-element-member-row e-con-full table-row e-flex e-con e-child" data-element_type="container" data-e-type="container">
+              <div class="elementor-element elementor-element-member-level e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+                <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                  <p class="elementor-heading-title elementor-size-default">{{ member.level }}</p>
+                </div>
+              </div>
+              <div class="elementor-element elementor-element-member-circle e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+                <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                  <p class="elementor-heading-title elementor-size-default">{{ member.position }}</p>
+                </div>
+              </div>
+              <div class="elementor-element elementor-element-member-merits e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+                <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                  <p class="elementor-heading-title elementor-size-default">{% if member.merits and member.merits.length > 0 %}{{ member.merits.join(', ') }}{% else %}{{ member.circleName }}{% endif %}</p>
+                </div>
+              </div>
+              <div class="elementor-element elementor-element-member-since e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+                <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                  <p class="elementor-heading-title elementor-size-default">{{ member.memberSince or '' }}</p>
+                </div>
+              </div>
+              <div class="elementor-element elementor-element-member-region e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+                <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+                  <p class="elementor-heading-title elementor-size-default">{{ member.region or '' }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          {% endfor %}
+          {% else %}
+          <div class="elementor-element elementor-element-no-members e-con-full e-flex e-con e-child" data-element_type="container" data-e-type="container">
+            <div class="elementor-element elementor-widget elementor-widget-heading" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+              <p class="elementor-heading-title elementor-size-default">No members found.</p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

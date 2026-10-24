@@ -36,6 +36,20 @@ export async function adminRoutes(fastify) {
 
   // Members
   fastify.get("/members", adminController.listMembers.bind(adminController));
+  fastify.get("/members/new", adminController.newMember.bind(adminController));
+  fastify.post("/members", adminController.createMember.bind(adminController));
+  fastify.get(
+    "/members/:id/edit",
+    adminController.editMember.bind(adminController),
+  );
+  fastify.post(
+    "/members/:id/edit",
+    adminController.updateMember.bind(adminController),
+  );
+  fastify.post(
+    "/members/:id/delete",
+    adminController.deleteMember.bind(adminController),
+  );
 
   // Settings (admin only)
   fastify.get(
