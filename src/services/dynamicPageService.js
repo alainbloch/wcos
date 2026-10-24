@@ -1,3 +1,4 @@
+import { classesService } from './classesService.js';
 /**
  * Dynamic Page Service
  * Resolves page dataSources to repositories and renders partial templates.
@@ -5,13 +6,8 @@
 import {
   membersRepo,
   championsRepo,
-  classesRepo,
-  ranksRepo,
   movesRepo,
-  kaidensRepo,
-  kaidenRulesRepo,
   resourcesRepo,
-  duesRepo,
   siteSettingsRepo,
   navigationRepo,
   usersRepo,
@@ -27,8 +23,7 @@ const repoMapping = {
   currentCouncilMembers: {
     findAll: () => memberService.getCurrentCouncilMembers(),
   },
-  classes: classesRepo,
-  ranks: ranksRepo,
+  classes: { findAll: () => classesService.getAllClasses() },
   moves: movesRepo,
   coreMoves: { findAll: async () => (await movesRepo.findAll()).filter(move => move.core) },
   dalmaterColors: {
@@ -37,10 +32,7 @@ const repoMapping = {
         (member) => member.dalmaterColorName,
       ),
   },
-  kaidens: kaidensRepo,
-  kaidenRules: kaidenRulesRepo,
   resources: resourcesRepo,
-  dues: duesRepo,
   siteSettings: siteSettingsRepo,
   navigation: navigationRepo,
   users: usersRepo,

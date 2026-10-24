@@ -1,0 +1,81 @@
+[
+  {
+    "name": "Hayward, CA",
+    "location": "Hayward, CA",
+    "region": "CA",
+    "schedule": "Tuesday, 7:30PM to 9:30PM",
+    "instructorNames": [
+      "Kaiden GAD",
+      "Kaiden Vea"
+    ],
+    "description": "WCoS Headquarters Dojo WCoS Requirements, Way of the Ever Adapting Blade, Steel Combat, NSC, and specialized training",
+    "active": true
+  },
+  {
+    "name": "Redding, CA",
+    "location": "Redding, CA",
+    "region": "CA",
+    "schedule": "Wednesday, 7:30PM to 9:30PM",
+    "instructorNames": [
+      "Kaiden Requiem",
+      "Honorary Kaiden Dalton"
+    ],
+    "description": "Requirements, Sparring and Drills",
+    "active": true
+  },
+  {
+    "name": "Escondido, CA",
+    "location": "Escondido, CA",
+    "region": "CA",
+    "schedule": "Contact for details",
+    "instructorNames": [
+      "Kaiden Steel Wind"
+    ],
+    "description": "Requirements, Sparring, Specialized Training, NSC",
+    "active": true
+  },
+  {
+    "name": "Louisville, KY",
+    "location": "Louisville, KY",
+    "region": "KY",
+    "schedule": "Sunday, 7:00PM to 9:00PM",
+    "instructorNames": [
+      "Kaiden Daniel"
+    ],
+    "description": "WCoS Requirements, Drills, and Sparring",
+    "active": true
+  },
+  {
+    "name": "Gardnerville, NV",
+    "location": "Gardnerville, NV",
+    "region": "NV",
+    "schedule": "Saturday, 9:30AM to 11:30AM",
+    "instructorNames": [
+      "Kaiden David"
+    ],
+    "description": "WCoS requirements, stretching/exercises; occasional special trips for specialized training",
+    "active": true
+  },
+  {
+    "name": "Beaverton, OR",
+    "location": "Beaverton, OR",
+    "region": "OR",
+    "schedule": "Thursday, 7:30PM to 10:00PM",
+    "instructorNames": [
+      "Kaiden Umbra"
+    ],
+    "description": "Stretching/Exercises, Requirements, Drills, and Sparring",
+    "active": true
+  },
+  {
+    "name": "Seattle, WA",
+    "location": "Seattle, WA",
+    "region": "WA",
+    "schedule": "Monday, 6:00PM to 8:00PM",
+    "instructorNames": [
+      "Kaiden Severer"
+    ],
+    "description": "Stretching/Exercises, Requirements, Sparring, Specialized Training",
+    "active": true
+  }
+]

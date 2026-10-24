@@ -8,12 +8,9 @@ import { BaseController } from "./baseController.js";
 import { pagesService } from "../services/pagesService.js";
 import { memberService } from "../services/memberService.js";
 import { championService } from "../services/championService.js";
-import { classesService } from "../services/classesService.js";
-import { ranksService } from "../services/ranksService.js";
+import { readClassForm, classesService } from "../services/classesService.js";
 import { MOVE_TYPES, readMoveForm, movesService } from "../services/movesService.js";
-import { kaidensService } from "../services/kaidensService.js";
 import { resourcesService } from "../services/resourcesService.js";
-import { duesService } from "../services/duesService.js";
 import { siteService } from "../services/siteService.js";
 import {
   originalPages,
@@ -332,52 +329,36 @@ export class AdminController extends BaseController {
     });
   }
 
-  async newClass(request, reply) {
-    await this.renderAdmin(request, reply, "admin/classes/form.njk", {
-      pageTitle: "New Class",
-      class: null,
+  async classForm(request, reply, cls = { active: true }, flash) {
+    return this.renderAdmin(request, reply, 'admin/classes/form.njk', {
+      pageTitle: cls.id ? 'Edit Class' : 'New Class', class: cls,
+      instructors: await classesService.getInstructorOptions(), flash,
     });
   }
-
+  async newClass(request, reply) { return this.classForm(request, reply); }
   async createClass(request, reply) {
     try {
       const cls = await classesService.createClass(request.body);
-      request.session.adminFlash = { success: "Class created successfully" };
-      reply.redirect(`/admin/classes/${cls.id}/edit`);
+      return reply.redirect(`/admin/classes/${cls.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.renderAdmin(request, reply, "admin/classes/form.njk", {
-        pageTitle: "New Class",
-        class: request.body,
-        flash: { error: error.message },
-      });
+      return this.classForm(request, reply, readClassForm(request.body), { error: error.message });
     }
   }
-
   async editClass(request, reply) {
     const cls = await classesService.getClassById(request.params.id);
-    if (!cls) {
-      return reply.code(404).send("Class not found");
-    }
-    await this.renderAdmin(request, reply, "admin/classes/form.njk", {
-      pageTitle: "Edit Class",
-      class: cls,
-    });
+    if (!cls) return reply.code(404).send('Class not found');
+    return this.classForm(request, reply, cls);
   }
-
   async updateClass(request, reply) {
+    const existing = await classesService.getClassById(request.params.id);
+    if (!existing) return reply.code(404).send('Class not found');
     try {
       await classesService.updateClass(request.params.id, request.body);
-      request.session.adminFlash = { success: "Class updated successfully" };
-      reply.redirect(`/admin/classes/${request.params.id}/edit`);
+      return reply.redirect(`/admin/classes/${request.params.id}/edit`);
     } catch (error) {
-      const existing = await classesService.getClassById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/classes/form.njk", {
-        pageTitle: "Edit Class",
-        class: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
+      reply.code(400);
+      return this.classForm(request, reply, { ...existing, ...readClassForm(request.body), id: request.params.id }, { error: error.message });
     }
   }
 
@@ -389,75 +370,6 @@ export class AdminController extends BaseController {
     } catch (error) {
       request.session.adminFlash = { error: error.message };
       reply.redirect("/admin/classes");
-    }
-  }
-
-  // Ranks management
-  async listRanks(request, reply) {
-    const ranks = await ranksService.getAllRanks();
-    await this.renderAdmin(request, reply, "admin/ranks/list.njk", {
-      pageTitle: "Manage Ranks",
-      ranks,
-    });
-  }
-
-  async newRank(request, reply) {
-    await this.renderAdmin(request, reply, "admin/ranks/form.njk", {
-      pageTitle: "New Rank",
-      rank: null,
-    });
-  }
-
-  async createRank(request, reply) {
-    try {
-      const rank = await ranksService.createRank(request.body);
-      request.session.adminFlash = { success: "Rank created successfully" };
-      reply.redirect(`/admin/ranks/${rank.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/ranks/form.njk", {
-        pageTitle: "New Rank",
-        rank: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editRank(request, reply) {
-    const rank = await ranksService.getRankByLevel(request.params.id);
-    if (!rank) {
-      return reply.code(404).send("Rank not found");
-    }
-    await this.renderAdmin(request, reply, "admin/ranks/form.njk", {
-      pageTitle: "Edit Rank",
-      rank,
-    });
-  }
-
-  async updateRank(request, reply) {
-    try {
-      await ranksService.updateRank(request.params.id, request.body);
-      request.session.adminFlash = { success: "Rank updated successfully" };
-      reply.redirect(`/admin/ranks/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await ranksService.getRankByLevel(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/ranks/form.njk", {
-        pageTitle: "Edit Rank",
-        rank: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteRank(request, reply) {
-    try {
-      await ranksService.deleteRank(request.params.id);
-      request.session.adminFlash = { success: "Rank deleted successfully" };
-      reply.redirect("/admin/ranks");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/ranks");
     }
   }
 
@@ -510,144 +422,6 @@ export class AdminController extends BaseController {
   async uploadMoveMedia(request, reply) {
     try { return await uploadMoveMedia(request.body?.file); }
     catch (error) { return reply.code(400).send({ error: error.message }); }
-  }
-
-  // Kaidens management
-  async listKaidens(request, reply) {
-    const kaidens = await kaidensService.getAllKaidens();
-    await this.renderAdmin(request, reply, "admin/kaidens/list.njk", {
-      pageTitle: "Manage Kaidens",
-      kaidens,
-    });
-  }
-
-  async newKaiden(request, reply) {
-    await this.renderAdmin(request, reply, "admin/kaidens/form.njk", {
-      pageTitle: "New Kaiden",
-      kaiden: null,
-    });
-  }
-
-  async createKaiden(request, reply) {
-    try {
-      const kaiden = await kaidensService.createKaiden(request.body);
-      request.session.adminFlash = { success: "Kaiden created successfully" };
-      reply.redirect(`/admin/kaidens/${kaiden.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/kaidens/form.njk", {
-        pageTitle: "New Kaiden",
-        kaiden: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editKaiden(request, reply) {
-    const kaiden = await kaidensService.getKaidenById(request.params.id);
-    if (!kaiden) {
-      return reply.code(404).send("Kaiden not found");
-    }
-    await this.renderAdmin(request, reply, "admin/kaidens/form.njk", {
-      pageTitle: "Edit Kaiden",
-      kaiden,
-    });
-  }
-
-  async updateKaiden(request, reply) {
-    try {
-      await kaidensService.updateKaiden(request.params.id, request.body);
-      request.session.adminFlash = { success: "Kaiden updated successfully" };
-      reply.redirect(`/admin/kaidens/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await kaidensService.getKaidenById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/kaidens/form.njk", {
-        pageTitle: "Edit Kaiden",
-        kaiden: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteKaiden(request, reply) {
-    try {
-      await kaidensService.deleteKaiden(request.params.id);
-      request.session.adminFlash = { success: "Kaiden deleted successfully" };
-      reply.redirect("/admin/kaidens");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/kaidens");
-    }
-  }
-
-  // Kaiden Rules management
-  async listKaidenRules(request, reply) {
-    const kaidenRules = await kaidensService.getAllKaidenRules();
-    await this.renderAdmin(request, reply, "admin/kaidenRules/list.njk", {
-      pageTitle: "Manage Kaiden Rules",
-      kaidenRules,
-    });
-  }
-
-  async newKaidenRule(request, reply) {
-    await this.renderAdmin(request, reply, "admin/kaidenRules/form.njk", {
-      pageTitle: "New Kaiden Rule",
-      kaidenRule: null,
-    });
-  }
-
-  async createKaidenRule(request, reply) {
-    try {
-      const kaidenRule = await kaidensService.createKaidenRule(request.body);
-      request.session.adminFlash = { success: "Kaiden rule created successfully" };
-      reply.redirect(`/admin/kaiden-rules/${kaidenRule.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/kaidenRules/form.njk", {
-        pageTitle: "New Kaiden Rule",
-        kaidenRule: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editKaidenRule(request, reply) {
-    const kaidenRule = await kaidensService.getKaidenRuleById(request.params.id);
-    if (!kaidenRule) {
-      return reply.code(404).send("Kaiden rule not found");
-    }
-    await this.renderAdmin(request, reply, "admin/kaidenRules/form.njk", {
-      pageTitle: "Edit Kaiden Rule",
-      kaidenRule,
-    });
-  }
-
-  async updateKaidenRule(request, reply) {
-    try {
-      await kaidensService.updateKaidenRule(request.params.id, request.body);
-      request.session.adminFlash = { success: "Kaiden rule updated successfully" };
-      reply.redirect(`/admin/kaiden-rules/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await kaidensService.getKaidenRuleById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/kaidenRules/form.njk", {
-        pageTitle: "Edit Kaiden Rule",
-        kaidenRule: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteKaidenRule(request, reply) {
-    try {
-      await kaidensService.deleteKaidenRule(request.params.id);
-      request.session.adminFlash = { success: "Kaiden rule deleted successfully" };
-      reply.redirect("/admin/kaiden-rules");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/kaiden-rules");
-    }
   }
 
   // Resources management
@@ -716,75 +490,6 @@ export class AdminController extends BaseController {
     } catch (error) {
       request.session.adminFlash = { error: error.message };
       reply.redirect("/admin/resources");
-    }
-  }
-
-  // Dues management
-  async listDues(request, reply) {
-    const dues = await duesService.getAllDues();
-    await this.renderAdmin(request, reply, "admin/dues/list.njk", {
-      pageTitle: "Manage Dues/Donations",
-      dues,
-    });
-  }
-
-  async newDues(request, reply) {
-    await this.renderAdmin(request, reply, "admin/dues/form.njk", {
-      pageTitle: "New Dues/Donation",
-      dues: null,
-    });
-  }
-
-  async createDues(request, reply) {
-    try {
-      const dues = await duesService.createDues(request.body);
-      request.session.adminFlash = { success: "Dues/Donation created successfully" };
-      reply.redirect(`/admin/dues/${dues.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/dues/form.njk", {
-        pageTitle: "New Dues/Donation",
-        dues: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editDues(request, reply) {
-    const dues = await duesService.getDuesById(request.params.id);
-    if (!dues) {
-      return reply.code(404).send("Dues not found");
-    }
-    await this.renderAdmin(request, reply, "admin/dues/form.njk", {
-      pageTitle: "Edit Dues/Donation",
-      dues,
-    });
-  }
-
-  async updateDues(request, reply) {
-    try {
-      await duesService.updateDues(request.params.id, request.body);
-      request.session.adminFlash = { success: "Dues/Donation updated successfully" };
-      reply.redirect(`/admin/dues/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await duesService.getDuesById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/dues/form.njk", {
-        pageTitle: "Edit Dues/Donation",
-        dues: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteDues(request, reply) {
-    try {
-      await duesService.deleteDues(request.params.id);
-      request.session.adminFlash = { success: "Dues/Donation deleted successfully" };
-      reply.redirect("/admin/dues");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/dues");
     }
   }
 

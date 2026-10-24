@@ -1,3 +1,4 @@
+import { migrateClasses, retiredCollections } from './migrations/classesInstructors.js';
 /**
  * Database Service
  * Lowdb JSON file database with repository pattern
@@ -21,12 +22,8 @@ export const defaultData = {
   members: [],
   champions: [],
   classes: [],
-  ranks: [],
   moves: [],
-  kaidens: [],
-  kaidenRules: [],
   resources: [],
-  dues: [],
   siteSettings: {
     siteName: 'Western Circle of Swordfighters',
     siteEmail: 'westerncouncil@gmail.com',
@@ -111,6 +108,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (retiredCollections.some(key => Object.hasOwn(dbInstance.data, key)) || (dbInstance.data.classes?.length && !dbInstance.data.migrations?.classesInstructors)) {
+    await writeFile(`${dbPath}.backup-classes-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    migrateClasses(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -139,12 +144,8 @@ export { pagesRepo } from './pagesRepository.js';
 export { membersRepo } from './membersRepository.js';
 export { championsRepo } from './championsRepository.js';
 export { classesRepo } from './classesRepository.js';
-export { ranksRepo } from './ranksRepository.js';
 export { movesRepo } from './movesRepository.js';
-export { kaidensRepo } from './kaidensRepository.js';
-export { kaidenRulesRepo } from './kaidenRulesRepository.js';
 export { resourcesRepo } from './resourcesRepository.js';
-export { duesRepo } from './duesRepository.js';
 export { siteSettingsRepo } from './siteSettingsRepository.js';
 export { navigationRepo } from './navigationRepository.js';
 export { usersRepo } from './usersRepository.js';
@@ -155,12 +156,8 @@ export { PagesRepository } from './pagesRepository.js';
 export { MembersRepository } from './membersRepository.js';
 export { ChampionsRepository } from './championsRepository.js';
 export { ClassesRepository } from './classesRepository.js';
-export { RanksRepository } from './ranksRepository.js';
 export { MovesRepository } from './movesRepository.js';
-export { KaidensRepository } from './kaidensRepository.js';
-export { KaidenRulesRepository } from './kaidenRulesRepository.js';
 export { ResourcesRepository } from './resourcesRepository.js';
-export { DuesRepository } from './duesRepository.js';
 export { SiteSettingsRepository } from './siteSettingsRepository.js';
 export { NavigationRepository } from './navigationRepository.js';
 export { UsersRepository } from './usersRepository.js';
