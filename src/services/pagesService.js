@@ -68,6 +68,17 @@ export class PagesService {
           ? data.content
           : existing?.content || "",
       published: data.published === true,
+      dataSources: (() => {
+        if (Array.isArray(data.dataSources)) return data.dataSources;
+        if (typeof data.dataSources === "string" && data.dataSources.trim().length > 0) {
+          return data.dataSources.split(",").map((s) => s.trim()).filter(Boolean);
+        }
+        return existing?.dataSources || [];
+      })(),
+      templatePartial: typeof data.templatePartial === "string" ? data.templatePartial : (existing?.templatePartial || null),
+      layout: typeof data.layout === "string" ? data.layout : (existing?.layout || null),
+      parentSlug: typeof data.parentSlug === "string" ? data.parentSlug : (existing?.parentSlug || null),
+      styleOverrides: typeof data.styleOverrides === "string" ? data.styleOverrides : (existing?.styleOverrides || null),
     };
   }
 

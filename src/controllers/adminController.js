@@ -20,6 +20,7 @@ import {
   sanitizePageContent,
 } from "../services/referenceSiteService.js";
 import { renderView } from "../utils/viewEngine.js";
+import { dynamicPageService } from "../services/dynamicPageService.js";
 
 export class AdminController extends BaseController {
   async dashboard(request, reply) {
@@ -53,10 +54,28 @@ export class AdminController extends BaseController {
       ? await pagesService.getPageById(request.body.id)
       : null;
     const source = originalPages.find((item) => item.slug === page?.slug);
+
+    let content = sanitizePageContent(
+      typeof request.body.content === "string" ? request.body.content : "",
+    );
+
+    // If the page uses dynamic sources, resolve and inject them into preview
+    if (page && (page.dataSources || page.templatePartial)) {
+      const data = await dynamicPageService.resolveDataSources(page.dataSources || []);
+      if (page.templatePartial && request.server) {
+        const partialHtml = await dynamicPageService.renderPartial(
+          request.server,
+          page.templatePartial,
+          page.dataSources || [],
+        );
+        if (partialHtml !== null) {
+          content = partialHtml;
+        }
+      }
+    }
+
     const html = await renderView(request.server, "admin/pages/preview.njk", {
-      content: sanitizePageContent(
-        typeof request.body.content === "string" ? request.body.content : "",
-      ),
+      content,
       styles: source?.styles || [],
       bodyClass: source?.bodyClass || "",
     });
