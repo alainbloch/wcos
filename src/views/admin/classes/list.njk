@@ -26,7 +26,7 @@
         {% for cls in classes %}
         <tr>
           <td>{{ cls.name }}</td>
-          <td>{{ cls.instructor or '-' }}</td>
+          <td>{% for instructor in cls.instructors %}{{ instructor.position }}{% if not loop.last %}, {% endif %}{% else %}—{% endfor %}{% if cls.unresolvedInstructors.length %} (Review: {{ cls.unresolvedInstructors | join(', ') }}){% endif %}</td>
           <td>{{ cls.location or '-' }}</td>
           <td>{{ cls.region or '-' }}</td>
           <td>{{ cls.schedule or '-' }}</td>

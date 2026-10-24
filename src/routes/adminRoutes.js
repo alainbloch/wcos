@@ -85,23 +85,6 @@ export async function adminRoutes(fastify) {
     adminController.deleteClass.bind(adminController),
   );
 
-  // Ranks
-  fastify.get("/ranks", adminController.listRanks.bind(adminController));
-  fastify.get("/ranks/new", adminController.newRank.bind(adminController));
-  fastify.post("/ranks", adminController.createRank.bind(adminController));
-  fastify.get(
-    "/ranks/:id/edit",
-    adminController.editRank.bind(adminController),
-  );
-  fastify.post(
-    "/ranks/:id/edit",
-    adminController.updateRank.bind(adminController),
-  );
-  fastify.post(
-    "/ranks/:id/delete",
-    adminController.deleteRank.bind(adminController),
-  );
-
   // Moves
   fastify.post("/moves/order", adminController.reorderMoves.bind(adminController));
   fastify.post("/moves/media", adminController.uploadMoveMedia.bind(adminController));
@@ -122,40 +105,6 @@ export async function adminRoutes(fastify) {
     adminController.deleteMove.bind(adminController),
   );
 
-  // Kaidens
-  fastify.get("/kaidens", adminController.listKaidens.bind(adminController));
-  fastify.get("/kaidens/new", adminController.newKaiden.bind(adminController));
-  fastify.post("/kaidens", adminController.createKaiden.bind(adminController));
-  fastify.get(
-    "/kaidens/:id/edit",
-    adminController.editKaiden.bind(adminController),
-  );
-  fastify.post(
-    "/kaidens/:id/edit",
-    adminController.updateKaiden.bind(adminController),
-  );
-  fastify.post(
-    "/kaidens/:id/delete",
-    adminController.deleteKaiden.bind(adminController),
-  );
-
-  // Kaiden Rules
-  fastify.get("/kaiden-rules", adminController.listKaidenRules.bind(adminController));
-  fastify.get("/kaiden-rules/new", adminController.newKaidenRule.bind(adminController));
-  fastify.post("/kaiden-rules", adminController.createKaidenRule.bind(adminController));
-  fastify.get(
-    "/kaiden-rules/:id/edit",
-    adminController.editKaidenRule.bind(adminController),
-  );
-  fastify.post(
-    "/kaiden-rules/:id/edit",
-    adminController.updateKaidenRule.bind(adminController),
-  );
-  fastify.post(
-    "/kaiden-rules/:id/delete",
-    adminController.deleteKaidenRule.bind(adminController),
-  );
-
   // Resources
   fastify.get("/resources", adminController.listResources.bind(adminController));
   fastify.get("/resources/new", adminController.newResource.bind(adminController));
@@ -171,23 +120,6 @@ export async function adminRoutes(fastify) {
   fastify.post(
     "/resources/:id/delete",
     adminController.deleteResource.bind(adminController),
-  );
-
-  // Dues
-  fastify.get("/dues", adminController.listDues.bind(adminController));
-  fastify.get("/dues/new", adminController.newDues.bind(adminController));
-  fastify.post("/dues", adminController.createDues.bind(adminController));
-  fastify.get(
-    "/dues/:id/edit",
-    adminController.editDues.bind(adminController),
-  );
-  fastify.post(
-    "/dues/:id/edit",
-    adminController.updateDues.bind(adminController),
-  );
-  fastify.post(
-    "/dues/:id/delete",
-    adminController.deleteDues.bind(adminController),
   );
 
   // Settings (admin only)

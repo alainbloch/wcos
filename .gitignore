@@ -56,3 +56,5 @@ data/*.backup-*
 *.backup-dalmater-*
 
 *.backup-moves-*
+
+*.backup-classes-*

@@ -28,8 +28,8 @@ async function resetDatabase() {
   // Clear all collections (keep schema defaults)
   const collections = [
     'pages', 'members', 'champions',
-    'classes', 'ranks', 'moves',
-    'kaidens', 'kaidenRules', 'resources', 'dues',
+    'classes', 'moves',
+    'resources',
     'siteSettings', 'navigation', 'users'
   ];
   

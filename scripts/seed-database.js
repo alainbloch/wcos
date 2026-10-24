@@ -1,10 +1,11 @@
+import { seedClasses } from './seed-classes.js';
 import { seedCoreMoves } from './seed-core-moves.js';
 /**
  * Database Seeding Script
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, championsRepo, classesRepo, ranksRepo, kaidensRepo, kaidenRulesRepo, resourcesRepo, duesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, championsRepo, resourcesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -18,12 +19,8 @@ async function seed() {
   // db.data.members = [];
   // db.data.champions = [];
   // db.data.classes = [];
-  // db.data.ranks = [];
   // db.data.moves = [];
-  // db.data.kaidens = [];
-  // db.data.kaidenRules = [];
   // db.data.resources = [];
-  // db.data.dues = [];
   // db.data.siteSettings = [];
   // db.data.navigation = [];
 
@@ -128,87 +125,10 @@ async function seed() {
     console.log('  ✓ Champions');
   }
 
-  // Classes
-  if ((await classesRepo.findAll()).length === 0) {
-    const classes = [
-      { location: 'Hayward, CA', day: 'Tuesday, 7:30PM to 9:30PM', kaiden: 'Kaiden GAD, Kaiden Vea', description: 'WCoS Headquarters Dojo - WCoS Requirements, Way of the Ever Adapting Blade, Steel Combat, NSC, and specialized training', region: 'CA', active: true },
-      { location: 'Redding, CA', day: 'Wednesday, 7:30PM to 9:30PM', kaiden: 'Kaiden Requiem, Honorary Kaiden Dalton', description: 'Requirements, Sparring and Drills', region: 'CA', active: true },
-      { location: 'Escondido, CA', day: 'Contact for details', kaiden: 'Kaiden Steel Wind', description: 'Requirements, Sparring, Specialized Training, NSC', region: 'CA', active: true },
-      { location: 'Louisville, KY', day: 'Sunday, 7:00PM to 9:00PM', kaiden: 'Kaiden Daniel', description: 'WCoS Requirements, Drills, and Sparring', region: 'KY', active: true },
-      { location: 'Gardnerville, NV', day: 'Saturday, 9:30AM to 11:30AM', kaiden: 'Kaiden David', description: 'WCoS requirements, stretching/exercises; occasional special trips for specialized training', region: 'NV', active: true },
-      { location: 'Beaverton, OR', day: 'Thursday, 7:30PM to 10:00PM', kaiden: 'Kaiden Umbra', description: 'Stretching/Exercises, Requirements, Drills, and Sparring', region: 'OR', active: true },
-      { location: 'Seattle, WA', day: 'Monday, 6:00PM to 8:00PM', kaiden: 'Kaiden Severer', description: 'Stretching/Exercises, Requirements, Sparring, Specialized Training', region: 'WA', active: true },
-    ];
-    for (const c of classes) {
-      await classesRepo.create(c);
-    }
-    console.log('  ✓ Classes');
-  }
-
-  // Primary Ranks
-  if ((await ranksRepo.findAll()).length === 0) {
-    const primaryRanks = [
-      { type: 'primary', level: 'Guest', name: 'Guest', description: 'Visitor or new student', requirements: [] },
-      { type: 'primary', level: 'L1', name: 'Trainee', description: 'Beginning student learning basics', requirements: ['Attend 4 classes', 'Learn basic safety', 'Learn basic footwork'] },
-      { type: 'primary', level: 'L2', name: 'Green Braid - Swordsman', description: 'First ranked level', requirements: ['Complete L1 requirements', 'Pass Green Braid test', 'Demonstrate basic cuts and blocks'] },
-      { type: 'primary', level: 'L3', name: 'White Rope - Trained Swordsman', description: 'Intermediate level', requirements: ['Complete L2 requirements', 'Pass White Rope test', 'Demonstrate combinations'] },
-      { type: 'primary', level: 'L4', name: 'Red Rope - Skilled Swordsman', description: 'Advanced student', requirements: ['Complete L3 requirements', 'Pass Red Rope test', 'Teach basics to L1-L2 students'] },
-      { type: 'primary', level: 'L5', name: 'Crimson Chain - Proficient Swordsman (Red Ring - Sword Dancer)', description: 'Black belt equivalent', requirements: ['Complete L4 requirements', 'Pass Crimson Chain test', 'Demonstrate mastery of core moves', 'Sword Dancer qualification'] },
-      { type: 'primary', level: 'L6', name: 'Silver Chain - Advanced Swordsman (Silver Ring - Advanced Sword Dancer)', description: 'Advanced mastery', requirements: ['Complete L5 requirements', 'Pass Silver Chain test', 'Advanced Sword Dancer qualification', 'Teach intermediate students'] },
-      { type: 'primary', level: 'L7', name: 'Copper Chain - Expert Swordsman (Copper Ring - Expert Sword Dancer)', description: 'Highest primary rank', requirements: ['Complete L6 requirements', 'Pass Copper Chain test', 'Expert Sword Dancer qualification', 'Teach advanced students'] },
-    ];
-    for (const r of primaryRanks) {
-      await ranksRepo.create(r);
-    }
-
-    // Steel Ranks
-    const steelRanks = [
-      { type: 'steel', level: 'L0', name: 'Live Steel Practitioner', description: 'Introduction to live steel', requirements: ['Complete L5 primary', 'Safety orientation'] },
-      { type: 'steel', level: 'L1', name: 'Live Steel Qualified Swordsman', description: 'Basic live steel competency', requirements: ['Pass L0 requirements', 'Demonstrate safe handling'] },
-      { type: 'steel', level: 'L2', name: 'Green Braid - Live Steel Ranked Swordsman', description: 'First live steel rank', requirements: ['Complete L1 steel', 'Pass cutting test'] },
-      { type: 'steel', level: 'L3', name: 'White Rope - Live Steel Trained Swordsman', description: 'Intermediate live steel', requirements: ['Complete L2 steel', 'Advanced cutting'] },
-      { type: 'steel', level: 'L4', name: 'Red Rope - Live Steel Skilled Swordsman', description: 'Advanced live steel', requirements: ['Complete L3 steel', 'Complex cutting patterns'] },
-      { type: 'steel', level: 'L5', name: 'Crimson Chain - Live Steel Proficient Swordsman', description: 'Expert live steel', requirements: ['Complete L4 steel', 'Master cutting forms'] },
-      { type: 'steel', level: 'L6', name: 'Silver Chain - Live Steel Advanced Swordsman', description: 'Master live steel', requirements: ['Complete L5 steel', 'Teach live steel'] },
-      { type: 'steel', level: 'L7', name: 'Copper Chain - Live Steel Expert Swordsman', description: 'Grandmaster live steel', requirements: ['Complete L6 steel', 'Teach all levels'] },
-    ];
-    for (const r of steelRanks) {
-      await ranksRepo.create(r);
-    }
-    console.log('  ✓ Ranks (Primary + Steel)');
-  }
+  await seedClasses();
 
   // Actual core moves extracted from the supplied page.
   await seedCoreMoves();
-
-  // Kaidens
-  if ((await kaidensRepo.findAll()).length === 0) {
-    await kaidensRepo.create({
-      section: 'theWay',
-      title: 'The Way of the Sword Teacher',
-      content: 'This perchance is the hardest road a swordsperson can walk. He must teach those people that are truly qualified, The Art of The Sword. This is often a road of pain, blood, bruises, harshness, broken vows, fallen students and failing interest. The true student is rare and the benefits are few, but every now and again you stumble on a truly honorable student that holds the essence of the sword. In them is a refuge, a long awaited peace. In all students there is a hope that you are looked up to as a respected Kaiden. On their days of victory, you as well feel their joy. As they grow so do you. Even in the worst of students, there is a sense of knowing you will not be forgotten. It is not a job to be a Kaiden, but it is hard work for the soul. In the end, the fee is never enough. But the pay can last a long, long time. The term Kaiden originally was a Japanese term that referred to a script that as provided to a student after they had completed their training. We have adapted that term slightly and it now directly translates into "Sword Teacher". It is the one who bears the right to teach steel and bokken. This person bears the right to teach and bring in new sword students and True Students. His or her word in the arena is of the strictest council. His price for training is respect and his reward is the student\'s growth. The rank of Kaiden can only be given by the Head Kaiden, who is appointed by the Council of Swordfighters. In the WCoS abroad the word Kaiden or Teacher should be given respect.'
-    });
-
-    // Kaiden Rules
-    const rules = [
-      { number: 1, title: 'ADHERING TO STUDENT REQUIREMENTS', content: 'Kaidens must ensure all students meet the established requirements for each rank before promotion.' },
-      { number: 2, title: 'MAINTAINING HIGHER SKILL LEVEL', content: 'Kaidens must maintain a skill level higher than their highest-ranking student.' },
-      { number: 3, title: 'CLASS LOGS AND DOCUMENTATION', content: 'Detailed class logs must be maintained for each session.' },
-      { number: 4, title: 'NOTIFICATION & MONTHLY REPORTING', content: 'Monthly reports must be submitted to the Head Kaiden.' },
-      { number: 5, title: 'CLASS FREQUENCY REQUIREMENTS', content: 'Minimum class frequency standards must be met.' },
-      { number: 6, title: 'ANNUAL TEACHING REQUIREMENT', content: 'Kaidens must teach a minimum number of classes per year.' },
-      { number: 7, title: 'ONGOING INSTRUCTION REQUIREMENT', content: 'Continuous instruction without extended gaps.' },
-      { number: 8, title: 'MORAL CHARACTER & LEADERSHIP', content: 'Kaidens must exemplify the highest moral character.' },
-      { number: 9, title: 'DOJO RESPONSIBILITY & SAFETY', content: 'Dojo safety is the Kaiden\'s primary responsibility.' },
-      { number: 10, title: 'TRAINING DISCRETION & WCOS ADJUSTMENTS', content: 'Kaidens have discretion in training methods within WCoS guidelines.' },
-      { number: 11, title: 'MONTHLY REPORT STRUCTURE', content: 'Reports must follow the standardized format.' },
-      { number: 12, title: 'PROFESSIONAL NEUTRALITY & ETHICAL CONDUCT', content: 'Kaidens must maintain professional neutrality.' },
-    ];
-    for (const r of rules) {
-      await kaidenRulesRepo.create(r);
-    }
-    console.log('  ✓ Kaidens & Rules');
-  }
 
   // Resources
   if ((await resourcesRepo.findAll()).length === 0) {
@@ -228,21 +148,6 @@ async function seed() {
       await resourcesRepo.create(r);
     }
     console.log('  ✓ Resources');
-  }
-
-  // Dues
-  if ((await duesRepo.findAll()).length === 0) {
-    await duesRepo.create({
-      nonProfit: 'The Western Circle of Swordfighters is a non-profit organization and all active (sparring) members are asked to donate annual dues of $50.00 per person. In response to donations, Members will receive a WCoS member card, which will be required to participate in any form of combat sparring at a sanctioned Western Circle event or class.',
-      memberContributions: 'The dues cover the cost of maintaining the website, liability insurance (to obtain permits to hold events in public areas), incorporation costs, limited class supplies and anything else needed to maintain the WCoS as an official organization. Please make donations with the below form or through your Kaiden (teacher).',
-      donateText: 'DONATE SECURELY WITH ANY MAJOR CREDIT CARD THROUGH PAYPAL!',
-      amountOptions: ['50.00', '100.00'],
-      rankOptions: ['L1 - Trainee', 'L2 - Green Braid', 'L3 - White Rope', 'L4 - Red Rope', 'L5 - Crimson Chain', 'L6 - Silver Chain', 'L7 - Copper Chain', '(other)'],
-      dojoOptions: ['CA - Hayward', 'CA - Redding', 'CA - San Diego (Escondido)', 'KY - Louisville', 'NV - Gardnerville', 'OR - Portland (Beaverton)', 'WA - Seattle', '(other/none)'],
-      paypalEmail: 'westerncouncil@gmail.com',
-      active: true,
-    });
-    console.log('  ✓ Dues');
   }
 
   // Admin user

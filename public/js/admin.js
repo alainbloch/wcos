@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Use the Pages checkbox-dropdown pattern for move types, with keyboard support.
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-move-types]').forEach(group => {
+  document.querySelectorAll('[data-move-types], [data-checkbox-dropdown]').forEach(group => {
     const trigger = group.querySelector('.dropdown-trigger');
     const panel = group.querySelector('.dropdown-panel');
     const setOpen = open => {
@@ -638,10 +638,12 @@ document.addEventListener('DOMContentLoaded', () => {
       trigger.setAttribute('aria-expanded', String(open));
     };
     trigger.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
-    group.addEventListener('change', () => {
-      const types = [...group.querySelectorAll('input:checked')].map(input => input.value);
-      group.querySelector('.dropdown-display').textContent = types.join(', ') || 'Select move types...';
-    });
+    const updateDisplay = () => {
+      const types = [...group.querySelectorAll('input:checked')].map(input => input.dataset.label || input.value);
+      group.querySelector('.dropdown-display').textContent = types.join(', ') || group.dataset.placeholder || 'Select move types...';
+    };
+    group.addEventListener('change', updateDisplay);
+    updateDisplay();
     group.addEventListener('keydown', event => {
       if (event.key === 'Escape') { setOpen(false); trigger.focus(); }
     });

@@ -34,3 +34,10 @@ it('opens the type dropdown, updates selected labels, and closes with Escape', a
  trigger.click(); w.document.body.click(); expect(panel.classList.contains('open')).toBe(false);
  dom.window.close();
 });
+it('uses instructor names rather than member IDs in a preselected shared dropdown', async () => {
+ const dom=new JSDOM('<div data-checkbox-dropdown data-placeholder="Select instructors..."><button class="dropdown-trigger"><span class="dropdown-display"></span></button><div class="dropdown-panel"><input type="checkbox" checked value="member-1" data-label="Teacher One"><input type="checkbox" value="member-2" data-label="Teacher Two"></div></div>',{runScripts:'outside-only'});
+ const w=dom.window;w.eval(fs.readFileSync('public/js/admin.js','utf8'));await tick();
+ const display=w.document.querySelector('.dropdown-display');expect(display.textContent).toBe('Teacher One');
+ w.document.querySelector('[value=member-2]').click();expect(display.textContent).toBe('Teacher One, Teacher Two');
+ w.document.querySelectorAll('input').forEach(input=>input.click());expect(display.textContent).toBe('Select instructors...');dom.window.close();
+});

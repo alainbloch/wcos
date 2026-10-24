@@ -36,11 +36,8 @@ wcos/
 │   │   ├── memberService.js
 │   │   ├── championService.js
 │   │   ├── classesService.js
-│   │   ├── ranksService.js
 │   │   ├── movesService.js
-│   │   ├── kaidensService.js
 │   │   ├── resourcesService.js
-│   │   ├── duesService.js
 │   │   ├── pagesService.js
 │   │   └── authService.js
 │   ├── models/

@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { initDatabase, getDatabase } from '../../src/models/database.js';
 import { buildApp } from '../../src/app.js';
-import { siteSettingsRepo, navigationRepo, pagesRepo, duesRepo } from '../../src/models/database.js';
+import { siteSettingsRepo, navigationRepo, pagesRepo } from '../../src/models/database.js';
 import { authService } from '../../src/services/authService.js';
 
 describe('Public Routes', () => {
