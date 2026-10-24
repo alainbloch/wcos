@@ -28,10 +28,12 @@ describe("Complete public conversion", () => {
       expect($('script[src*="wp-content"]').length).toBe(0);
       expect($("main").text().replace(/\s+/g, " ").length).toBeGreaterThan(15);
       expect($("main").html()).not.toContain("[Truncated]");
-      for (const stylesheet of page.styles)
+      for (const stylesheet of page.styles) {
+        expect($(`link[href="${stylesheet}"]`).length).toBeGreaterThan(0);
         expect(
           fs.existsSync(path.join(process.cwd(), "public", stylesheet)),
         ).toBe(true);
+      }
     },
   );
   it("ships every referenced local image, font and stylesheet", () => {

@@ -1,57 +1,40 @@
-/**
- * Who We Are Controller
- * Handles Member Profiles, Photo Gallery, WCOS Council, Hall of Heroes
- */
-import { BaseController } from './baseController.js';
-import { memberService } from '../services/memberService.js';
-import { championService } from '../services/championService.js';
-import { councilService } from '../services/councilService.js';
-import { pagesService } from '../services/pagesService.js';
+import { PublicPageController } from "./publicPageController.js";
+import { memberService } from "../services/memberService.js";
+import { memberRosterService } from "../services/memberRosterService.js";
+import { renderView } from "../utils/viewEngine.js";
 
-export class WhoWeAreController extends BaseController {
+export class WhoWeAreController extends PublicPageController {
   async memberProfiles(request, reply) {
-    const membersGrouped = await memberService.getMembersGroupedByLevel();
-
-    await this.render(request, reply, 'pages/who-we-are/member-profiles.njk', {
-      pageTitle: 'Member Profiles & Rankings',
-      membersGrouped,
+    return this.renderPage(request, reply, "member-profiles", async (page) => {
+      // Keep the imported roster until member management is used. Afterwards an
+      // empty or inactive roster must stay empty, rather than resurrecting old names.
+      if (!(await memberService.isRosterManaged())) return page;
+      const membersGrouped = await memberService.getMembersGroupedByLevel();
+      const members = Object.values(membersGrouped)
+        .flat()
+        .filter((member) => member.active);
+      const rows = await renderView(
+        request.server,
+        "partials/member-rows.njk",
+        { members },
+      );
+      return {
+        ...page,
+        content: memberRosterService.replaceRows(page.content, rows),
+      };
     });
   }
 
   async photoGallery(request, reply) {
-    // Photo gallery - placeholder for future implementation
-    await this.render(request, reply, 'pages/who-we-are/photo-gallery.njk', {
-      pageTitle: 'Photo Gallery',
-      photos: [],
-    });
+    return reply.redirect("https://westerncircle.smugmug.com/");
   }
 
   async wcosCouncil(request, reply) {
-    const council = await councilService.getCurrentCouncil();
-    const allCouncil = await councilService.getAllCouncilMembers();
-
-    // Get historical dates from page content or settings
-    const historicalDates = allCouncil
-      .filter(c => c.historicalDate)
-      .sort((a, b) => new Date(b.historicalDate) - new Date(a.historicalDate));
-
-    await this.render(request, reply, 'pages/who-we-are/wcos-council.njk', {
-      pageTitle: 'WCoS Council',
-      council,
-      historicalDates,
-    });
+    return this.renderPage(request, reply, "wcos-council");
   }
 
   async hallOfHeroes(request, reply) {
-    const champions = await championService.getAllChampions();
-    const championsByDecade = await championService.getChampionsGroupedByDecade();
-
-    await this.render(request, reply, 'pages/who-we-are/hall-of-heroes.njk', {
-      pageTitle: 'Hall of Heroes',
-      pageSubtitle: 'Best of the Best Champions & Legends',
-      champions,
-      championsByDecade,
-    });
+    return this.renderPage(request, reply, "hall-of-heroes");
   }
 }
 

@@ -2,7 +2,7 @@
  * Member Service
  * Handles member profiles and rankings
  */
-import { membersRepo } from '../models/database.js';
+import { membersRepo, getDatabase } from "../models/database.js";
 
 export class MemberService {
   async getAllMembers() {
@@ -25,15 +25,31 @@ export class MemberService {
     return membersRepo.findByRegion(region);
   }
 
+  async isRosterManaged() {
+    return Boolean(
+      getDatabase().data.memberRosterManaged ||
+      (await this.getAllMembers()).length,
+    );
+  }
+
+  async markRosterManaged() {
+    const db = getDatabase();
+    db.data.memberRosterManaged = true;
+    await db.write();
+  }
+
   async createMember(data) {
+    await this.markRosterManaged();
     return membersRepo.create(data);
   }
 
   async updateMember(id, data) {
+    await this.markRosterManaged();
     return membersRepo.update(id, data);
   }
 
   async deleteMember(id) {
+    await this.markRosterManaged();
     return membersRepo.delete(id);
   }
 
@@ -42,7 +58,7 @@ export class MemberService {
     const grouped = {};
 
     for (const member of members) {
-      const level = member.level || 'Unknown';
+      const level = member.level || "Unknown";
       if (!grouped[level]) {
         grouped[level] = [];
       }
@@ -50,7 +66,7 @@ export class MemberService {
     }
 
     // Sort levels: L7, L6, L5, L4, L3, L2, L1, then others
-    const levelOrder = ['L7', 'L6', 'L5', 'L4', 'L3', 'L2', 'L1'];
+    const levelOrder = ["L7", "L6", "L5", "L4", "L3", "L2", "L1"];
     const sortedLevels = Object.keys(grouped).sort((a, b) => {
       const aIndex = levelOrder.indexOf(a);
       const bIndex = levelOrder.indexOf(b);

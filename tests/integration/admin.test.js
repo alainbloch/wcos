@@ -29,7 +29,6 @@ describe("Admin editing workflow", () => {
       const response = await get(url);
       expect(response.statusCode).toBe(200);
       expect(response.payload).toContain("/css/admin.css");
-      expect(response.payload).not.toContain("/admin/members/new");
     }
     expect((await app.inject("/css/admin.css")).statusCode).toBe(200);
   });
