@@ -1,0 +1,8 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<a href="/admin/updates/new" class="btn btn-primary">Add update</a>
+<form method="get"><label for="category">Category</label><select id="category" name="category"><option value="">All updates</option value="general" {% if category == 'general' %}selected{% endif %}>General Update</option><option value="council" {% if category == 'council' %}selected{% endif %}>Council</option></select><button class="btn">Filter</button></form>
+<div class="table-scroll"><table class="admin-table"><thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Actions</th></tr></thead><tbody>
+{% for item in items %}<tr><td>{{ item.dateLabel }}</td><td>{{ item.title or 'Untitled update' }}</td><td>{% if item.category == 'council' %}Council{% else %}General Update{% endif %}</td><td><a href="/admin/updates/{{ item.id }}/edit">Edit</a><form class="inline-form" method="post" action="/admin/updates/{{ item.id }}/delete"><input type="hidden" name="_csrf" value="{{ csrf }}"><button class="btn btn-danger" data-confirm-delete="Delete this update?">Delete</button></form></td></tr>{% else %}<tr><td colspan="4">No updates found.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

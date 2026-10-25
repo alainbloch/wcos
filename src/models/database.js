@@ -1,3 +1,4 @@
+import { seedUpdates } from './migrations/seedUpdates.js';
 import { migrateEditableLayout } from './migrations/editableLayout.js';
 import { mergeMemberHonors } from './migrations/mergeMemberHonors.js';
 import { seedGlossary } from './migrations/seedGlossary.js';
@@ -26,6 +27,7 @@ export const defaultData = {
   members: [],
   classes: [],
   glossary: [],
+  updates: [],
   moves: [],
   siteSettings: {
     siteName: 'Western Circle of Swordfighters',
@@ -105,6 +107,14 @@ export async function initDatabase() {
     await dbInstance.write();
   }
 
+  if (!dbInstance.data.migrations?.updates) {
+    if (existsSync(dbPath)) await writeFile(`${dbPath}.backup-updates-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    seedUpdates(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
+
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
@@ -152,3 +162,5 @@ export { MovesRepository } from './movesRepository.js';
 export { SiteSettingsRepository } from './siteSettingsRepository.js';
 export { UsersRepository } from './usersRepository.js';
 export { glossaryRepo, GlossaryRepository } from './glossaryRepository.js';
+
+export { updatesRepo, UpdatesRepository } from './updatesRepository.js';
