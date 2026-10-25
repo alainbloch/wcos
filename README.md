@@ -489,3 +489,64 @@ The **updates** data source returns all categories; **generalUpdates** and
 **councilUpdates** return their respective categories. The extraction script is
 `node scripts/extract-updates.mjs general.html council.html`; it regenerates the
 versioned seed and templates from source HTML, not the live database.
+
+### Settings → Data Transfer
+
+Open **Admin → Settings → Data Transfer** (`/admin/settings/data-transfer`).
+
+- **Export Data (.json)** includes all eight database collections: pages, members,
+  classes, glossary, updates, moves, site settings/layout, and users. IDs and
+  relationships are preserved. Passwords remain bcrypt hashes; sessions and
+  environment credentials are excluded.
+- **Export Archive (.zip)** adds all images/videos in `UPLOAD_DIR`, plus a versioned
+  manifest with SHA-256 checksums and sizes. Built-in `/images` assets belong to the
+  deployed codebase; external URLs remain links. ZIPs contain `database.json`,
+  `manifest.json`, and `uploads/*`.
+- Upload either format, choose a mode, inspect validation results and counts, then
+  explicitly confirm. The preview never changes the live database. Imports fail
+  if the database or uploaded files changed after preview; upload again to review.
+
+**Populate** adds missing IDs and retains matching records. **Override** replaces
+matching IDs and adds new records while retaining records omitted from the file.
+**Restore** replaces all collections and requires all collections in the snapshot.
+Site settings are a singleton matched as one record, regardless of its ID.
+JSON imports always retain existing uploaded files; ZIP Restore replaces the
+uploads directory with the snapshot. Missing referenced local media blocks imports.
+For Populate/Override archives, identical media is reused; conflicting names receive
+a content-based suffix and imported record/HTML references are rewritten. No member
+is matched by name: relationships use stable IDs and invalid references are errors.
+
+The importer validates schema version 1, collection shapes/IDs, required fields,
+dates, duplicate slugs/emails/championship years, member relationships, page parents,
+layout templates, local media references, file signatures, and manifest checksums.
+User records require valid bcrypt hashes; the importer never accepts plaintext
+passwords. A resulting database must have at least one administrator. Changed user
+credentials revoke existing sessions; Restore revokes all prior user sessions.
+The importing user signs in again after any successful import.
+
+**Limits:** 128 MiB input/output archive or JSON file, 256 MiB expanded content,
+5,000 archive entries, 50,000 records per collection. Supported uploaded files are
+PNG, JPEG, GIF, WebP, MP4, MOV, and WebM. Archive directory entries, symlinks,
+path traversal, encrypted/multi-volume/ZIP64 archives, unknown files, and unsupported
+versions are rejected. Use archives produced by this app. Transfers buffer data
+within these limits; allow enough memory and disk space for staging and backups.
+At most 20 previews can be pending; they expire after 30 minutes and are cleaned on
+Data Transfer requests. Private stages are bound to the user and browser session.
+
+Before applying, a complete recovery archive is saved beside `DB_PATH` in
+`.wcos-transfer/backups/` with private file permissions. It can be downloaded from
+Data Transfer and imported as Restore. Backups are retained until an operator removes
+them from disk. Protect backups as carefully as the database itself.
+
+During commit, the app serializes database writes and prevents reads from seeing an
+incomplete media/database swap. A private journal enables rollback after a write
+failure and recovery before startup serves requests following an interruption.
+If storage failure prevents rollback, requests are blocked until recovery succeeds.
+Use a **single app process** for this Lowdb database and stop the app before running
+maintenance scripts against the same storage. Multiple processes/external writers
+cannot be coordinated by the in-process lock. Allow sufficient free disk space for
+the recovery archive plus old and staged media directories. Do not delete a pending
+`.wcos-transfer/transaction.json` or `.wcos-import-*` directory during recovery.
+
+Deployment: run `npm install` (or `npm ci`) for the added `fflate` dependency, then
+restart. No database migration or new environment variables are required.

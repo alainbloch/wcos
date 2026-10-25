@@ -62,3 +62,9 @@ data/*.backup-*
 *.backup-glossary-*
 
 *.backup-honors-*
+
+# Private data-transfer staging, journals and backups
+**/.wcos-transfer/
+**/.wcos-import-*/
+*.backup-updates-*
+*.backup-layout-*
