@@ -498,6 +498,7 @@ Open **Admin → Settings → Data Transfer** (`/admin/settings/data-transfer`).
   classes, glossary, updates, moves, site settings/layout, and users. IDs and
   relationships are preserved. Passwords remain bcrypt hashes; sessions and
   environment credentials are excluded.
+- Backup system metadata preserves the managed-roster flag and any retired `resources` data left in older databases. Restore reinstates that metadata; Populate/Override retain legacy resource entries from both databases without exposing a Resources admin section. Older backups without the roster flag restore as managed so an intentionally empty roster stays empty.
 - **Export Archive (.zip)** adds all images/videos in `UPLOAD_DIR`, plus a versioned
   manifest with SHA-256 checksums and sizes. Built-in `/images` assets belong to the
   deployed codebase; external URLs remain links. ZIPs contain `database.json`,
