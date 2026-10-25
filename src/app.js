@@ -94,9 +94,12 @@ async function buildApp() {
   return fastify;
 }
 
+let serverInstance = null;
+
 async function start() {
   try {
     const app = await buildApp();
+    serverInstance = app;
     await app.listen({ port: config.port, host: config.host });
     console.log(`🚀 WCoS Server running at http://${config.host}:${config.port}`);
     console.log(`📚 Environment: ${config.nodeEnv}`);
@@ -109,11 +112,17 @@ async function start() {
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully...');
+  if (serverInstance) {
+    try { await serverInstance.close(); } catch (e) { /* ignore */ }
+  }
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully...');
+  if (serverInstance) {
+    try { await serverInstance.close(); } catch (e) { /* ignore */ }
+  }
   process.exit(0);
 });
 
