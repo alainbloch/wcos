@@ -2,6 +2,8 @@ import { BaseController } from "./baseController.js";
 import { updatesRepo } from "../models/updatesRepository.js";
 import { updatesService, readUpdateForm } from "../services/updatesService.js";
 import { adminController } from "./adminController.js";
+import { pagesRepo } from "../models/database.js";
+import { updateImageService } from "../services/updateImageService.js";
 export class UpdatesController extends BaseController {
   async list(request, reply) {
     const category = ["general", "council"].includes(request.query.category)
@@ -15,9 +17,14 @@ export class UpdatesController extends BaseController {
     });
   }
   async form(request, reply, item = {}, error) {
+    const pages = (await pagesRepo.findAll() || []).map(p => ({ title: p.title, slug: p.slug }));
+    const updates = await updatesRepo.findAll();
+    const subcategories = [...new Set(updates.map(u => u.subcategory).filter(Boolean))];
     return this.renderAdmin(request, reply, "admin/updates/form.njk", {
       pageTitle: item.id ? "Edit Update" : "New Update",
       item,
+      pages,
+      subcategories,
       csrf: request.session.userCsrf,
       ...(error ? { flash: { error } } : {}),
     });
@@ -34,13 +41,23 @@ export class UpdatesController extends BaseController {
     if (id && !(await updatesRepo.findById(id)))
       return reply.code(404).send("Update not found");
     request.body = { ...request.body, body: request.body.content };
+    let uploadedImage = null;
     try {
+      uploadedImage = await updateImageService.save(request.body?.image);
+      if (uploadedImage) request.body.image = uploadedImage;
+      else {
+        const existing = id ? await updatesRepo.findById(id) : null;
+        request.body.image = existing?.image || request.body.image || "";
+      }
       const item = id
         ? await updatesService.update(id, request.body)
         : await updatesService.create(request.body);
       request.session.adminFlash = { success: "Update saved." };
       return reply.redirect(`/admin/updates/${item.id}/edit`);
     } catch (error) {
+      if (uploadedImage) {
+        await updateImageService.discard(uploadedImage).catch(cleanupError => request.log.error(cleanupError));
+      }
       reply.code(400);
       return this.form(
         request,

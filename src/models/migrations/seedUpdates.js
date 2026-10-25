@@ -18,7 +18,7 @@ export function seedUpdates(data) {
             old.body === item.body),
       )
     ) {
-      data.updates.push({ ...item, id: `updates_${randomUUID()}` });
+      data.updates.push({ ...item, id: `updates_${randomUUID()}`, subcategory: null, pageLink: null, image: null });
     }
   }
   data.migrations ||= {};
