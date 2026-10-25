@@ -58,7 +58,7 @@ export async function adminRoutes(fastify) {
     ['get','/updates','list'], ['get','/updates/new','newItem'], ['post','/updates','create'],
     ['post','/updates/preview','preview'], ['get','/updates/:id/edit','edit'],
     ['post','/updates/:id/edit','update'], ['post','/updates/:id/delete','delete'],
-  ]) fastify[method](path,{preHandler:usersController.guard.bind(usersController)},(request,reply)=>updatesController[action](request,reply));
+  ]) fastify[method](path,(request,reply)=>updatesController[action](request,reply));
 
   fastify.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: MAX_FILE }, (_request, body, done) => done(null, body));
   for (const [method, path, action] of [

@@ -6,7 +6,7 @@ import { pagesRepo } from "../models/database.js";
 import { updateImageService } from "../services/updateImageService.js";
 export class UpdatesController extends BaseController {
   async list(request, reply) {
-    const category = ["general", "council"].includes(request.query.category)
+    const category = ["general", "council", "news"].includes(request.query.category)
       ? request.query.category
       : "";
     return this.renderAdmin(request, reply, "admin/updates/list.njk", {

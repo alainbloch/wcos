@@ -256,7 +256,7 @@ export function validateDatabase(data) {
       if (
         key === "updates" &&
         (!validUpdateDate(row.date) ||
-          !["general", "council"].includes(row.category))
+          !["general", "council", "news"].includes(row.category))
       )
         fail(key, row, "date/category", "invalid date or category.");
       if (

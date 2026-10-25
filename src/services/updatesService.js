@@ -43,8 +43,8 @@ export class UpdatesService {
     data.title = data.title.trim();
     if (data.title.length > 200)
       throw new Error("Title must be at most 200 characters.");
-    if (!["general", "council"].includes(data.category))
-      throw new Error("Choose General Update or Council.");
+    if (!["general", "council", "news"].includes(data.category))
+      throw new Error("Choose General Update, Council, or News.");
     if (!validUpdateDate(data.date))
       throw new Error(
         "Enter a valid date as YYYY-MM-DD or YYYY-MM for a month-only date.",
