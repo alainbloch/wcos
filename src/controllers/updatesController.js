@@ -1,3 +1,4 @@
+import { usersController } from "./usersController.js";
 import { BaseController } from "./baseController.js";
 import { updatesRepo } from "../models/updatesRepository.js";
 import { updatesService, readUpdateForm } from "../services/updatesService.js";
@@ -5,6 +6,17 @@ import { adminController } from "./adminController.js";
 import { pagesRepo } from "../models/database.js";
 import { updateImageService } from "../services/updateImageService.js";
 export class UpdatesController extends BaseController {
+  async guard(request, reply) {
+    if (request.isMultipart()) {
+      request.body = Object.fromEntries(
+        Object.entries(request.body || {}).map(([key, value]) => [
+          key,
+          value?.type === "field" ? value.value : value,
+        ]),
+      );
+    }
+    return usersController.guard(request, reply);
+  }
   async list(request, reply) {
     const category = ["general", "council", "news"].includes(request.query.category)
       ? request.query.category
@@ -38,7 +50,8 @@ export class UpdatesController extends BaseController {
     return this.form(request, reply, item);
   }
   async save(request, reply, id) {
-    if (id && !(await updatesRepo.findById(id)))
+    const existing = id ? await updatesRepo.findById(id) : null;
+    if (id && !existing)
       return reply.code(404).send("Update not found");
     request.body = { ...request.body, body: request.body.content };
     let uploadedImage = null;
@@ -46,8 +59,7 @@ export class UpdatesController extends BaseController {
       uploadedImage = await updateImageService.save(request.body?.image);
       if (uploadedImage) request.body.image = uploadedImage;
       else {
-        const existing = id ? await updatesRepo.findById(id) : null;
-        request.body.image = existing?.image || request.body.image || "";
+        request.body.image = existing?.image || "";
       }
       const item = id
         ? await updatesService.update(id, request.body)
@@ -62,7 +74,7 @@ export class UpdatesController extends BaseController {
       return this.form(
         request,
         reply,
-        { ...readUpdateForm(request.body), id },
+        { ...readUpdateForm(request.body), image: existing?.image || "", id },
         error.message,
       );
     }
