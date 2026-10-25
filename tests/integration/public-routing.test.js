@@ -21,7 +21,7 @@ it.each([
 });
 
 it("renders search and authentication routes independently of CMS pages", async () => {
-  for (const url of ["/search?q=sword", "/login", "/register"]) {
+  for (const url of ["/search?q=sword", "/login"]) {
     expect((await app.inject(url)).statusCode).toBe(200);
   }
   const response = await app.inject({

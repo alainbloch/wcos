@@ -2,18 +2,18 @@
  * Auth Controller
  * Handles login, logout, registration
  */
-import { BaseController } from './baseController.js';
-import { originalPages } from '../services/referenceSiteService.js';
-import { authService } from '../services/authService.js';
+import { BaseController } from "./baseController.js";
+import { originalPages } from "../services/referenceSiteService.js";
+import { authService } from "../services/authService.js";
 
 export class AuthController extends BaseController {
   async loginForm(request, reply) {
     if (request.user) {
-      return reply.redirect('/admin');
+      return reply.redirect("/admin");
     }
-    await this.render(request, reply, 'auth/login.njk', {
-      pageTitle: 'Login',
-      page: originalPages.find(page => page.slug === ''),
+    await this.render(request, reply, "auth/login.njk", {
+      pageTitle: "Login",
+      page: originalPages.find((page) => page.slug === ""),
     });
   }
 
@@ -23,54 +23,26 @@ export class AuthController extends BaseController {
     try {
       const { user, token } = await authService.authenticate(email, password);
 
-      reply.setCookie('wcos_session', token, {
-        path: '/',
+      reply.setCookie("wcos_session", token, {
+        path: "/",
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60, // 7 days
       });
 
-      request.flash = { success: 'Welcome back!' };
-      reply.redirect('/admin');
+      request.flash = { success: "Welcome back!" };
+      reply.redirect("/admin");
     } catch (error) {
       request.flash = { error: error.message };
-      reply.redirect('/login');
+      reply.redirect("/login");
     }
   }
 
   async logout(request, reply) {
-    reply.clearCookie('wcos_session', { path: '/' });
-    request.flash = { success: 'Logged out successfully' };
-    reply.redirect('/login');
-  }
-
-  async registerForm(request, reply) {
-    if (request.user) {
-      return reply.redirect('/admin');
-    }
-    await this.render(request, reply, 'auth/register.njk', {
-      pageTitle: 'Register',
-      page: originalPages.find(page => page.slug === ''),
-    });
-  }
-
-  async register(request, reply) {
-    const { name, email, password, confirmPassword } = request.body;
-
-    if (password !== confirmPassword) {
-      request.flash = { error: 'Passwords do not match' };
-      return reply.redirect('/register');
-    }
-
-    try {
-      await authService.createUser({ name, email, password, role: 'editor' });
-      request.flash = { success: 'Account created! Please log in.' };
-      reply.redirect('/login');
-    } catch (error) {
-      request.flash = { error: error.message };
-      reply.redirect('/register');
-    }
+    reply.clearCookie("wcos_session", { path: "/" });
+    request.flash = { success: "Logged out successfully" };
+    reply.redirect("/login");
   }
 }
 

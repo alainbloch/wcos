@@ -27,9 +27,8 @@
           <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Members</a></li>
           <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Classes</a></li>
 
-          {% if user and user.role === 'admin' %}
+          <li><a href="/admin/users">Users</a></li>
           <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Settings</a></li>
-          {% endif %}
         </ul>
       </nav>
       <div class="admin-user">

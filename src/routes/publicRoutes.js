@@ -55,12 +55,13 @@ export async function publicRoutes(fastify) {
   fastify.get("/logout", async (request, reply) => {
     await authController.logout(request, reply);
   });
-  fastify.get("/register", async (request, reply) => {
-    await authController.registerForm(request, reply);
-  });
-  fastify.post("/register", async (request, reply) => {
-    await authController.register(request, reply);
-  });
+  // All accounts have full CMS access; account creation requires an existing login.
+  fastify.get("/register", (_request, reply) => reply.redirect("/login"));
+  fastify.post("/register", (_request, reply) =>
+    reply
+      .code(403)
+      .send({ error: "Contact an administrator to create an account." }),
+  );
 
   // All published CMS pages, including category and member pages, share one renderer.
   fastify.get("/:slug", async (request, reply) => {
