@@ -529,3 +529,27 @@ body.reference-site {
 .elementor-317 .elementor-element.elementor-element-e84c2fc .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .card-header:not(.background-gradient) .card-header-button { background-color: rgba(56, 56, 56, 0.46); }
 .elementor-317 .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .right-icon-group .normal-icon { display: none; }
 .elementor-317 .jeg-elementor-kit.jkit-accordion .glossary-entry[open] .right-icon-group .active-icon { display: block; }
+
+/* Dynamic News cards: three columns, with additional records flowing into new rows. */
+.reference-site .news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 56px 40px;
+  width: 100%;
+}
+.reference-site .news-card { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.reference-site .news-card-image { width: 100%; aspect-ratio: 1.24; overflow: hidden; margin-bottom: 10px; }
+.reference-site .news-card-image a { display: block; height: 100%; }
+.reference-site .news-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reference-site .news-card-category { color: #ff0000; font-weight: 700; margin-bottom: 20px; }
+.reference-site .news-card-title { font-family: Anton, sans-serif; font-size: 26px; line-height: 1.3; text-transform: uppercase; margin: 0 0 22px; color: #fff; }
+.reference-site .news-card-title a { color: inherit; }
+.reference-site .news-card-date { display: flex; align-items: center; gap: 6px; color: #aaa; margin-bottom: 20px; }
+.reference-site .news-card-date svg { flex: 0 0 16px; }
+.reference-site .news-card-excerpt { color: #cbcbcb; line-height: 1.6; margin-bottom: 24px; overflow-wrap: anywhere; }
+.reference-site .news-card-excerpt > :last-child { margin-bottom: 0; }
+.reference-site .news-card-readmore { margin-top: auto; display: inline-flex; gap: 8px; align-items: center; border: 1px solid #292b33; border-left: 3px solid red; padding: 12px 16px; color: #fff; }
+.reference-site .news-card-readmore:hover { background: #191b23; color: #fff; }
+.reference-site .news-card a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+@media (max-width: 1024px) { .reference-site .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .reference-site .news-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; } }

@@ -16,6 +16,7 @@ import { memberService } from "./memberService.js";
 
 const repoMapping = {
   updates: { findAll: () => updatesService.getAll() },
+  newsUpdates: { findAll: () => updatesService.getAll('news') },
   generalUpdates: { findAll: () => updatesService.getAll('general') },
   councilUpdates: { findAll: () => updatesService.getAll('council') },
   glossary: { findAll: () => glossaryService.getAll() },

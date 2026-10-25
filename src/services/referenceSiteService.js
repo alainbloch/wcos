@@ -1,5 +1,6 @@
 /** Public source content and CMS overrides share one page model. */
 import fs from "node:fs";
+import { migrateNewsPage } from "./newsPageService.js";
 import sanitizeHtml from "sanitize-html";
 import { pagesRepo, getDatabase } from "../models/database.js";
 
@@ -95,13 +96,17 @@ export function sanitizePageContent(content) {
 /** Seed missing pages only; restarting must never overwrite an editor's changes. */
 export async function ensureReferencePages() {
   const db = getDatabase();
-  if (db.data.referenceMigrationVersion === 1) return;
+  if (db.data.referenceMigrationVersion === 1) {
+    if (migrateNewsPage(db.data.pages.find(page => page.slug === "news"))) await db.write();
+    return;
+  }
   const existing = new Set(db.data.pages.map((p) => p.slug));
   db.data.pages.push(
     ...originalPages
       .filter((p) => !existing.has(p.slug))
       .map((p) => ({ ...p, migrated: true })),
   );
+  migrateNewsPage(db.data.pages.find(page => page.slug === "news"));
   db.data.referenceMigrationVersion = 1;
   await db.write();
 }
