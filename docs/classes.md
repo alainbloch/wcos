@@ -8,6 +8,6 @@ The ranks, dues, kaidens and kaidenRules repositories, services, admin endpoints
 
 ## Apply
 
-Restart the application after deployment. Existing databases migrate automatically, with backup. For an empty database use the normal `npm run db:seed`, or stop the app and run `node scripts/seed-classes.js` with the application's DB_PATH to add just the seven classes, then restart. The class seed is idempotent and preserves edits.
+Startup does not migrate or seed classes. Import prepared records through Data Transfer. For an empty database use the normal `npm run db:seed`, or stop the app and run `node scripts/seed-classes.js` with the application's DB_PATH to add just the seven classes, then restart. The class seed is idempotent and preserves edits.
 
 Paste `docs/cms/classes.html` into the Classes page editor, enable the **classes** data source and save. It displays active classes and linked instructor names, keeping the supplied table styling, introductory text, COVID notice and contact footer. The COVID notice is preserved source content, not newly verified schedule guidance. Existing custom templates must use `cls.schedule`, `cls.instructors` (member objects), and `cls.unresolvedInstructors` instead of the removed text instructor fields.

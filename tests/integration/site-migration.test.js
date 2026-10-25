@@ -13,6 +13,7 @@ import { pagesRepo, getDatabase } from "../../src/models/database.js";
 let app;
 beforeAll(async () => {
   app = await buildApp();
+  await ensureReferencePages();
   await app.ready();
 });
 afterAll(async () => app.close());

@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {
   beforeAll,
   afterAll,
@@ -32,6 +33,7 @@ let app, cookie, csrf, baseline;
 const media = Buffer.from("RIFF1234WEBPtest-media");
 beforeAll(async () => {
   app = await buildApp();
+  await ensureReferencePages();
   const user = await usersRepo.findByEmail("admin@wcos.org");
   cookie = `wcos_session=${authService.generateToken(user)}`;
   const response = await app.inject({

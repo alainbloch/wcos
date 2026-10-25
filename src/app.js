@@ -18,7 +18,6 @@ import { setupViewEngine, renderView } from './utils/viewEngine.js';
 import { authService } from './services/authService.js';
 import { publicRoutes } from './routes/publicRoutes.js';
 import { adminRoutes } from './routes/adminRoutes.js';
-import { ensureReferencePages } from './services/referenceSiteService.js';
 import { referenceSiteController } from './controllers/referenceSiteController.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
@@ -81,7 +80,6 @@ async function buildApp() {
 
   // Initialize database
   await initDatabase();
-  await ensureReferencePages();
 
   // Initialize admin user
   await authService.initializeAdmin();

@@ -4,7 +4,7 @@ A modern Node.js CMS application rebuilt from the original WordPress site at [ve
 
 The completed conversion includes 24 original pages, local imagery/fonts/styles, responsive menus, native accordions and galleries, search, and an SMTP-backed contact form. See [conversion, migration, and deployment notes](docs/site-conversion.md).
 
-New databases are populated automatically. To replace the older sample page content in an existing installation, run `npm run migrate:site -- --replace` (a database backup is created first). Do not run it over edits you want to retain.
+Startup loads existing databases without migrations, normalization, content seeding, or reference-page rewrites. Missing database files receive an empty current schema; the initial admin account is still bootstrapped using `ADMIN_PASSWORD`. Populate content explicitly through Admin Settings → Data Transfer or the manual seed/import scripts. To replace the older sample page content in an existing installation, run `npm run migrate:site -- --replace` (a database backup is created first). Do not run it over edits you want to retain.
 
 ## 🎯 Design Overview
 
@@ -459,11 +459,8 @@ errors preserve your submitted source. Each section has a confirmed **Restore de
 action. Custom CSS loads after the reference styles and does not affect admin pages.
 Templates use a restricted context without user records, cookies, or request objects.
 
-On restart, an automatic migration initializes these settings from the existing
-reference partials and removes the unused Navigation collection. Existing navigation
-records are preserved in a `db.json.backup-layout-*` backup, not substituted for the
-links already in use on the public site. Migration does not overwrite saved layout
-edits. No seed/reset command is required. The source partials remain the restore defaults.
+Layout settings are edited explicitly in Admin Settings. Restarting does not migrate
+navigation or rewrite layouts. The source partials remain the restore defaults.
 
 ### General and council updates
 
@@ -473,10 +470,8 @@ filtering. Dates accept `YYYY-MM-DD` or `YYYY-MM` for historical month-only entr
 Updates render newest first. Original imported date labels are retained until the
 date changes; no day is invented for month-only records.
 
-Restart after merging to run the one-time migration with a `backup-updates-*`
-database backup. It imports 157 general updates and seven council updates from the
-supplied pages. Existing records are preserved; subsequent restarts do not restore
-records you deleted or overwrite edits. No seed/reset command is necessary.
+Updates are imported explicitly through Data Transfer. Restarts do not seed updates
+or restore deleted records.
 
 Replace the Updates page HTML with `docs/cms/updates.html` and enable its
 **generalUpdates** data source. Replace WCOS Council HTML with

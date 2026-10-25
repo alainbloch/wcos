@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect} from '@jest/globals';
 import fs from 'node:fs';
 import nunjucks from 'nunjucks';
@@ -9,7 +10,7 @@ import {dynamicPageService} from '../../src/services/dynamicPageService.js';
 import {migrateClasses,retiredCollections} from '../../src/models/migrations/classesInstructors.js';
 let app,cookie,teachers,other;
 beforeAll(async()=>{
- app=await buildApp();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
+ app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
  teachers=[];for(const merit of ['Kaiden','Honorary Kaiden','Head Kaiden']) teachers.push(await membersRepo.create({position:merit,merits:[merit]}));
  other=await membersRepo.create({position:'Other',merits:['Expert Swordsman']});
 });

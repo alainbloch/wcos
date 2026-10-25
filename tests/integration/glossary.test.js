@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect,jest} from '@jest/globals';
 import fs from 'node:fs';
 import {load} from 'cheerio';
@@ -7,7 +8,7 @@ import {authService} from '../../src/services/authService.js';
 import {glossaryService} from '../../src/services/glossaryService.js';
 import {seedGlossary,glossarySeed} from '../../src/models/migrations/seedGlossary.js';
 let app,cookie;
-beforeAll(async()=>{app=await buildApp();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;});
+beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;});
 afterAll(async()=>{await app.close();});
 const post=(url,payload)=>app.inject({method:'POST',url,headers:{cookie},payload});
 it('seeds all 69 entries and preserves existing definitions without duplicates',()=>{
