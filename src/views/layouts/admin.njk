@@ -26,10 +26,9 @@
           <li><a href="/admin/moves" {% if request.path.startsWith('/admin/moves') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Moves</a></li>
           <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Members</a></li>
           <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Classes</a></li>
-
-          <li><a href="/admin/updates">Updates</a></li>
-          <li><a href="/admin/layout">Layout</a></li>
-          <li><a href="/admin/users">Users</a></li>
+          <li><a href="/admin/updates" {% if request.path.startsWith('/admin/updates') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Updates</a></li>
+          <li><a href="/admin/layout" {% if request.path.startsWith('/admin/layout') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Layout</a></li>
+          <li><a href="/admin/users" {% if request.path.startsWith('/admin/users') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Users</a></li>
           <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Settings</a></li>
         </ul>
       </nav>
