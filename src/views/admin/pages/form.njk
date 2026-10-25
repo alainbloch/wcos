@@ -13,7 +13,7 @@
   <span aria-hidden="true">▼</span>
 </div>
 <div class="dropdown-panel">
-  {% for source in ['updates','generalUpdates','councilUpdates'] %}<label class="dropdown-option"><input type="checkbox" name="dataSources" value="{{ source }}" {% if page.dataSources and source in page.dataSources %}checked{% endif %}> {{ source }}</label>{% endfor %}
+  {% for source in ['updates','generalUpdates','councilUpdates','newsUpdates'] %}<label class="dropdown-option"><input type="checkbox" name="dataSources" value="{{ source }}" {% if page.dataSources and source in page.dataSources %}checked{% endif %}> {{ source }}</label>{% endfor %}
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="glossary" {% if page.dataSources and 'glossary' in page.dataSources %}checked{% endif %}> glossary</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="members" {% if page.dataSources and 'members' in page.dataSources %}checked{% endif %}> members</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="champions" {% if page.dataSources and 'champions' in page.dataSources %}checked{% endif %}> Champions (member awards)</label>
