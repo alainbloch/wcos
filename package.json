@@ -14,7 +14,8 @@
     "format": "prettier --write src/",
     "db:seed": "node scripts/seed-database.js",
     "db:reset": "node scripts/reset-database.js",
-    "migrate:site": "node scripts/migrate-site.js"
+    "migrate:site": "node scripts/migrate-site.js",
+    "admin:reset": "node scripts/reset-admin.js"
   },
   "keywords": [
     "wcos",

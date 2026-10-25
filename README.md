@@ -561,3 +561,22 @@ an equivalent single trusted proxy, or `TRUST_PROXY=0` to disable this behavior.
 After deploying this fix, reload Data Transfer to obtain a fresh form token.
 Expired form tokens are still rejected; the upload screen now displays plain-text
 server errors rather than a JSON parsing error.
+
+### Create or reset the configured administrator
+
+Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` or the process environment, then run:
+
+```bash
+npm run admin:reset
+```
+
+The command creates the account if its email does not exist, or resets that
+account's password and revokes its previous login sessions. Email matching is
+case-insensitive; existing names and other accounts are preserved. The password
+must meet the application's password rules and is never printed. Missing or
+invalid credentials cause a nonzero exit. `ADMIN_EMAIL` defaults to `admin@wcos.org`.
+
+Stop the app before running this maintenance command against its JSON database,
+then restart it afterward. Use the same `DB_PATH` as the app; on Railway, run
+against the mounted volume, not a local database. Remove `ADMIN_PASSWORD` from
+the environment once the account has been set up or reset.
