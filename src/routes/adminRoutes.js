@@ -1,3 +1,5 @@
+import { dataTransferController } from '../controllers/dataTransferController.js';
+import { MAX_FILE } from '../services/dataTransfer/format.js';
 import { updatesController } from '../controllers/updatesController.js';
 import { layoutController } from '../controllers/layoutController.js';
 import { usersController } from "../controllers/usersController.js";
@@ -57,6 +59,16 @@ export async function adminRoutes(fastify) {
     ['post','/updates/preview','preview'], ['get','/updates/:id/edit','edit'],
     ['post','/updates/:id/edit','update'], ['post','/updates/:id/delete','delete'],
   ]) fastify[method](path,{preHandler:usersController.guard.bind(usersController)},(request,reply)=>updatesController[action](request,reply));
+
+  fastify.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: MAX_FILE }, (_request, body, done) => done(null, body));
+  for (const [method, path, action] of [
+    ['get','/settings/data-transfer','page'],
+    ['get','/settings/data-transfer/export/:format','export'],
+    ['post','/settings/data-transfer/upload','upload'],
+    ['get','/settings/data-transfer/preview/:token','preview'],
+    ['post','/settings/data-transfer/apply','apply'],
+    ['get','/settings/data-transfer/backups/:name','backup'],
+  ]) fastify[method](path, { onRequest: authMiddleware, preHandler: dataTransferController.guard.bind(dataTransferController), bodyLimit: MAX_FILE }, (request, reply) => dataTransferController[action](request, reply));
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));

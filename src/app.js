@@ -1,3 +1,5 @@
+import { installTransferGate } from './services/dataTransfer/gate.js';
+import { recoverTransfer, isTransferBlocked } from './services/dataTransfer/service.js';
 /**
  * Main Application Entry Point
  * Sets up Fastify server with all routes, middleware, and plugins
@@ -24,11 +26,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function buildApp() {
+  await recoverTransfer();
   const fastify = Fastify({
     ignoreTrailingSlash: true,
     bodyLimit: 2 * 1024 * 1024,
     logger: config.nodeEnv !== 'test',
     disableRequestLogging: config.nodeEnv === 'production',
+  });
+
+  installTransferGate(fastify);
+  fastify.addHook('onRequest', async (_request, reply) => {
+    if (isTransferBlocked()) return reply.code(503).send('Database recovery is required. Restart the app after resolving the storage error.');
   });
 
   // Register plugins

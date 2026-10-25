@@ -9,3 +9,5 @@ process.env.DB_PATH = path.join(
 );
 
 process.env.ADMIN_PASSWORD = 'TestAdmin123!';
+
+process.env.UPLOAD_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'wcos-uploads-test-'));
