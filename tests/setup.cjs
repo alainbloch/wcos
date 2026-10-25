@@ -7,3 +7,5 @@ process.env.DB_PATH = path.join(
   fs.mkdtempSync(path.join(os.tmpdir(), "wcos-test-")),
   "db.json",
 );
+
+process.env.ADMIN_PASSWORD = 'TestAdmin123!';

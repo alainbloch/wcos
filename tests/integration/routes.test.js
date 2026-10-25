@@ -127,7 +127,6 @@ describe('Public Routes', () => {
       { url: '/classes', title: 'Classes' },
       { url: '/wcos-etiquette-rules', title: 'WCoS Etiquette' },
       { url: '/login', title: 'Login' },
-      { url: '/register', title: 'Register' },
     ];
 
     for (const page of workingPages) {
@@ -162,8 +161,8 @@ describe('Public Routes', () => {
         url: '/register',
       });
       
-      expect(response.statusCode).toBe(200);
-      expect(response.payload).toContain('Register');
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toBe('/login');
     });
   });
 });
@@ -180,36 +179,9 @@ describe('Authentication Flow', () => {
     await app.close();
   });
 
-  it('should register a new user', async () => {
-    const response = await app.inject({
-      method: 'POST',
-      url: '/register',
-      payload: {
-        name: 'New User',
-        email: 'newuser@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
-      },
-    });
-    
-    expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe('/login');
-  });
-
-  it('should reject registration with mismatched passwords', async () => {
-    const response = await app.inject({
-      method: 'POST',
-      url: '/register',
-      payload: {
-        name: 'New User',
-        email: 'newuser2@example.com',
-        password: 'password123',
-        confirmPassword: 'differentpassword',
-      },
-    });
-    
-    expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe('/register');
+  it('rejects public account creation', async () => {
+    const response = await app.inject({ method: 'POST', url: '/register', payload: { email: 'intruder@example.com', password: 'Password123!' } });
+    expect(response.statusCode).toBe(403);
   });
 
   it('should login with valid credentials', async () => {
@@ -218,7 +190,7 @@ describe('Authentication Flow', () => {
       url: '/login',
       payload: {
         email: 'admin@wcos.org',
-        password: 'admin123',
+        password: 'TestAdmin123!',
       },
     });
     
@@ -247,7 +219,7 @@ describe('Authentication Flow', () => {
       url: '/login',
       payload: {
         email: 'admin@wcos.org',
-        password: 'admin123',
+        password: 'TestAdmin123!',
       },
     });
     

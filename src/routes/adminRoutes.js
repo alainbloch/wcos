@@ -1,21 +1,48 @@
-import { glossaryController } from '../controllers/glossaryController.js';
+import { usersController } from "../controllers/usersController.js";
+import { glossaryController } from "../controllers/glossaryController.js";
 /**
  * Admin Routes
  * CMS administration routes
  */
 import { adminController } from "../controllers/adminController.js";
-import { authMiddleware, requireRole } from "../middleware/auth.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 export async function adminRoutes(fastify) {
   // Apply auth middleware to all admin routes
   fastify.addHook("preHandler", authMiddleware);
 
-  fastify.get('/glossary', glossaryController.list.bind(glossaryController));
-  fastify.get('/glossary/new', glossaryController.newItem.bind(glossaryController));
-  fastify.post('/glossary', glossaryController.create.bind(glossaryController));
-  fastify.get('/glossary/:id/edit', glossaryController.edit.bind(glossaryController));
-  fastify.post('/glossary/:id/edit', glossaryController.update.bind(glossaryController));
-  fastify.post('/glossary/:id/delete', glossaryController.delete.bind(glossaryController));
+  fastify.get("/glossary", glossaryController.list.bind(glossaryController));
+  fastify.get(
+    "/glossary/new",
+    glossaryController.newItem.bind(glossaryController),
+  );
+  fastify.post("/glossary", glossaryController.create.bind(glossaryController));
+  fastify.get(
+    "/glossary/:id/edit",
+    glossaryController.edit.bind(glossaryController),
+  );
+  fastify.post(
+    "/glossary/:id/edit",
+    glossaryController.update.bind(glossaryController),
+  );
+  fastify.post(
+    "/glossary/:id/delete",
+    glossaryController.delete.bind(glossaryController),
+  );
+
+  for (const [method, path, action] of [
+    ["get", "/users", "list"],
+    ["get", "/users/new", "newUser"],
+    ["post", "/users", "create"],
+    ["get", "/users/:id/edit", "edit"],
+    ["post", "/users/:id/edit", "update"],
+    ["post", "/users/:id/delete", "delete"],
+  ])
+    fastify[method](
+      path,
+      { preHandler: usersController.guard.bind(usersController) },
+      usersController[action].bind(usersController),
+    );
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
@@ -77,9 +104,17 @@ export async function adminRoutes(fastify) {
   );
 
   // Moves
-  fastify.post("/moves/order", adminController.reorderMoves.bind(adminController));
-  fastify.post("/moves/media", adminController.uploadMoveMedia.bind(adminController));
-  fastify.get("/core-moves", (request, reply) => reply.redirect("/admin/moves"));
+  fastify.post(
+    "/moves/order",
+    adminController.reorderMoves.bind(adminController),
+  );
+  fastify.post(
+    "/moves/media",
+    adminController.uploadMoveMedia.bind(adminController),
+  );
+  fastify.get("/core-moves", (request, reply) =>
+    reply.redirect("/admin/moves"),
+  );
   fastify.get("/moves", adminController.listMoves.bind(adminController));
   fastify.get("/moves/new", adminController.newMove.bind(adminController));
   fastify.post("/moves", adminController.createMove.bind(adminController));
@@ -97,9 +132,18 @@ export async function adminRoutes(fastify) {
   );
 
   // Resources
-  fastify.get("/resources", adminController.listResources.bind(adminController));
-  fastify.get("/resources/new", adminController.newResource.bind(adminController));
-  fastify.post("/resources", adminController.createResource.bind(adminController));
+  fastify.get(
+    "/resources",
+    adminController.listResources.bind(adminController),
+  );
+  fastify.get(
+    "/resources/new",
+    adminController.newResource.bind(adminController),
+  );
+  fastify.post(
+    "/resources",
+    adminController.createResource.bind(adminController),
+  );
   fastify.get(
     "/resources/:id/edit",
     adminController.editResource.bind(adminController),
@@ -114,19 +158,13 @@ export async function adminRoutes(fastify) {
   );
 
   // Settings (admin only)
-  fastify.get(
-    "/settings",
-    { preHandler: requireRole("admin") },
-    adminController.settings.bind(adminController),
-  );
+  fastify.get("/settings", adminController.settings.bind(adminController));
   fastify.post(
     "/settings",
-    { preHandler: requireRole("admin") },
     adminController.updateSettings.bind(adminController),
   );
   fastify.post(
     "/settings/navigation",
-    { preHandler: requireRole("admin") },
     adminController.updateNavigation.bind(adminController),
   );
 }

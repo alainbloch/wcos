@@ -1,0 +1,14 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<form class="admin-form" method="post" action="{% if item.id %}/admin/users/{{ item.id }}/edit{% else %}/admin/users{% endif %}">
+  <input type="hidden" name="_csrf" value="{{ csrf }}">
+  <div class="form-field"><label for="name">Name</label><input id="name" name="name" value="{{ item.name }}" required maxlength="200" autocomplete="name"></div>
+  <div class="form-field"><label for="email">Email</label><input type="email" id="email" name="email" value="{{ item.email }}" required maxlength="254" autocomplete="username"></div>
+  <fieldset><legend>{% if item.id %}Change password{% else %}Password{% endif %}</legend>
+    <p id="password-help">At least 8 characters with uppercase, lowercase, a number, and a symbol. Maximum 72 UTF-8 bytes.{% if item.id %} Leave both fields blank to keep the current password. Changing your own password signs you out.{% endif %}</p>
+    <div class="form-field"><label for="password">New password</label><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" aria-describedby="password-help" {% if not item.id %}required{% endif %}></div>
+    <div class="form-field"><label for="confirmPassword">Confirm new password</label><input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="8" {% if not item.id %}required{% endif %}></div>
+  </fieldset>
+  <button class="btn btn-primary" type="submit">Save user</button> <a class="btn btn-secondary" href="/admin/users">Cancel</a>
+</form>
+{% endblock %}

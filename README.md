@@ -42,7 +42,7 @@ wcos/
 │   ├── models/
 │   │   └── database.js        # Lowdb + Repository pattern
 │   ├── middleware/
-│   │   ├── auth.js            # JWT verification, role guards
+│   │   ├── auth.js            # JWT verification and session revocation
 │   │   └── errorHandler.js    # Centralized error handling
 │   ├── routes/
 │   │   ├── publicRoutes.js    # Frontend website routes
@@ -81,7 +81,7 @@ wcos/
 | **Nunjucks Templates** | Secure auto-escaping, inheritance, macros, familiar Django/Jinja syntax |
 | **CSS Custom Properties** | Design tokens for colors, spacing, typography; easy theming, no build step |
 | **JWT in HttpOnly Cookies** | Secure auth without localStorage XSS risk; CSRF protected via SameSite |
-| **Role-Based Access** | `admin` vs `editor` roles; route-level guards via middleware |
+| **User Administration** | All authenticated users have full admin access; manage accounts under Admin → Users |
 
 ### Content Model (Mapped from Original Site)
 
@@ -130,10 +130,19 @@ npm run dev
 
 The application will be available at **http://localhost:3000**
 
-### Default Admin Login
-After first run, an admin user is created:
-- **Email**: `admin@wcos.org` (from `.env` ADMIN_EMAIL)
-- **Password**: `admin123` ⚠️ **Change immediately!**
+### Initial Admin Login
+For an empty database, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` before starting the app.
+The password must contain at least 8 characters including uppercase, lowercase,
+a number and a symbol, and be at most 72 UTF-8 bytes (bcrypt's limit).
+The initial password is hashed with bcrypt (cost 12); it is never logged.
+Remove `ADMIN_PASSWORD` from the environment after the first successful startup.
+Existing databases do not require this variable or a migration.
+
+Manage accounts in **Admin → Users**. Password fields are always empty; leave both
+blank on edit to keep the existing password. Resetting a password revokes prior
+sessions; resetting your own password requires signing in again. Deleting a user
+revokes access immediately. Self-deletion and deleting the last account are blocked.
+Public registration is disabled because every account has full administration access.
 
 Access admin panel at **http://localhost:3000/admin**
 

@@ -169,32 +169,29 @@ describe('AuthService', () => {
     const user = await authService.createUser({
       name: 'Test User',
       email: 'test@example.com',
-      password: 'password123',
+      password: 'Password123!',
       role: 'editor',
     });
     
     expect(user).toHaveProperty('id');
     expect(user.email).toBe('test@example.com');
     expect(user.name).toBe('Test User');
-    expect(user.role).toBe('editor');
-    // createUser returns the raw user from DB (with hashed password)
-    expect(user).toHaveProperty('password');
-    expect(user.password).not.toBe('password123');
-    expect(user.password).toMatch(/^\$2[aby]\$/);
+    expect(user.role).toBe('admin');
+    expect(user).not.toHaveProperty('password');
   });
 
   it('should throw error for duplicate email', async () => {
     await authService.createUser({
       name: 'User 1',
       email: 'duplicate@example.com',
-      password: 'password123',
+      password: 'Password123!',
     });
     
     await expect(
       authService.createUser({
         name: 'User 2',
         email: 'duplicate@example.com',
-        password: 'password123',
+        password: 'Password123!',
       })
     ).rejects.toThrow('Email already registered');
   });
@@ -203,10 +200,10 @@ describe('AuthService', () => {
     await authService.createUser({
       name: 'Auth User',
       email: 'auth@example.com',
-      password: 'password123',
+      password: 'Password123!',
     });
     
-    const result = await authService.authenticate('auth@example.com', 'password123');
+    const result = await authService.authenticate('auth@example.com', 'Password123!');
     
     expect(result).toHaveProperty('user');
     expect(result.user.email).toBe('auth@example.com');
@@ -217,7 +214,7 @@ describe('AuthService', () => {
 
   it('should throw for invalid email', async () => {
     await expect(
-      authService.authenticate('nonexistent@example.com', 'password123')
+      authService.authenticate('nonexistent@example.com', 'Password123!')
     ).rejects.toThrow('Invalid credentials');
   });
 
@@ -225,7 +222,7 @@ describe('AuthService', () => {
     await authService.createUser({
       name: 'Auth User',
       email: 'auth@example.com',
-      password: 'password123',
+      password: 'Password123!',
     });
     
     await expect(
