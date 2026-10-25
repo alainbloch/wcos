@@ -116,10 +116,11 @@ function initPageEditor() {
     const contentAtRequest = source.value;
     status.textContent = "Loading visual editor…";
     try {
-      const response = await fetch("/admin/pages/preview", {
+      const response = await fetch(form.dataset.previewUrl || "/admin/pages/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          _csrf: form.elements._csrf?.value,
           id: form.dataset.pageId,
           content: contentAtRequest,
         }),

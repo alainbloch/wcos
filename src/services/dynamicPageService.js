@@ -9,7 +9,6 @@ import {
   movesRepo,
   resourcesRepo,
   siteSettingsRepo,
-  navigationRepo,
   usersRepo,
 } from "../models/database.js";
 
@@ -36,7 +35,6 @@ const repoMapping = {
   },
   resources: resourcesRepo,
   siteSettings: siteSettingsRepo,
-  navigation: navigationRepo,
   users: usersRepo,
 };
 

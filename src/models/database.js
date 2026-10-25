@@ -1,3 +1,4 @@
+import { migrateEditableLayout } from './migrations/editableLayout.js';
 import { mergeMemberHonors } from './migrations/mergeMemberHonors.js';
 import { seedGlossary } from './migrations/seedGlossary.js';
 import { existsSync } from 'node:fs';
@@ -33,36 +34,6 @@ export const defaultData = {
     heroTitle: 'WESTERN CIRCLE OF SWORDFIGHTERS',
     heroSubtitle: 'experts',
     dojosText: 'DOJOS IN CA, OR, WA, NV AND KY',
-  },
-  navigation: {
-    whoWeAre: [
-      { label: 'Member Profiles', slug: 'member-profiles' },
-      { label: 'Photo Gallery', slug: 'photo-gallery' },
-      { label: 'WCOS Council', slug: 'wcos-council' },
-      { label: 'Hall of Heroes', slug: 'hall-of-heroes' },
-    ],
-    knowledgeBase: [
-      { label: 'Rank Requirements', slug: 'rank-requirements' },
-      { label: 'Core Moves', slug: 'core-moves' },
-      { label: 'Dalmater Colors', slug: 'dalmater-colors' },
-      { label: 'Kaidens', slug: 'kaidens' },
-      { label: 'Fighter Class', slug: 'fighter-class' },
-      { label: 'Armor', slug: 'armor' },
-      { label: 'Weapons', slug: 'weapons' },
-      { label: 'Sparring', slug: 'sparring' },
-      { label: 'Sword Dance', slug: 'sword-dance' },
-      { label: 'Glossary', slug: 'glossary' },
-    ],
-    involvement: [
-      { label: 'Classes', slug: 'classes' },
-      { label: 'WCOS Etiquette & Rules', slug: 'wcos-etiquette-rules' },
-      { label: 'Dues/Donations', slug: 'dues' },
-    ],
-    resources: [
-      { label: 'Links & Resources', slug: 'links-resources' },
-      { label: 'Contact Us', slug: 'contact-us' },
-      { label: 'Previous Updates', slug: 'previous-updates' },
-    ],
   },
   users: [],
 };
@@ -138,13 +109,20 @@ export async function initDatabase() {
   // Earlier versions seeded these two collections as objects even though their
   // repositories use array operations. Normalize once without discarding values.
   let normalized = false;
-  for (const key of ['siteSettings', 'navigation']) {
+  for (const key of ['siteSettings']) {
     if (!Array.isArray(dbInstance.data[key])) {
       dbInstance.data[key] = [{ id: key, ...(dbInstance.data[key] || defaultData[key]) }];
       normalized = true;
     }
   }
   if (normalized) await dbInstance.write();
+  if (!dbInstance.data.migrations?.editableLayout || Object.hasOwn(dbInstance.data, 'navigation')) {
+    if (existsSync(dbPath)) await writeFile(`${dbPath}.backup-layout-${Date.now()}`, JSON.stringify(dbInstance.data, null, 2), { flag: 'wx', mode: 0o600 });
+    const migrated = structuredClone(dbInstance.data);
+    await migrateEditableLayout(migrated);
+    dbInstance.data = migrated;
+    await dbInstance.write();
+  }
   return dbInstance;
 }
 
@@ -165,7 +143,6 @@ export { classesRepo } from './classesRepository.js';
 export { movesRepo } from './movesRepository.js';
 export { resourcesRepo } from './resourcesRepository.js';
 export { siteSettingsRepo } from './siteSettingsRepository.js';
-export { navigationRepo } from './navigationRepository.js';
 export { usersRepo } from './usersRepository.js';
 
 // Also export the repository classes for testing/extension
@@ -176,6 +153,5 @@ export { ClassesRepository } from './classesRepository.js';
 export { MovesRepository } from './movesRepository.js';
 export { ResourcesRepository } from './resourcesRepository.js';
 export { SiteSettingsRepository } from './siteSettingsRepository.js';
-export { NavigationRepository } from './navigationRepository.js';
 export { UsersRepository } from './usersRepository.js';
 export { glossaryRepo, GlossaryRepository } from './glossaryRepository.js';

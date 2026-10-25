@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { initDatabase, getDatabase } from '../../src/models/database.js';
 import { buildApp } from '../../src/app.js';
-import { siteSettingsRepo, navigationRepo, pagesRepo } from '../../src/models/database.js';
+import { siteSettingsRepo, pagesRepo } from '../../src/models/database.js';
 import { authService } from '../../src/services/authService.js';
 
 describe('Public Routes', () => {
@@ -26,36 +26,7 @@ describe('Public Routes', () => {
       dojosText: 'DOJOS IN CA, OR, WA, NV AND KY',
     });
     
-    await navigationRepo.create({
-      whoWeAre: [
-        { label: 'Member Profiles', slug: 'member-profiles' },
-        { label: 'Photo Gallery', slug: 'photo-gallery' },
-        { label: 'WCOS Council', slug: 'wcos-council' },
-        { label: 'Hall of Heroes', slug: 'hall-of-heroes' },
-      ],
-      knowledgeBase: [
-        { label: 'Rank Requirements', slug: 'rank-requirements' },
-        { label: 'Core Moves', slug: 'core-moves' },
-        { label: 'Dalmater Colors', slug: 'dalmater-colors' },
-        { label: 'Kaidens', slug: 'kaidens' },
-        { label: 'Fighter Class', slug: 'fighter-class' },
-        { label: 'Armor', slug: 'armor' },
-        { label: 'Weapons', slug: 'weapons' },
-        { label: 'Sparring', slug: 'sparring' },
-        { label: 'Sword Dance', slug: 'sword-dance' },
-        { label: 'Glossary', slug: 'glossary' },
-      ],
-      involvement: [
-        { label: 'Classes', slug: 'classes' },
-        { label: 'WCOS Etiquette & Rules', slug: 'wcos-etiquette-rules' },
-        { label: 'Dues/Donations', slug: 'dues' },
-      ],
-      resources: [
-        { label: 'Links & Resources', slug: 'links-resources' },
-        { label: 'Contact Us', slug: 'contact-us' },
-        { label: 'Previous Updates', slug: 'previous-updates' },
-      ],
-    });
+
     
     // Create admin user
     await authService.initializeAdmin();

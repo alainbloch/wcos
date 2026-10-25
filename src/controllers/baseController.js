@@ -1,3 +1,4 @@
+import { renderLayout } from '../services/layoutService.js';
 /**
  * Base Controller
  * Provides common functionality for all controllers
@@ -27,6 +28,7 @@ export class BaseController {
       ...additionalContext,
     };
 
+    context.referenceLayout = await renderLayout(context.page);
     const html = await renderView(request.server, template, context);
     reply.type("text/html").send(html);
   }

@@ -33,7 +33,7 @@ async function resetDatabase() {
     'pages', 'members',
     'classes', 'moves', 'glossary',
     'resources',
-    'siteSettings', 'navigation', 'users'
+    'siteSettings', 'users'
   ];
   
   for (const collection of collections) {

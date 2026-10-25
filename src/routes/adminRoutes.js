@@ -1,3 +1,4 @@
+import { layoutController } from '../controllers/layoutController.js';
 import { usersController } from "../controllers/usersController.js";
 import { glossaryController } from "../controllers/glossaryController.js";
 /**
@@ -43,6 +44,12 @@ export async function adminRoutes(fastify) {
       { preHandler: usersController.guard.bind(usersController) },
       usersController[action].bind(usersController),
     );
+
+  fastify.get('/layout', { preHandler: layoutController.guard.bind(layoutController) }, (request, reply) => layoutController.edit(request, reply));
+  for (const [method, path, action] of [
+    ['get', '/layout/:section', 'edit'], ['post', '/layout/:section', 'update'],
+    ['post', '/layout/:section/preview', 'preview'], ['post', '/layout/:section/restore', 'restore'],
+  ]) fastify[method](path, { preHandler: layoutController.guard.bind(layoutController) }, (request, reply) => layoutController[action](request, reply));
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
@@ -162,9 +169,5 @@ export async function adminRoutes(fastify) {
   fastify.post(
     "/settings",
     adminController.updateSettings.bind(adminController),
-  );
-  fastify.post(
-    "/settings/navigation",
-    adminController.updateNavigation.bind(adminController),
   );
 }
