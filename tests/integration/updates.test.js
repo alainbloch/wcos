@@ -166,3 +166,62 @@ it("does not reimport edited or deleted seed entries on restart", async () => {
   expect((await updatesRepo.findById(original.id)).title).toBe("Edited seed");
   expect(await updatesRepo.findById(removed.id)).toBeNull();
 });
+
+const multipartPost = async (url, fields, image, filename = "photo.png") => {
+  const boundary = "update-form-boundary";
+  const chunks = [];
+  for (const [name, value] of Object.entries({ _csrf: csrf, ...fields })) {
+    chunks.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`));
+  }
+  if (image !== undefined) {
+    chunks.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="image"; filename="${filename}"\r\nContent-Type: image/png\r\n\r\n`), image, Buffer.from("\r\n"));
+  }
+  chunks.push(Buffer.from(`--${boundary}--\r\n`));
+  return app.inject({
+    method: "POST", url,
+    headers: { cookie, "content-type": `multipart/form-data; boundary=${boundary}` },
+    payload: Buffer.concat(chunks),
+  });
+};
+
+it("saves multipart updates with images and preserves images when no replacement is selected", async () => {
+  const sharp = (await import("sharp")).default;
+  const image = await sharp({ create: { width: 2, height: 2, channels: 3, background: "red" } }).png().toBuffer();
+  const fields = { title: "Multipart news", date: "2026-10-24", category: "news", subcategory: "Events", pageLink: "updates", content: "<p>News summary</p>" };
+  const created = await multipartPost("/admin/updates", fields, image);
+  expect(created.statusCode).toBe(302);
+  const item = (await updatesRepo.findAll()).find(x => x.title === fields.title);
+  expect(item).toMatchObject({ title: fields.title, category: "news", subcategory: "Events", pageLink: "updates", body: fields.content });
+  expect(item.image).toMatch(/^\/uploads\/update-.*\.webp$/);
+  expect((await app.inject(item.image)).statusCode).toBe(200);
+  const edited = await multipartPost(created.headers.location, { ...fields, title: "Edited multipart" }, Buffer.alloc(0), "");
+  expect(edited.statusCode).toBe(302);
+  expect(await updatesRepo.findById(item.id)).toMatchObject({ title: "Edited multipart", image: item.image });
+  expect((await multipartPost(created.headers.location, fields)).statusCode).toBe(302);
+  expect((await updatesRepo.findById(item.id)).image).toBe(item.image);
+
+  const config = (await import("../../src/config/index.js")).default;
+  const before = fs.readdirSync(config.uploadDir).sort();
+  const invalid = await multipartPost(created.headers.location, { ...fields, date: "invalid" }, image);
+  expect(invalid.statusCode).toBe(400);
+  const $ = load(invalid.payload);
+  expect($("#title").val()).toBe(fields.title);
+  expect($("#content").val()).toBe(fields.content);
+  expect(invalid.payload).toContain(item.image);
+  expect(fs.readdirSync(config.uploadDir).sort()).toEqual(before);
+  expect((await updatesRepo.findById(item.id)).title).toBe("Multipart news");
+  expect((await multipartPost(created.headers.location, fields, Buffer.from("not an image"))).statusCode).toBe(400);
+  expect((await updatesRepo.findById(item.id)).image).toBe(item.image);
+  expect((await multipartPost(created.headers.location, { ...fields, _csrf: "" }, image)).statusCode).toBe(403);
+  expect(fs.readdirSync(config.uploadDir).sort()).toEqual(before);
+  expect((await multipartPost(created.headers.location, fields, image)).statusCode).toBe(302);
+  const replaced = await updatesRepo.findById(item.id);
+  expect(replaced.image).not.toBe(item.image);
+  expect((await app.inject(replaced.image)).statusCode).toBe(200);
+});
+
+it("creates multipart updates with an empty image picker", async () => {
+  const response = await multipartPost("/admin/updates", { title: "No image", date: "2026-10", category: "general", content: "<p>Body</p>" }, Buffer.alloc(0), "");
+  expect(response.statusCode).toBe(302);
+  expect((await updatesRepo.findAll()).find(x => x.title === "No image").image).toBe("");
+});
