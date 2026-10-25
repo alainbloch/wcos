@@ -29,6 +29,7 @@ async function buildApp() {
   await recoverTransfer();
   const fastify = Fastify({
     ignoreTrailingSlash: true,
+    trustProxy: config.trustProxy,
     bodyLimit: 2 * 1024 * 1024,
     logger: config.nodeEnv !== 'test',
     disableRequestLogging: config.nodeEnv === 'production',

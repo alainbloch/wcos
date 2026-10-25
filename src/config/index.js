@@ -20,6 +20,8 @@ const config = {
   port: parseInt(process.env.PORT || cliValue('--port') || '3000', 10),
   host: process.env.HOST || cliValue('--host') || '0.0.0.0',
   nodeEnv: process.env.NODE_ENV || 'development',
+  // Railway terminates HTTPS at its proxy; trust only the immediate hop.
+  trustProxy: (process.env.TRUST_PROXY ?? (process.env.RAILWAY_ENVIRONMENT_ID ? '1' : '0')) === '1' ? 1 : false,
 
   // Session
   sessionSecret: process.env.SESSION_SECRET || 'development-session-secret-change-before-deploying',
