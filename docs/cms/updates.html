@@ -1,0 +1,27 @@
+<div data-elementor-type="wp-page" data-elementor-id="916" class="elementor elementor-916" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-21fa97e e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="21fa97e" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-d45fe43 e-con-full e-flex e-con e-child" data-id="d45fe43" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-1a17eec e-con-full e-flex e-con e-child" data-id="1a17eec" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-89d5059 elementor-widget elementor-widget-heading" data-id="89d5059" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">Previous Updates </h1>				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-019f431 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="019f431" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-6d19e92 e-con-full e-flex e-con e-child" data-id="6d19e92" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-b1993d6 e-con-full e-flex e-con e-child" data-id="b1993d6" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-7f318e7 e-con-full e-flex e-con e-child" data-id="7f318e7" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-f3ec4fb elementor-widget elementor-widget-text-editor" data-id="f3ec4fb" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">{% for update in generalUpdates %}
+<h4>{{ update.dateLabel }}{% if update.title %} — {{ update.title }}{% endif %}</h4>
+{{ update.body | safe }}
+{% if not loop.last %}<hr style="border: 0; border-top: 1px solid #383838; width: 100%;">{% endif %}
+{% else %}<p>No updates yet.</p>{% endfor %}</div>
+				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+				</div>

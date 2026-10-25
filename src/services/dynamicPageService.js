@@ -1,3 +1,4 @@
+import { updatesService } from './updatesService.js';
 import { glossaryService } from './glossaryService.js';
 import { classesService } from './classesService.js';
 /**
@@ -14,6 +15,9 @@ import {
 import { memberService } from "./memberService.js";
 
 const repoMapping = {
+  updates: { findAll: () => updatesService.getAll() },
+  generalUpdates: { findAll: () => updatesService.getAll('general') },
+  councilUpdates: { findAll: () => updatesService.getAll('council') },
   glossary: { findAll: () => glossaryService.getAll() },
   members: membersRepo,
   champions: { findAll: () => memberService.getChampions() },

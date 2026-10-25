@@ -1,3 +1,4 @@
+import { updatesController } from '../controllers/updatesController.js';
 import { layoutController } from '../controllers/layoutController.js';
 import { usersController } from "../controllers/usersController.js";
 import { glossaryController } from "../controllers/glossaryController.js";
@@ -50,6 +51,12 @@ export async function adminRoutes(fastify) {
     ['get', '/layout/:section', 'edit'], ['post', '/layout/:section', 'update'],
     ['post', '/layout/:section/preview', 'preview'], ['post', '/layout/:section/restore', 'restore'],
   ]) fastify[method](path, { preHandler: layoutController.guard.bind(layoutController) }, (request, reply) => layoutController[action](request, reply));
+
+  for (const [method, path, action] of [
+    ['get','/updates','list'], ['get','/updates/new','newItem'], ['post','/updates','create'],
+    ['post','/updates/preview','preview'], ['get','/updates/:id/edit','edit'],
+    ['post','/updates/:id/edit','update'], ['post','/updates/:id/delete','delete'],
+  ]) fastify[method](path,{preHandler:usersController.guard.bind(usersController)},(request,reply)=>updatesController[action](request,reply));
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));

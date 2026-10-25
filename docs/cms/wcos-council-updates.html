@@ -1,0 +1,101 @@
+<div data-elementor-type="wp-page" data-elementor-id="923" class="elementor elementor-923" data-elementor-post-type="page">
+				<div class="elementor-element elementor-element-b9d5ae5 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="b9d5ae5" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-f18f383 e-con-full e-flex e-con e-child" data-id="f18f383" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-576995b e-con-full e-flex e-con e-child" data-id="576995b" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-c2a644f elementor-widget elementor-widget-heading" data-id="c2a644f" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h1 class="elementor-heading-title elementor-size-default">Wcos Council</h1>				</div>
+				</div>
+				</div>
+					</div>
+				</div>
+		<div class="elementor-element elementor-element-39397c2 e-flex e-con-boxed e-con e-parent e-lazyloaded" data-id="39397c2" data-element_type="container" data-e-type="container">
+					<div class="e-con-inner">
+		<div class="elementor-element elementor-element-ea4c5fb e-con-full e-flex e-con e-child" data-id="ea4c5fb" data-element_type="container" data-e-type="container">
+		<div class="elementor-element elementor-element-7158b28 e-con-full e-flex e-con e-child" data-id="7158b28" data-element_type="container" data-e-type="container">
+				<div class="elementor-element elementor-element-6a7ad5f elementor-widget elementor-widget-heading" data-id="6a7ad5f" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
+					<h2 class="elementor-heading-title elementor-size-default">The current council members </h2>				</div>
+				<div class="elementor-element elementor-element-3159078 elementor-widget-divider--view-line elementor-widget elementor-widget-divider" data-id="3159078" data-element_type="widget" data-e-type="widget" data-widget_type="divider.default">
+							<div class="elementor-divider">
+			<span class="elementor-divider-separator">
+						</span>
+		</div>
+						</div>
+		<div class="elementor-element elementor-element-6e51c35 e-con-full e-flex e-con e-child" data-id="6e51c35" data-element_type="container" data-e-type="container">
+{# Enable the members data source. Council status is independent of active roster status. #}
+{% for member in members | currentCouncilMembers %}
+  <div class="elementor-element elementor-element-732d5bd e-con-full e-flex e-con e-child" data-element_type="container">
+    <div class="elementor-element elementor-element-28b7317 elementor-widget elementor-widget-jkit_team" data-element_type="widget" data-widget_type="jkit_team.default">
+      <div class="jeg-elementor-kit jkit-team style-title-horizontal jeg_module_923__6adbbd4c856a7">
+        <div class="profile-card" data-member-id="{{ member.id }}"
+             data-modal-target="council-member-{{ member.id }}"
+             role="button" tabindex="0" aria-haspopup="dialog" aria-controls="page-modal"
+             aria-label="View {{ member.position }} profile">
+          {% if member.image %}
+          <img loading="lazy" decoding="async" src="{{ member.image }}" class="attachment-full size-full" alt="{{ member.position }}">
+          {% endif %}
+          <div class="profile-body">
+            <div class="title-wrapper"><p class="profile-designation">{{ member.councilPosition }}</p></div>
+            <div class="name-wrapper"><h2 class="profile-title">{% if member.councilTitle %}{{ member.councilTitle }} {% endif %}{{ member.position }}</h2></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<template id="council-member-{{ member.id }}" data-modal-variant="profile">
+  <div class="profile-modal-grid">
+    <div>
+      {% if member.image %}<img class="profile-portrait" src="{{ member.image }}" alt="{{ member.position }}" loading="lazy">{% endif %}
+      <h2 data-modal-title>{{ member.position }}</h2>
+      <p>{% if member.merits is string %}{{ member.merits }}{% else %}{{ (member.merits or []) | join(' · ') }}{% endif %}</p>
+    </div>
+    <div>
+      <table class="profile-statistics">
+        <caption>Battle Ratings and Stats{% if member.statsUpdated %}<small>Updated {{ member.statsUpdated }}</small>{% endif %}</caption>
+        <tbody>
+          {% for label, value in [
+            ['Council Position', member.councilPosition], ['Council Title', member.councilTitle],
+            ['Term Start', member.councilTermStart], ['Term End', member.councilTermEnd],
+            ['Level', member.level], ['Steel Rank', member.steelRank],
+            ['Years Fought', member.yearsFought], ['Battles Fought', member.battlesFought],
+            ['Steel Battles Fought', member.steelBattlesFought], ['Opponents Fought', member.opponentsFought],
+            ['Weapon Type', member.weaponType], ['Member Since', member.memberSince], ['Region', member.region]
+          ] %}
+            {% if value %}<tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr>{% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if member.email %}<p class="profile-email">Email address: <a href="mailto:{{ member.email }}">{{ member.email }}</a></p>{% endif %}
+    </div>
+  </div>
+  <section class="profile-biography" aria-label="Biography">
+    {% if member.biography %}<p class="biography-text">{{ member.biography }}</p>{% else %}<p>A biography has not been added for this member yet.</p>{% endif %}
+  </section>
+</template>
+{% else %}
+  <div class="member-empty"><p>No current council members to display.</p></div>
+{% endfor %}
+</div>
+
+				<div class="elementor-element elementor-element-864c117 elementor-widget__width-initial elementor-widget elementor-widget-text-editor" data-id="864c117" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
+									<p>The Council of the WCoS is made of three Kaidens. They are there to help guide and shape the circle.</p>								</div>
+				{% for update in councilUpdates %}
+<div class="elementor-element elementor-element-85c56b7 elementor-widget elementor-widget-jkit_accordion" data-id="85c56b7" data-element_type="widget" data-e-type="widget" data-widget_type="jkit_accordion.default">
+					<div class="jeg-elementor-kit jkit-accordion style-box jeg_module_923_3_6adbbd4c871e2"><details class="reference-accordion card-wrapper"><summary class="card-header"><span class="card-header-button">
+                        <span class="title">{{ update.dateLabel }}{% if update.title %} — {{ update.title }}{% endif %}</span><div class="right-icon-group">
+                <div class="normal-icon"><i aria-hidden="true" class="jki jki-plus-line"></i></div>
+                <div class="active-icon"><i aria-hidden="true" class="jki jki-minus-line"></i></div>
+            </div>
+                    </span></summary><div class="card-expand"><div class="card-body">{{ update.body | safe }}</div></div></details></div>				</div>
+{% else %}<p>No council updates yet.</p>{% endfor %}
+				
+				
+				
+				
+				
+				
+				</div>
+				</div>
+					</div>
+				</div>
+				</div>

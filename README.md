@@ -464,3 +464,28 @@ reference partials and removes the unused Navigation collection. Existing naviga
 records are preserved in a `db.json.backup-layout-*` backup, not substituted for the
 links already in use on the public site. Migration does not overwrite saved layout
 edits. No seed/reset command is required. The source partials remain the restore defaults.
+
+### General and council updates
+
+**Admin → Updates** manages HTML bodies, optional titles, dates, and the General
+Update/Council category. It reuses the Pages HTML/visual editor and supports category
+filtering. Dates accept `YYYY-MM-DD` or `YYYY-MM` for historical month-only entries.
+Updates render newest first. Original imported date labels are retained until the
+date changes; no day is invented for month-only records.
+
+Restart after merging to run the one-time migration with a `backup-updates-*`
+database backup. It imports 157 general updates and seven council updates from the
+supplied pages. Existing records are preserved; subsequent restarts do not restore
+records you deleted or overwrite edits. No seed/reset command is necessary.
+
+Replace the Updates page HTML with `docs/cms/updates.html` and enable its
+**generalUpdates** data source. Replace WCOS Council HTML with
+`docs/cms/wcos-council-updates.html` and enable **councilUpdates** and **members**.
+These templates preserve the original update layout and council accordion wrappers,
+icons, member cards, and static content. Pages are not overwritten automatically,
+so existing CMS changes can be reviewed before pasting the replacement templates.
+
+The **updates** data source returns all categories; **generalUpdates** and
+**councilUpdates** return their respective categories. The extraction script is
+`node scripts/extract-updates.mjs general.html council.html`; it regenerates the
+versioned seed and templates from source HTML, not the live database.
