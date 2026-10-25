@@ -1,3 +1,4 @@
+import { getLayout } from '../services/layoutService.js';
 /** Stable source URLs and CMS routes, with compatibility redirects for the first conversion. */
 import { authController } from "../controllers/authController.js";
 import { referenceSiteController as site } from "../controllers/referenceSiteController.js";
@@ -6,6 +7,11 @@ import { optionalAuthMiddleware } from "../middleware/auth.js";
 
 export async function publicRoutes(fastify) {
   fastify.addHook("preHandler", optionalAuthMiddleware);
+
+  fastify.get('/reference-layout.css', async (_request, reply) => {
+    reply.header('Cache-Control', 'no-cache').header('X-Content-Type-Options', 'nosniff');
+    return reply.type('text/css').send((await getLayout()).css);
+  });
 
   // Home page
   fastify.get("/", async (request, reply) => {

@@ -9,13 +9,14 @@
   <link rel="stylesheet" href="/css/fonts.css">
   {% for stylesheet in page.styles %}<link rel="stylesheet" href="{{ stylesheet }}">{% endfor %}
   <link rel="stylesheet" href="/css/reference.css">
+  <link rel="stylesheet" href="/reference-layout.css">
   <script src="/js/reference.js" defer></script>
 </head>
 <body class="{{ page.bodyClass }} reference-site">
   <a class="skip-link" href="#content">Skip to content</a>
-  {% include 'partials/reference-header.njk' %}
+  {{ referenceLayout.header | safe }}
   <main id="content">{% block content %}{% endblock %}</main>
-  {% include 'partials/reference-footer.njk' %}
+  {{ referenceLayout.footer | safe }}
   <dialog id="page-modal" class="page-modal" aria-label="Details">
     <button type="button" class="dialog-close" aria-label="Close dialog" autofocus>×</button>
     <div data-modal-content></div>

@@ -4,7 +4,6 @@
  */
 import {
   siteSettingsRepo,
-  navigationRepo,
 } from '../models/database.js';
 
 export class SiteService {
@@ -16,17 +15,8 @@ export class SiteService {
     return siteSettingsRepo.updateSettings(data);
   }
 
-  async getNavigation() {
-    return navigationRepo.getNavigation();
-  }
-
-  async updateNavigation(data) {
-    return navigationRepo.updateNavigation(data);
-  }
-
   async getFooterData() {
     const settings = await this.getSiteSettings();
-    const nav = await this.getNavigation();
 
     return {
       siteName: settings.siteName,
@@ -37,7 +27,6 @@ export class SiteService {
         instagram: 'https://instagram.com/wcos',
         youtube: 'https://youtube.com/wcos',
       },
-      navigation: nav,
     };
   }
 }

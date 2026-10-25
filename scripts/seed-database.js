@@ -6,7 +6,7 @@ import { seedCoreMoves } from './seed-core-moves.js';
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, resourcesRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, resourcesRepo, siteSettingsRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -22,7 +22,6 @@ async function seed() {
   // db.data.moves = [];
   // db.data.resources = [];
   // db.data.siteSettings = [];
-  // db.data.navigation = [];
 
   // Site Settings
   if ((await siteSettingsRepo.findAll()).length === 0) {
@@ -34,41 +33,6 @@ async function seed() {
       dojosText: 'DOJOS IN CA, OR, WA, NV AND KY',
     });
     console.log('  ✓ Site settings');
-  }
-
-  // Navigation
-  if ((await navigationRepo.findAll()).length === 0) {
-    await navigationRepo.create({
-      whoWeAre: [
-        { label: 'Member Profiles', slug: 'member-profiles' },
-        { label: 'Photo Gallery', slug: 'photo-gallery' },
-        { label: 'WCOS Council', slug: 'wcos-council' },
-        { label: 'Hall of Heroes', slug: 'hall-of-heroes' },
-      ],
-      knowledgeBase: [
-        { label: 'Rank Requirements', slug: 'rank-requirements' },
-        { label: 'Core Moves', slug: 'core-moves' },
-        { label: 'Dalmater Colors', slug: 'dalmater-colors' },
-        { label: 'Kaidens', slug: 'kaidens' },
-        { label: 'Fighter Class', slug: 'fighter-class' },
-        { label: 'Armor', slug: 'armor' },
-        { label: 'Weapons', slug: 'weapons' },
-        { label: 'Sparring', slug: 'sparring' },
-        { label: 'Sword Dance', slug: 'sword-dance' },
-        { label: 'Glossary', slug: 'glossary' },
-      ],
-      involvement: [
-        { label: 'Classes', slug: 'classes' },
-        { label: 'WCOS Etiquette & Rules', slug: 'wcos-etiquette-rules' },
-        { label: 'Dues/Donations', slug: 'dues' },
-      ],
-      resources: [
-        { label: 'Links & Resources', slug: 'links-resources' },
-        { label: 'Contact Us', slug: 'contact-us' },
-        { label: 'Previous Updates', slug: 'previous-updates' },
-      ],
-    });
-    console.log('  ✓ Navigation');
   }
 
   // Members (sample from original site)

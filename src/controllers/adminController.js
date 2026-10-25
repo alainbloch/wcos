@@ -427,12 +427,10 @@ export class AdminController extends BaseController {
   // Settings
   async settings(request, reply) {
     const siteSettings = await siteService.getSiteSettings();
-    const navigation = await siteService.getNavigation();
 
     await this.renderAdmin(request, reply, "admin/settings.njk", {
       pageTitle: "Site Settings",
       siteSettings,
-      navigation,
       homePage: await pagesService.getPageBySlug(""),
       contactPage: await pagesService.getPageBySlug("contact"),
     });
@@ -440,7 +438,7 @@ export class AdminController extends BaseController {
 
   async updateSettings(request, reply) {
     try {
-      await siteService.updateSiteSettings(request.body);
+      await siteService.updateSiteSettings({ siteName: request.body.siteName });
       request.session.adminFlash = { success: "Settings updated successfully" };
       reply.redirect("/admin/settings");
     } catch (error) {
@@ -449,18 +447,7 @@ export class AdminController extends BaseController {
     }
   }
 
-  async updateNavigation(request, reply) {
-    try {
-      await siteService.updateNavigation(request.body);
-      request.session.adminFlash = {
-        success: "Navigation updated successfully",
-      };
-      reply.redirect("/admin/settings");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/settings");
-    }
-  }
+
 }
 
 export const adminController = new AdminController();

@@ -126,8 +126,8 @@ describe("Complete public conversion", () => {
       );
     }
   });
-  it("migrates both singleton settings collections to usable repository arrays", () => {
+  it("migrates settings and retires navigation", () => {
     expect(Array.isArray(getDatabase().data.siteSettings)).toBe(true);
-    expect(Array.isArray(getDatabase().data.navigation)).toBe(true);
+    expect(getDatabase().data.navigation).toBeUndefined();
   });
 });

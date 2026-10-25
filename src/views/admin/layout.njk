@@ -1,0 +1,22 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<nav aria-label="Layout sections"><a class="btn" href="/admin/layout/header" {% if section == 'header' %}aria-current="page"{% endif %}>Header</a> <a class="btn" href="/admin/layout/footer" {% if section == 'footer' %}aria-current="page"{% endif %}>Footer</a> <a class="btn" href="/admin/layout/css" {% if section == 'css' %}aria-current="page"{% endif %}>Custom CSS</a></nav>
+<p>Changes apply to every public page when saved. HTML controls navigation links and structure; Custom CSS loads after the site's styles. Admin styling stays independent.</p>
+<form action="/admin/layout/{{ section }}" method="post" class="admin-form page-editor" {% if section != 'css' %}data-page-editor{% else %}data-layout-css{% endif %} data-preview-url="/admin/layout/{{ section }}/preview" data-unsaved="{% if flash.error %}true{% else %}false{% endif %}">
+<input type="hidden" name="_csrf" value="{{ csrf }}">
+<section class="admin-card">
+{% if section != 'css' %}
+<p>Template variables: <code>{% raw %}{{ siteName }}, {{ siteEmail }}, {{ currentYear }}, {{ page.title }}, {{ page.slug }}{% endraw %}</code>. Edit templates in HTML mode; visual edits replace expressions with their rendered values.</p>
+<div class="editor-toolbar"><button type="button" class="btn" data-editor-mode="source" aria-pressed="true">HTML source</button><button type="button" class="btn" data-editor-mode="visual" aria-pressed="false">Visual preview / edit</button></div>
+<p data-editor-status role="status">Edit the source or open the visual preview.</p>
+<div data-visual-panel hidden><div class="editor-toolbar">{% for command, label in [['bold','Bold'],['italic','Italic'],['createLink','Link'],['undo','Undo']] %}<button type="button" class="editor-btn" data-command="{{ command }}">{{ label }}</button>{% endfor %}</div><iframe class="editor-frame" title="Layout visual editor" sandbox="allow-same-origin"></iframe></div>
+{% endif %}
+<label for="content" class="eyebrow" data-source-label>{{ section | capitalize }} source</label>
+<textarea id="content" name="content" class="source-editor" rows="24" spellcheck="false" maxlength="200000">{{ content }}</textarea>
+<p data-save-status role="status">{% if flash.error %}Unsaved changes{% else %}All changes saved{% endif %}</p>
+<button type="submit" class="btn btn-primary">Save {{ section }}</button>
+{% if section == 'css' %}<button type="button" class="btn" data-css-preview>Preview CSS</button><p data-css-status role="status"></p><iframe class="editor-frame" title="Custom CSS preview" sandbox="" hidden></iframe>{% endif %}
+</section></form>
+<form action="/admin/layout/{{ section }}/restore" method="post"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="btn btn-danger" data-confirm-delete="Restore the default {{ section }}? This replaces your saved changes.">Restore default {{ section }}</button></form>
+{% endblock %}
+{% block scripts %}<script src="/js/layout-editor.js" defer></script>{% endblock %}

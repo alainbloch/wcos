@@ -315,8 +315,8 @@ cp data/db.json.backup.20240115 data/db.json
 ### Public Layout
 All public category controllers extend `PublicPageController`. Its `renderPage()` loads
 published CMS content and the page-specific original CSS metadata, then renders
-`pages/reference.njk` inside `layouts/reference.njk`. Shared navigation and footer
-live in `partials/reference-header.njk` and `partials/reference-footer.njk`.
+`pages/reference.njk` inside `layouts/reference.njk`. Shared header and footer are stored in site settings and edited in Admin → Layout.
+`partials/reference-header.njk` and `partials/reference-footer.njk` provide restore defaults.
 
 Use `public/css/reference.css` for maintained public overrides, `fonts.css` for local
 fonts, and `admin.css` for admin controls. The obsolete base layout, sample public
@@ -414,7 +414,9 @@ server {
 | GET | `/admin/members` | List members |
 | GET | `/admin/settings` | Site settings |
 | POST | `/admin/settings` | Update settings |
-| POST | `/admin/settings/navigation` | Update navigation |
+| GET/POST | `/admin/layout/:section` | Edit/save header, footer, or CSS |
+| POST | `/admin/layout/:section/preview` | Preview without publishing |
+| POST | `/admin/layout/:section/restore` | Restore the shipped default |
 
 ---
 
@@ -452,3 +454,22 @@ MIT License — see [LICENSE](LICENSE) for details.
 **Questions?** Check [CLAUDE.md](CLAUDE.md) for coding conventions or open an issue.
 
 Council service is maintained on member records. See [Council membership](docs/council-membership.md) for migration and CMS filter usage.
+
+### Shared header, footer, and navigation
+
+Use **Admin → Layout** to edit Header, Footer, or Custom CSS. Header and Footer
+reuse the Pages HTML/visual editor. Navigation links live directly in that HTML.
+The saved templates support `siteName`, `siteEmail`, `currentYear`, `page.title`,
+and `page.slug`; filesystem includes are not supported. Use HTML mode for dynamic
+expressions, since visual edits can replace them with the preview's rendered values.
+
+Preview does not publish. Save validates templates before replacing live content;
+errors preserve your submitted source. Each section has a confirmed **Restore default**
+action. Custom CSS loads after the reference styles and does not affect admin pages.
+Templates use a restricted context without user records, cookies, or request objects.
+
+On restart, an automatic migration initializes these settings from the existing
+reference partials and removes the unused Navigation collection. Existing navigation
+records are preserved in a `db.json.backup-layout-*` backup, not substituted for the
+links already in use on the public site. Migration does not overwrite saved layout
+edits. No seed/reset command is required. The source partials remain the restore defaults.
