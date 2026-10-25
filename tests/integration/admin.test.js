@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { load } from "cheerio";
 import { buildApp } from "../../src/app.js";
@@ -7,6 +8,7 @@ import { authService } from "../../src/services/authService.js";
 let app, cookie, home;
 beforeAll(async () => {
   app = await buildApp();
+  await ensureReferencePages();
   await app.ready();
   const admin = await usersRepo.findByEmail("admin@wcos.org");
   cookie = `wcos_session=${authService.generateToken(admin)}`;

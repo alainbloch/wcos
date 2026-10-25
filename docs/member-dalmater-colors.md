@@ -19,19 +19,9 @@ color section leave an assigned color unchanged.
 
 ## Migration and commands
 
-After merging/updating the application, restart normally:
-
-```sh
-npm start
-# Or, for local development:
-npm run dev
-```
-
-No separate migration command, dependency install, or database reset is needed.
-Startup creates `<DB_PATH>.backup-dalmater-<timestamp>` with restricted permissions,
-then migrates the old `dalmaterColors` collection into members and removes it.
-The backup and migration happen only if the legacy collection exists. Do not run
-`db:reset` or `db:seed` to perform this migration.
+Startup no longer migrates the legacy `dalmaterColors` collection. Import prepared
+member records explicitly through Data Transfer. The following describes the
+historical migration helper retained for explicit maintenance.
 
 Names are matched after removing Kaiden honorifics and retired suffixes; Severer
 maps to The Severer. Ambiguous or unmatched people become inactive members for

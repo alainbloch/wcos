@@ -13,7 +13,7 @@ npm start
 
 The app listens on port 3000. `PORT=8788 npm start` selects another port. `npm run dev -- --port 4173 --host 0.0.0.0` is also supported. No WordPress, PHP, MySQL, build step, or access to the original host is needed to render the migrated pages.
 
-New databases receive the complete pages automatically. Existing databases retain edits. To replace the earlier sample content with the captured originals:
+Startup never imports or migrates page content. Populate new databases explicitly using Data Transfer or the command below. Existing databases retain edits. To replace the earlier sample content with the captured originals:
 
 ```sh
 npm run migrate:site -- --replace

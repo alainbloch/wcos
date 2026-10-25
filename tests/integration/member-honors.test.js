@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect} from '@jest/globals';
 import fs from 'node:fs';
 import {load} from 'cheerio';
@@ -7,7 +8,7 @@ import {authService} from '../../src/services/authService.js';
 import {memberService} from '../../src/services/memberService.js';
 import {mergeMemberHonors,honorsSeed} from '../../src/models/migrations/mergeMemberHonors.js';
 let app,cookie,member;
-beforeAll(async()=>{app=await buildApp();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;member=await membersRepo.create({position:'Test Champion',level:'L3',active:false});});
+beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;member=await membersRepo.create({position:'Test Champion',level:'L3',active:false});});
 afterAll(async()=>{await app.close();});
 function post(values){return app.inject({method:'POST',url:`/admin/members/${member.id}/edit`,headers:{cookie,'content-type':'multipart/form-data; boundary=honors'},payload:Object.entries({circleName:'Test Champion',level:'L3',honorsPresent:'1',...values}).map(([name,value])=>`--honors\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`).join('')+'--honors--\r\n'});}
 it('saves integer years and fallen status, preserves errors, and clears honors',async()=>{

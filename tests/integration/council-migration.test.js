@@ -4,7 +4,7 @@ import path from "node:path";
 import config from "../../src/config/index.js";
 import { initDatabase, defaultData } from "../../src/models/database.js";
 
-it("backs up legacy data before consolidation, persists it, and only migrates once", async () => {
+it("leaves legacy councilMembers unchanged on startup", async () => {
   const legacy = {
     ...structuredClone(defaultData),
     members: [{ id: "m", position: "Person", active: true }],
@@ -19,23 +19,10 @@ it("backs up legacy data before consolidation, persists it, and only migrates on
   };
   await mkdir(path.dirname(config.dbPath), { recursive: true });
   await writeFile(config.dbPath, JSON.stringify(legacy));
+  const before = await readFile(config.dbPath, "utf8");
   const db = await initDatabase();
-  expect(db.data.members[0].councilCurrent).toBe(true);
-  expect(db.data).not.toHaveProperty("councilMembers");
-  const files = (await readdir(path.dirname(config.dbPath))).filter((f) =>
-    f.includes(".backup-council-"),
-  );
-  expect(files).toHaveLength(1);
-  expect(
-    JSON.parse(
-      await readFile(path.join(path.dirname(config.dbPath), files[0]), "utf8"),
-    ),
-  ).toEqual(legacy);
-  expect(JSON.parse(await readFile(config.dbPath, "utf8"))).toEqual(db.data);
+  expect(db.data).toEqual(legacy);
   await initDatabase();
-  expect(
-    (await readdir(path.dirname(config.dbPath))).filter((f) =>
-      f.includes(".backup-council-"),
-    ),
-  ).toHaveLength(1);
+  expect(await readFile(config.dbPath, "utf8")).toBe(before);
+  expect((await readdir(path.dirname(config.dbPath))).filter(f => f.includes('.backup-'))).toHaveLength(0);
 });

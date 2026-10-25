@@ -1,10 +1,12 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import { beforeAll, afterAll, it, expect } from "@jest/globals";
 import { load } from "cheerio";
 import { buildApp } from "../../src/app.js";
 import { pagesRepo, updatesRepo } from "../../src/models/database.js";
 import { migrateNewsPage } from "../../src/services/newsPageService.js";
 let app;
-beforeAll(async () => { app = await buildApp(); });
+beforeAll(async () => { app = await buildApp();
+  await ensureReferencePages(); });
 afterAll(async () => app.close());
 
 it("converts the News listing once and keeps its heading and surrounding content", async () => {

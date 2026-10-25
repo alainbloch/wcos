@@ -6,12 +6,12 @@ The Move types dropdown supports any combination of Straight Offense, Offensive 
 
 Drag list rows (or use Up/Down) to automatically save move order. Failed requests restore the last saved order and display an error. Media rows support drag and Up/Down; save the move to persist their order. Creator is optional for historical moves with unknown attribution. Deleting a member does not delete their moves.
 
-On restart, existing `coreMoves` data migrates to `moves`, preserving IDs and record content, with a `*.backup-moves-*` database backup. Existing moves are marked core; the three old move-type explanation records remain available but are not marked core. `moves` is the full ordered CMS data source; `coreMoves` remains a filtered source containing only core moves.
+Startup does not rename legacy `coreMoves` collections or seed moves. Import prepared move records explicitly through Data Transfer. `moves` is the full ordered CMS data source; `coreMoves` remains a filtered source containing only core moves.
 
 ## Deploy and seed
 
 1. Stop the application before seeding to avoid concurrent writes to the JSON database.
-2. Run `node scripts/seed-core-moves.js` (this also runs the migration), then restart the application. Run the command using the same environment/DB_PATH as the application. It adds missing moves from the supplied page without modifying existing entries. It can be rerun safely. Existing moves retain their positions; new moves append in source order. Use the admin list to adjust the combined order if needed.
+2. Run `node scripts/seed-core-moves.js`, then restart the application. Run the command using the same environment/DB_PATH as the application. It adds missing moves from the supplied page without modifying existing entries. It can be rerun safely. Existing moves retain their positions; new moves append in source order. Use the admin list to adjust the combined order if needed.
 3. Paste `docs/cms/core-moves.html` into the Core Moves page editor, enable the **coreMoves** and **members** data sources, and save. The page keeps its three move-type explanations and Elementor accordion styling, with dynamic move names, text, creator and ordered media.
 
 For a fresh installation, `npm run db:seed` includes these same 45 moves. Do not reset an existing database. The source's unconfirmed teacher move label is preserved; no creators or descriptions were invented. Existing historical sample descriptions are preserved by the additive seed and can be reviewed in admin.

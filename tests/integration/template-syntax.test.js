@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 /**
  * Integration Tests - Template Syntax
  * Tests that all templates render without syntax errors
@@ -14,6 +15,7 @@ describe('Template Syntax Tests', () => {
 
   beforeAll(async () => {
     app = await buildApp();
+  await ensureReferencePages();
     await app.ready();
     db = getDatabase();
     

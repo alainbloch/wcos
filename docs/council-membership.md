@@ -44,7 +44,7 @@ legacy council templates using `name`, `bio`, `termStart`, `termEnd`, `current`,
 
 ## Existing databases
 
-On the first startup after deployment, the application automatically:
+Startup no longer runs this historical migration. The legacy migration helper (retained for explicit maintenance only):
 
 1. Writes a restricted-permission backup next to `DB_PATH`, named
    `<database filename>.backup-council-<timestamp>`.

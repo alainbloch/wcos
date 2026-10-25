@@ -1,3 +1,4 @@
+import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 /**
  * Integration Tests - Routes (Simplified)
  * Tests basic route functionality that works reliably
@@ -14,6 +15,7 @@ describe('Public Routes', () => {
 
   beforeAll(async () => {
     app = await buildApp();
+  await ensureReferencePages();
     await app.ready();
     db = getDatabase();
     
