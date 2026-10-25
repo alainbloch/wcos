@@ -6,7 +6,7 @@ import { seedCoreMoves } from './seed-core-moves.js';
  * Populates the database with initial content from the original WCoS site
  */
 import { initDatabase, getDatabase } from '../src/models/database.js';
-import { pagesRepo, membersRepo, resourcesRepo, siteSettingsRepo, usersRepo } from '../src/models/database.js';
+import { pagesRepo, membersRepo, siteSettingsRepo, navigationRepo, usersRepo } from '../src/models/database.js';
 import { authService } from '../src/services/authService.js';
 
 async function seed() {
@@ -20,7 +20,6 @@ async function seed() {
   // db.data.members = [];
   // db.data.classes = [];
   // db.data.moves = [];
-  // db.data.resources = [];
   // db.data.siteSettings = [];
 
   // Site Settings
@@ -63,26 +62,6 @@ async function seed() {
 
   // Actual core moves extracted from the supplied page.
   await seedCoreMoves();
-
-  // Resources
-  if ((await resourcesRepo.findAll()).length === 0) {
-    const resources = [
-      { category: 'Bokken / Wasters (Wood Training Weapons)', name: 'Purpleheart Armory', url: 'https://purpleheartarmory.com', description: 'Quality wooden training weapons' },
-      { category: 'Bokken / Wasters (Wood Training Weapons)', name: 'Wooden Sword', url: 'https://woodensword.com', description: 'Custom bokken and wasters' },
-      { category: 'Steel Weapons (Combat-Grade, Blunt/Rebated)', name: 'Albion Swords', url: 'https://albion-swords.com', description: 'High-quality combat-ready swords' },
-      { category: 'Steel Weapons (Combat-Grade, Blunt/Rebated)', name: 'Darkwood Armory', url: 'https://darkwoodarmory.com', description: 'HEMA-focused training weapons' },
-      { category: 'Steel Weapons (Cutting-Grade, Sharps)', name: 'Kult of Athena', url: 'https://kultofathena.com', description: 'Sharp swords for cutting' },
-      { category: 'Armor', name: 'Armored Encounters', url: 'https://armoredencounters.com', description: 'HEMA protective gear' },
-      { category: 'Armor', name: 'HEMA Gear', url: 'https://hemagear.com', description: 'Full protective equipment' },
-      { category: 'Materials', name: 'Online Metals', url: 'https://onlinemetals.com', description: 'Steel, aluminum, titanium' },
-      { category: 'Other Guilds & Organizations', name: 'HEMA Alliance', url: 'https://hemaalliance.com', description: 'Historical European Martial Arts Alliance' },
-      { category: 'Other Guilds & Organizations', name: 'SCA', url: 'https://sca.org', description: 'Society for Creative Anachronism' },
-    ];
-    for (const r of resources) {
-      await resourcesRepo.create(r);
-    }
-    console.log('  ✓ Resources');
-  }
 
   // Admin user
   if ((await usersRepo.findAll()).length === 0) {

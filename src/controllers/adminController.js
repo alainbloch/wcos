@@ -9,7 +9,6 @@ import { pagesService } from "../services/pagesService.js";
 import { memberService } from "../services/memberService.js";
 import { readClassForm, classesService } from "../services/classesService.js";
 import { MOVE_TYPES, readMoveForm, movesService } from "../services/movesService.js";
-import { resourcesService } from "../services/resourcesService.js";
 import { siteService } from "../services/siteService.js";
 import {
   originalPages,
@@ -353,75 +352,6 @@ export class AdminController extends BaseController {
   async uploadMoveMedia(request, reply) {
     try { return await uploadMoveMedia(request.body?.file); }
     catch (error) { return reply.code(400).send({ error: error.message }); }
-  }
-
-  // Resources management
-  async listResources(request, reply) {
-    const resources = await resourcesService.getAllResources();
-    await this.renderAdmin(request, reply, "admin/resources/list.njk", {
-      pageTitle: "Manage Resources",
-      resources,
-    });
-  }
-
-  async newResource(request, reply) {
-    await this.renderAdmin(request, reply, "admin/resources/form.njk", {
-      pageTitle: "New Resource",
-      resource: null,
-    });
-  }
-
-  async createResource(request, reply) {
-    try {
-      const resource = await resourcesService.createResource(request.body);
-      request.session.adminFlash = { success: "Resource created successfully" };
-      reply.redirect(`/admin/resources/${resource.id}/edit`);
-    } catch (error) {
-      reply.code(400);
-      return this.renderAdmin(request, reply, "admin/resources/form.njk", {
-        pageTitle: "New Resource",
-        resource: request.body,
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async editResource(request, reply) {
-    const resource = await resourcesService.getResourceById(request.params.id);
-    if (!resource) {
-      return reply.code(404).send("Resource not found");
-    }
-    await this.renderAdmin(request, reply, "admin/resources/form.njk", {
-      pageTitle: "Edit Resource",
-      resource,
-    });
-  }
-
-  async updateResource(request, reply) {
-    try {
-      await resourcesService.updateResource(request.params.id, request.body);
-      request.session.adminFlash = { success: "Resource updated successfully" };
-      reply.redirect(`/admin/resources/${request.params.id}/edit`);
-    } catch (error) {
-      const existing = await resourcesService.getResourceById(request.params.id);
-      reply.code(existing ? 400 : 404);
-      return this.renderAdmin(request, reply, "admin/resources/form.njk", {
-        pageTitle: "Edit Resource",
-        resource: { ...existing, ...request.body, id: request.params.id },
-        flash: { error: error.message },
-      });
-    }
-  }
-
-  async deleteResource(request, reply) {
-    try {
-      await resourcesService.deleteResource(request.params.id);
-      request.session.adminFlash = { success: "Resource deleted successfully" };
-      reply.redirect("/admin/resources");
-    } catch (error) {
-      request.session.adminFlash = { error: error.message };
-      reply.redirect("/admin/resources");
-    }
   }
 
   // Settings

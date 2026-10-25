@@ -27,7 +27,6 @@ export const defaultData = {
   classes: [],
   glossary: [],
   moves: [],
-  resources: [],
   siteSettings: {
     siteName: 'Western Circle of Swordfighters',
     siteEmail: 'westerncouncil@gmail.com',
@@ -141,7 +140,6 @@ export { pagesRepo } from './pagesRepository.js';
 export { membersRepo } from './membersRepository.js';
 export { classesRepo } from './classesRepository.js';
 export { movesRepo } from './movesRepository.js';
-export { resourcesRepo } from './resourcesRepository.js';
 export { siteSettingsRepo } from './siteSettingsRepository.js';
 export { usersRepo } from './usersRepository.js';
 
@@ -151,7 +149,6 @@ export { PagesRepository } from './pagesRepository.js';
 export { MembersRepository } from './membersRepository.js';
 export { ClassesRepository } from './classesRepository.js';
 export { MovesRepository } from './movesRepository.js';
-export { ResourcesRepository } from './resourcesRepository.js';
 export { SiteSettingsRepository } from './siteSettingsRepository.js';
 export { UsersRepository } from './usersRepository.js';
 export { glossaryRepo, GlossaryRepository } from './glossaryRepository.js';

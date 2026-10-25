@@ -7,7 +7,6 @@ import { classesService } from './classesService.js';
 import {
   membersRepo,
   movesRepo,
-  resourcesRepo,
   siteSettingsRepo,
   usersRepo,
 } from "../models/database.js";
@@ -33,7 +32,6 @@ const repoMapping = {
         (member) => member.dalmaterColorName,
       ),
   },
-  resources: resourcesRepo,
   siteSettings: siteSettingsRepo,
   users: usersRepo,
 };

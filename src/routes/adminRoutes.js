@@ -137,33 +137,6 @@ export async function adminRoutes(fastify) {
     "/moves/:id/delete",
     adminController.deleteMove.bind(adminController),
   );
-
-  // Resources
-  fastify.get(
-    "/resources",
-    adminController.listResources.bind(adminController),
-  );
-  fastify.get(
-    "/resources/new",
-    adminController.newResource.bind(adminController),
-  );
-  fastify.post(
-    "/resources",
-    adminController.createResource.bind(adminController),
-  );
-  fastify.get(
-    "/resources/:id/edit",
-    adminController.editResource.bind(adminController),
-  );
-  fastify.post(
-    "/resources/:id/edit",
-    adminController.updateResource.bind(adminController),
-  );
-  fastify.post(
-    "/resources/:id/delete",
-    adminController.deleteResource.bind(adminController),
-  );
-
   // Settings (admin only)
   fastify.get("/settings", adminController.settings.bind(adminController));
   fastify.post(

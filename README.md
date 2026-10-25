@@ -28,7 +28,6 @@ wcos/
 │   │   ├── whoWeAreController.js
 │   │   ├── knowledgeBaseController.js
 │   │   ├── involvementController.js
-│   │   ├── resourcesController.js
 │   │   ├── adminController.js
 │   │   └── authController.js
 │   ├── services/              # Business logic (zero HTTP knowledge)
@@ -36,7 +35,6 @@ wcos/
 │   │   ├── memberService.js
 │   │   ├── classesService.js
 │   │   ├── movesService.js
-│   │   ├── resourcesService.js
 │   │   ├── pagesService.js
 │   │   └── authService.js
 │   ├── models/
@@ -88,17 +86,10 @@ wcos/
 | Entity | Fields | Source Page |
 |--------|--------|-------------|
 | **Member** | level, circleName, position, memberSince, region, active | Member Profiles |
-| **Champion** | year, name, title, image | Hall of Heroes |
-| **CouncilMember** | name, title, image, current, historicalDate | WCOS Council |
 | **Class** | location, day, kaiden, description, region, active | Classes |
-| **Rank** | type (primary/steel), level, name, description, requirements[] | Rank Requirements |
-| **CoreMove** | name, category, description, level | Core Moves |
-| **DalmaterColor** | kaiden, color, kaidenOrder, isRedDalmater, requirements[] | Dalmater Colors |
-| **Kaiden** | section (theWay/rules/documents), number, title, content | Kaidens |
-| **Resource** | category, name, url, description | Links & Resources |
-| **Dues** | amountOptions, rankOptions, dojoOptions, paypalEmail, nonProfit, memberContributions, donateText | Dues |
+| **Move** | name, category, description, level | Core Moves |
 | **Page** | title, slug, content, published | Dynamic CMS pages |
-| **Navigation** | whoWeAre[], knowledgeBase[], involvement[], resources[] | Site-wide menus |
+| **Navigation** | whoWeAre[], knowledgeBase[], involvement[] | Site-wide menus |
 
 ---
 

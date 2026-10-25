@@ -32,8 +32,7 @@ async function resetDatabase() {
   const collections = [
     'pages', 'members',
     'classes', 'moves', 'glossary',
-    'resources',
-    'siteSettings', 'users'
+    'siteSettings', 'navigation', 'users'
   ];
   
   for (const collection of collections) {
