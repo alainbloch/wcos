@@ -86,7 +86,7 @@ small,
   min-height: 100vh;
 }
 .admin-sidebar {
-  background: #181e27;
+  background: #000000;
   color: #d9dfe7;
   padding: 28px 20px;
   position: sticky;
@@ -700,7 +700,7 @@ textarea {
 }
 body { font-size: 14px; }
 .admin-layout { grid-template-columns: 224px minmax(0, 1fr); }
-.admin-sidebar { padding: 24px 16px; overflow-y: auto; background: #141e2c; }
+.admin-sidebar { padding: 24px 16px; overflow-y: auto; background: #000000; }
 .admin-brand { padding: 0 8px 24px; }
 .admin-logo { font-size: 16px; }
 .admin-nav ul { margin: 0 0 24px; }
