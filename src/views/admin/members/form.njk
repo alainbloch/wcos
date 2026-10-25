@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="admin-content">
-  <div class="flex justify-between items-center mb-6">
-    <h2>{% if member.id %}Edit Member{% else %}New Member{% endif %}</h2>
+  <div class="page-heading">
+
     <a href="/admin/members" class="btn btn-secondary">← Back to Members</a>
   </div>
 
@@ -22,7 +22,7 @@
       <!-- Basic Info -->
       <fieldset class="form-section">
         <legend>Basic Information</legend>
-        
+
         <div class="form-field">
           <label for="circleName">Circle Name <span class="required">*</span></label>
           <input type="text" id="circleName" name="circleName" value="{{ member.circleName or '' }}" required placeholder="e.g., Gad, Steel Wind">
@@ -74,7 +74,7 @@
       <!-- Dates & Status -->
       <fieldset class="form-section">
         <legend>Dates & Status</legend>
-        
+
         <div class="form-field">
           <label for="memberSince">Member Since</label>
           <input type="text" id="memberSince" name="memberSince" value="{{ member.memberSince or '' }}" placeholder="e.g., Aug 1982, 2004, Spring 1992">
@@ -138,7 +138,7 @@
       <!-- Biography & Media -->
       <fieldset class="form-section form-section-full">
         <legend>Biography & Media</legend>
-        
+
         <div class="form-field">
           <label for="biography">Biography</label>
           <textarea id="biography" name="biography" rows="6" placeholder="Member biography, achievements, history...">{{ member.biography or '' }}</textarea>

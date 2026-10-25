@@ -20,16 +20,16 @@
       </div>
       <nav class="admin-nav" aria-label="Administration">
         <ul>
-          <li><a href="/admin" {% if request.path == '/admin' %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Overview</a></li>
-          <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Pages</a></li>
-          <li><a href="/admin/glossary" {% if request.path.startsWith('/admin/glossary') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Glossary</a></li>
-          <li><a href="/admin/moves" {% if request.path.startsWith('/admin/moves') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Moves</a></li>
-          <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Members</a></li>
-          <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Classes</a></li>
-          <li><a href="/admin/updates" {% if request.path.startsWith('/admin/updates') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Updates</a></li>
-          <li><a href="/admin/layout" {% if request.path.startsWith('/admin/layout') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Layout</a></li>
-          <li><a href="/admin/users" {% if request.path.startsWith('/admin/users') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Users</a></li>
-          <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Settings</a></li>
+          <li><a href="/admin" {% if request.path == '/admin' %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Overview</a></li>
+          <li><a href="/admin/pages" {% if request.path.startsWith('/admin/pages') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Pages</a></li>
+          <li><a href="/admin/glossary" {% if request.path.startsWith('/admin/glossary') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Glossary</a></li>
+          <li><a href="/admin/moves" {% if request.path.startsWith('/admin/moves') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Moves</a></li>
+          <li><a href="/admin/members" {% if request.path.startsWith('/admin/members') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Members</a></li>
+          <li><a href="/admin/classes" {% if request.path.startsWith('/admin/classes') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Classes</a></li>
+          <li><a href="/admin/updates" {% if request.path.startsWith('/admin/updates') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Updates</a></li>
+          <li><a href="/admin/layout" {% if request.path.startsWith('/admin/layout') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Layout</a></li>
+          <li><a href="/admin/users" {% if request.path.startsWith('/admin/users') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Users</a></li>
+          <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Settings</a></li>
         </ul>
       </nav>
       <div class="admin-user">
@@ -40,7 +40,7 @@
 
     <div class="admin-main">
       <header class="admin-header">
-        <h1>{{ pageTitle }}</h1>
+        <div class="admin-heading"><span class="eyebrow">Website administration</span><h1>{{ pageTitle }}</h1></div>
         <a href="/" target="_blank" rel="noopener" class="btn btn-sm btn-outline">View Site</a>
       </header>
 

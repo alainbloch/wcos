@@ -3,8 +3,8 @@
 {% block content %}
 {% if honorsReview.length %}<details class="notice"><summary>Hall of Heroes migration: {{ honorsReview.length }} records need review</summary><ul>{% for issue in honorsReview %}<li>{{ issue.reason }} — {{ issue.record.name }}{% if issue.record.year %} ({{ issue.record.year }}){% endif %}</li>{% endfor %}</ul><p>The original records are retained in the migration backup.</p></details>{% endif %}
 <div class="admin-content">
-  <div class="flex justify-between items-center mb-6">
-    <h2>Member records</h2>
+  <div class="page-heading">
+
     <div class="flex gap-2">
       {% if memberPage %}<a href="/admin/pages/{{ memberPage.id }}/edit" class="btn btn-secondary">Edit public member profiles page</a>{% endif %}
       <a href="/admin/members/new" class="btn btn-primary">+ Add Member</a>
@@ -12,13 +12,13 @@
   </div>
 
   <div class="notice">Manage member records below. The public Member Profiles page displays active members grouped by level.</div>
-  <form method="GET" action="/admin/members" class="admin-form">
-    <label for="council-filter">Council service</label>
+  <form method="GET" action="/admin/members" class="filter-bar">
+    <div class="filter-field"><label for="council-filter">Council service</label>
     <select id="council-filter" name="council">
       <option value="" {% if not councilFilter %}selected{% endif %}>All members</option>
       <option value="all" {% if councilFilter == 'all' %}selected{% endif %}>All council members (past and current)</option>
       <option value="current" {% if councilFilter == 'current' %}selected{% endif %}>Current council members</option>
-    </select>
+    </select></div>
     <button type="submit" class="btn btn-secondary">Filter</button>
   </form>
   {% if members and members.length > 0 %}
@@ -61,9 +61,9 @@
             {% endif %}
           </td>
           <td class="actions-cell">
-            <a href="/admin/members/{{ member.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <a href="/admin/members/{{ member.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">Edit</a>
             <form method="POST" action="/admin/members/{{ member.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ member.position }}? This cannot be undone.');">
-              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">Delete</button>
             </form>
           </td>
         </tr>

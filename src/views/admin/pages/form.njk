@@ -6,13 +6,13 @@
 <div class="form-group"><label for="title">Page title</label><input id="title" name="title" value="{{ page.title }}" required maxlength="180" placeholder="Give your page a clear title"></div>
 <div class="form-group"><label for="slug">Page address</label><input id="slug" name="slug" value="{{ page.slug }}" {% if page.id %}data-manually-edited="true"{% endif %} pattern="[a-z0-9]+(-[a-z0-9]+)*|" aria-describedby="slug-help"><small id="slug-help">{% if page.id and page.slug == '' %}This is your homepage. Leave the address empty to keep it at /.{% else %}Use lowercase words separated by hyphens, such as sword-training.{% endif %}</small></div>
 <div class="form-group"><label for="layout">Layout template</label><input id="layout" name="layout" value="{{ page.layout or '' }}" placeholder="pages/reference.njk"><small>Leave empty for default layout.</small></div>
-<div class="form-group dropdown-group" style="position:relative;">
-<label>Data sources</label>
-<div class="dropdown-trigger" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.dropdown-display').textContent = this.querySelector('.dropdown-display').dataset.selected || 'Select data sources...'" data-selected="{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% endif %}">
-  <span class="dropdown-display" data-selected="{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% endif %}">{% if page.dataSources %}{{ page.dataSources.join(', ') }}{% else %}Select data sources...{% endif %}</span>
+<div class="form-group dropdown-group" data-checkbox-dropdown data-placeholder="Select data sources..." style="position:relative;">
+<label id="sources-label">Data sources</label>
+<button type="button" class="dropdown-trigger" aria-labelledby="sources-label sources-display" aria-expanded="false" aria-controls="sources-panel">
+  <span id="sources-display" class="dropdown-display">Select data sources...</span>
   <span aria-hidden="true">▼</span>
-</div>
-<div class="dropdown-panel">
+</button>
+<div id="sources-panel" class="dropdown-panel">
   {% for source in ['updates','generalUpdates','councilUpdates','newsUpdates'] %}<label class="dropdown-option"><input type="checkbox" name="dataSources" value="{{ source }}" {% if page.dataSources and source in page.dataSources %}checked{% endif %}> {{ source }}</label>{% endfor %}
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="glossary" {% if page.dataSources and 'glossary' in page.dataSources %}checked{% endif %}> glossary</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="members" {% if page.dataSources and 'members' in page.dataSources %}checked{% endif %}> members</label>
@@ -27,19 +27,7 @@
 </div>
 </div>
 
-<script>
-(function(){
-  document.querySelectorAll('.dropdown-option input').forEach(function(box){
-    box.addEventListener('change', function(){
-      var parent = box.closest('.dropdown-group');
-      var checked = parent.querySelectorAll('.dropdown-option input:checked');
-      var names = Array.from(checked).map(function(c){ return c.value; });
-      parent.querySelector('.dropdown-display').textContent = names.length ? names.join(', ') : 'Select data sources...';
-      parent.querySelector('.dropdown-display').dataset.selected = names.join(', ');
-    });
-  });
-})();
-</script>
+
 <div class="form-group"><label for="parentSlug">Parent page</label><select id="parentSlug" name="parentSlug"><option value="" {% if not page.parentSlug %}selected{% endif %}>— None (root) —</option>{% for p in pages %}{% if p.id != page.id %}<option value="{{ p.slug }}" {% if page.parentSlug == p.slug %}selected{% endif %}>{{ p.title }} ({{ p.slug }})</option>{% endif %}{% endfor %}</select><small>Leave empty for root pages.</small></div>
 <div class="form-group"><label for="styleOverrides">Style overrides</label><textarea id="styleOverrides" name="styleOverrides" rows="3" placeholder="Optional CSS snippet">{{ page.styleOverrides or '' }}</textarea><small>Optional custom CSS for this page.</small></div>
 <h2>Page content</h2>
