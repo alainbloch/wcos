@@ -64,6 +64,10 @@ it("provides Settings navigation, authenticated exports, and versioned round tri
   expect(
     (await app.inject({ url: "/admin/settings", headers: { cookie } })).payload,
   ).toContain("/admin/settings/data-transfer");
+  getDatabase().data.resources = [
+    { id: "legacy-resource", title: "Retired resource" },
+  ];
+  getDatabase().data.memberRosterManaged = true;
   for (const format of ["json", "zip"]) {
     const response = await app.inject({
       url: `/admin/settings/data-transfer/export/${format}`,
@@ -79,6 +83,8 @@ it("provides Settings navigation, authenticated exports, and versioned round tri
     expect(snapshot.version).toBe(1);
     expect(snapshot.collections.users[0].password).toMatch(/^\$2/);
     expect(snapshot.sessions).toBeUndefined();
+    expect(snapshot.system.resources).toEqual(getDatabase().data.resources);
+    expect(snapshot.system.memberRosterManaged).toBe(true);
     const plan = await buildPlan(
       response.rawPayload,
       format === "zip",

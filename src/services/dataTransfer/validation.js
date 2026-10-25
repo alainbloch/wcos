@@ -25,6 +25,8 @@ export function snapshotOf(data) {
         "migrations",
         "referenceMigrationVersion",
         "honorsMigrationReview",
+        "memberRosterManaged",
+        "resources",
       ].includes(key),
   );
   if (unknown.length)
@@ -39,6 +41,13 @@ export function snapshotOf(data) {
       COLLECTIONS.map((key) => [key, structuredClone(data[key] || [])]),
     ),
     system: {
+      // Retired resources remain recoverable without exposing a removed CMS collection.
+      ...(data.resources !== undefined
+        ? { resources: structuredClone(data.resources) }
+        : {}),
+      ...(data.memberRosterManaged !== undefined
+        ? { memberRosterManaged: data.memberRosterManaged }
+        : {}),
       migrations: structuredClone(data.migrations || {}),
       referenceMigrationVersion: data.referenceMigrationVersion || 1,
       honorsMigrationReview: structuredClone(data.honorsMigrationReview || []),
@@ -61,7 +70,11 @@ export function inspectSnapshot(snapshot, mode) {
     snapshot.system !== undefined &&
     (!object(snapshot.system) ||
       (snapshot.system.honorsMigrationReview !== undefined &&
-        !Array.isArray(snapshot.system.honorsMigrationReview)))
+        !Array.isArray(snapshot.system.honorsMigrationReview)) ||
+      (snapshot.system.memberRosterManaged !== undefined &&
+        typeof snapshot.system.memberRosterManaged !== "boolean") ||
+      (snapshot.system.resources !== undefined &&
+        !Array.isArray(snapshot.system.resources)))
   )
     errors.push("Invalid system metadata.");
   for (const key of Object.keys(snapshot.collections))
@@ -164,6 +177,29 @@ export function mergeCollections(current, incoming, mode) {
             ),
           ).values(),
         ];
+  // A managed empty roster must not fall back to the original imported names.
+  result.memberRosterManaged =
+    mode === "restore"
+      ? (incoming.system?.memberRosterManaged ?? true)
+      : Boolean(
+          current.memberRosterManaged ||
+          incoming.system?.memberRosterManaged ||
+          incoming.collections.members !== undefined,
+        );
+  if (incoming.system?.resources !== undefined) {
+    result.resources =
+      mode === "restore"
+        ? structuredClone(incoming.system.resources)
+        : [
+            ...new Map(
+              [...(current.resources || []), ...incoming.system.resources].map(
+                (item) => [JSON.stringify(item), structuredClone(item)],
+              ),
+            ).values(),
+          ];
+  } else if (mode === "restore") {
+    delete result.resources;
+  }
   result.referenceMigrationVersion = 1;
   return { result, counts };
 }
@@ -178,7 +214,7 @@ export function validateDatabase(data) {
     members: ["position"],
     classes: ["name"],
     glossary: ["name", "definition"],
-    updates: ["date", "category", "subcategory", "pageLink", "image", "body"],
+    updates: ["date", "category", "body"],
     moves: ["name"],
     siteSettings: ["siteName"],
     users: ["email", "name", "password"],
