@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const input=fieldset.querySelector('[name=championships]'),rows=fieldset.querySelector('[data-championship-rows]');
   const sync=()=>{input.value=JSON.stringify([...rows.children].map(row=>({year:row.querySelector('[data-year]').value,note:row.querySelector('[data-note]').value})));};
   function add(honor={year:'',note:''}){
-    const row=document.createElement('div');row.className='move-media-row';
+    const row=document.createElement('div');row.className='championship-row';
     row.innerHTML='<label>Year <input type="number" min="1000" max="9999" step="1" required data-year></label><label>Note <input data-note></label><button type="button">Remove</button>';
     row.querySelector('[data-year]').value=honor.year;row.querySelector('[data-note]').value=honor.note||'';
     row.querySelector('button').addEventListener('click',()=>{row.remove();sync();});rows.append(row);

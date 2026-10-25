@@ -25,10 +25,23 @@ describe("Admin editing workflow", () => {
       "/admin/pages/new",
       "/admin/members",
       "/admin/settings",
+      "/admin/members/new",
+      "/admin/classes", "/admin/classes/new",
+      "/admin/moves", "/admin/moves/new",
+      "/admin/glossary", "/admin/glossary/new",
+      "/admin/updates", "/admin/updates/new",
+      "/admin/users", "/admin/users/new",
+      "/admin/layout/header", "/admin/settings/data-transfer",
     ]) {
       const response = await get(url);
       expect(response.statusCode).toBe(200);
       expect(response.payload).toContain("/css/admin.css");
+      const $ = load(response.payload);
+      expect($("h1").length).toBe(1);
+      const title = $("h1").text();
+      expect($("main h2").toArray().some(node => $(node).text() === title)).toBe(false);
+      expect($(".admin-nav [aria-current=page]").length).toBe(1);
+      expect($(".admin-table").toArray().every(table => $(table).closest(".admin-table-container").length)).toBe(true);
     }
     expect((await app.inject("/css/admin.css")).statusCode).toBe(200);
   });

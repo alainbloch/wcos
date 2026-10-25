@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="admin-content">
-  <div class="flex justify-between items-center mb-6">
-    <h2>Classes & Locations</h2>
+  <div class="page-heading">
+
     <a href="/admin/classes/new" class="btn btn-primary">+ Add Class</a>
   </div>
 
@@ -38,9 +38,9 @@
             {% endif %}
           </td>
           <td class="actions-cell">
-            <a href="/admin/classes/{{ cls.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">✏️ Edit</a>
+            <a href="/admin/classes/{{ cls.id }}/edit" class="btn btn-sm btn-secondary" title="Edit">Edit</a>
             <form method="POST" action="/admin/classes/{{ cls.id }}/delete" class="inline-form" onsubmit="return confirm('Delete {{ cls.name }}? This cannot be undone.');">
-              <button type="submit" class="btn btn-sm btn-danger" title="Delete">🗑️ Delete</button>
+              <button type="submit" class="btn btn-sm btn-danger" title="Delete">Delete</button>
             </form>
           </td>
         </tr>

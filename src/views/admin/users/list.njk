@@ -1,11 +1,11 @@
 {% extends 'layouts/admin.njk' %}
 {% block content %}
-<p>All users have full access to administration.</p>
-<a href="/admin/users/new" class="btn btn-primary">Add user</a>
-<div class="table-scroll"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>
+
+<div class="page-heading"><p>Manage administrator accounts. All users have full access.</p><a href="/admin/users/new" class="btn btn-primary">Add user</a></div>
+<div class="admin-table-container"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>
 {% for item in items %}
 <tr><td>{{ item.name }}{% if item.id == user.id %} (you){% endif %}</td><td>{{ item.email }}</td><td>
-<a href="/admin/users/{{ item.id }}/edit">Edit</a>
+<a class="btn btn-sm" href="/admin/users/{{ item.id }}/edit">Edit</a>
 {% if item.id != user.id %}<form class="inline-form" method="post" action="/admin/users/{{ item.id }}/delete"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="btn btn-sm btn-danger" data-confirm-delete="Delete this user? Their access will end immediately.">Delete</button></form>{% endif %}
 </td></tr>
 {% endfor %}
