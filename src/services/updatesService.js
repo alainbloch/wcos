@@ -3,7 +3,7 @@ import { sanitizePageContent } from "./referenceSiteService.js";
 import sanitizeHtml from "sanitize-html";
 export function readUpdateForm(body = {}) {
   return Object.fromEntries(
-    ["title", "date", "category", "body"].map((key) => [
+    ["title", "date", "category", "subcategory", "pageLink", "body", "image"].map((key) => [
       key,
       typeof body[key] === "string" ? body[key] : "",
     ]),
@@ -43,12 +43,18 @@ export class UpdatesService {
     data.title = data.title.trim();
     if (data.title.length > 200)
       throw new Error("Title must be at most 200 characters.");
-    if (!["general", "council"].includes(data.category))
-      throw new Error("Choose General Update or Council.");
+    if (!["general", "council", "news"].includes(data.category))
+      throw new Error("Choose General Update, Council, or News.");
     if (!validUpdateDate(data.date))
       throw new Error(
         "Enter a valid date as YYYY-MM-DD or YYYY-MM for a month-only date.",
       );
+    if (data.subcategory && data.subcategory.length > 100)
+      throw new Error("Subcategory must be at most 100 characters.");
+    if (data.pageLink && data.pageLink.length > 200)
+      throw new Error("Page link must be at most 200 characters.");
+    if (data.image && data.image.length > 500)
+      throw new Error("Image URL/path must be at most 500 characters.");
     if (data.body.length > 200000)
       throw new Error("Body must be at most 200,000 characters.");
     data.body = sanitizePageContent(data.body);
