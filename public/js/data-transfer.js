@@ -28,6 +28,15 @@ if (form)
         },
         body: file,
       });
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const message = await response.text();
+        throw new Error(
+          contentType.includes("text/plain") && message.trim()
+            ? message
+            : "Upload failed. Reload this page, sign in if needed, and try again.",
+        );
+      }
       const result = await response.json();
       if (!response.ok)
         throw new Error(

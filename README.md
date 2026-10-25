@@ -551,3 +551,13 @@ the recovery archive plus old and staged media directories. Do not delete a pend
 
 Deployment: run `npm install` (or `npm ci`) for the added `fflate` dependency, then
 restart. No database migration or new environment variables are required.
+
+### Railway HTTPS and import sessions
+
+Railway terminates HTTPS before forwarding requests to the app. When
+`RAILWAY_ENVIRONMENT_ID` is present, WCOS trusts one proxy hop so secure session
+cookies work for admin form tokens and import previews. Set `TRUST_PROXY=1` for
+an equivalent single trusted proxy, or `TRUST_PROXY=0` to disable this behavior.
+After deploying this fix, reload Data Transfer to obtain a fresh form token.
+Expired form tokens are still rejected; the upload screen now displays plain-text
+server errors rather than a JSON parsing error.
