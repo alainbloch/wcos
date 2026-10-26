@@ -577,3 +577,5 @@ Stop the app before running this maintenance command against its JSON database,
 then restart it afterward. Use the same `DB_PATH` as the app; on Railway, run
 against the mounted volume, not a local database. Remove `ADMIN_PASSWORD` from
 the environment once the account has been set up or reset.
+
+Partial imports preserve omitted collections and unchanged administrator sessions. Import previews list only supplied collections. Restores and account credential changes still invalidate affected sessions.

@@ -238,7 +238,7 @@ it("stages through HTTP without writes, hides hashes in preview, and requires co
     payload: { _csrf: csrf, token, confirm: "yes" },
   });
   expect(applied.statusCode).toBe(302);
-  expect(applied.headers.location).toBe("/login");
+  expect(applied.headers.location).toBe("/admin/settings/data-transfer");
   expect(
     getDatabase().data.members.some((m) => m.id === "preview-member"),
   ).toBe(true);
@@ -401,4 +401,34 @@ it('shows all collection choices selected by default and blocks incomplete archi
   expect($('[data-transfer-export] input[name="collections"]:checked').length).toBe(8);
   getDatabase().data.moves = [{ id: 'missing-image', media: [{type:'image',url:'/uploads/not-present.webp'}] }];
   await expect(exportData(true, ['moves'])).rejects.toThrow('Missing uploaded media');
+});
+
+it.each(['populate', 'override'])('imports a partial export with %s while preserving users and the active session', async mode => {
+  const before = structuredClone(getDatabase().data);
+  const snapshot = { ...snapshotOf(before), collections: { glossary: [{ id:'partial-term', name:'Partial import', definition:'<p>Definition</p>' }] } };
+  delete snapshot.system;
+  const preview = await stageImport(jsonBytes(snapshot), false, mode, 'partial-owner');
+  expect(preview.errors).toEqual([]);
+  expect(preview.counts.map(item => item.collection)).toEqual(['glossary']);
+  await applyImport(preview.token, 'partial-owner');
+  for (const key of ['users', 'pages', 'members', 'classes', 'updates', 'moves', 'siteSettings']) {
+    expect(getDatabase().data[key]).toEqual(before[key]);
+  }
+  expect(getDatabase().data.glossary.some(item => item.id === 'partial-term')).toBe(true);
+  expect((await app.inject({url:'/admin',headers:{cookie}})).statusCode).toBe(200);
+});
+
+it('keeps the importing administrator signed in through the partial-import HTTP flow', async () => {
+  const upload = await app.inject({
+    method:'POST', url:'/admin/settings/data-transfer/upload',
+    headers:{cookie, 'content-type':'application/octet-stream', 'x-transfer-csrf':csrf, 'x-transfer-format':'json', 'x-transfer-mode':'override'},
+    payload: await exportData(false, ['glossary']),
+  });
+  expect(upload.statusCode).toBe(200);
+  const token = upload.json().location.split('/').pop();
+  const response = await app.inject({method:'POST',url:'/admin/settings/data-transfer/apply',headers:{cookie},payload:{_csrf:csrf,token,confirm:'yes'}});
+  expect(response.statusCode).toBe(302);
+  expect(response.headers.location).toBe('/admin/settings/data-transfer');
+  expect(response.cookies.some(item => item.name === 'wcos_session')).toBe(false);
+  expect((await app.inject({url:response.headers.location,headers:{cookie}})).statusCode).toBe(200);
 });

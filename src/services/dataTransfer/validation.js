@@ -116,10 +116,11 @@ export function mergeCollections(current, incoming, mode) {
   const result = structuredClone(current),
     counts = [];
   for (const key of COLLECTIONS) {
+    if (mode !== "restore" && incoming.collections[key] === undefined) continue;
     const existing = current[key] || [],
       rows = incoming.collections[key] || [];
     // Site settings are a singleton: backups from another installation can have a different ID.
-    const map = new Map(existing.map((row) => [row.id, row]));
+    const map = new Map(existing.map((row) => [row.id, structuredClone(row)]));
     let added = 0,
       replaced = 0,
       skipped = 0;
