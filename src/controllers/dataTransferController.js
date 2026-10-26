@@ -1,3 +1,4 @@
+import { COLLECTIONS } from "../services/dataTransfer/validation.js";
 import { BaseController } from "./baseController.js";
 import { usersController } from "./usersController.js";
 import { sha } from "../services/dataTransfer/format.js";
@@ -28,6 +29,7 @@ export class DataTransferController extends BaseController {
       pageTitle: "Data Transfer",
       csrf: request.session.userCsrf,
       report,
+      exportCollections: COLLECTIONS.map(key => ({ key, label: ({ pages: "Pages", members: "Members", classes: "Classes", glossary: "Glossary", updates: "Updates", moves: "Moves", siteSettings: "Site settings and layouts", users: "Users" })[key] })),
       backups: await listBackups(),
       ...(error ? { flash: { error } } : {}),
     });
@@ -37,7 +39,12 @@ export class DataTransferController extends BaseController {
     if (!archive && request.params.format !== "json")
       return reply.code(404).send("Unknown export format.");
     try {
-      const bytes = await exportData(archive);
+      const query = request.query || {};
+      const explicit = query.selection !== undefined || query.collections !== undefined;
+      const selected = explicit
+        ? (Array.isArray(query.collections) ? query.collections : query.collections ? [query.collections] : [])
+        : undefined;
+      const bytes = await exportData(archive, selected);
       return reply
         .header(
           "Content-Disposition",

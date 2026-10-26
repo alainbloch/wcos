@@ -365,3 +365,40 @@ it("restores a blank draft and keeps imported collections empty after restart", 
   expect(getDatabase().data.members).toHaveLength(1);
   expect(getDatabase().data.pages).toHaveLength(1);
 });
+
+it('exports selected collections through authenticated JSON and ZIP endpoints', async () => {
+  getDatabase().data.updates = [{ id: 'selected', image: '/uploads/selected.webp', body: '<p>Selected</p>' }];
+  await fs.writeFile(path.join(config.uploadDir, 'selected.webp'), media);
+  await fs.writeFile(path.join(config.uploadDir, 'unrelated.webp'), media);
+  for (const format of ['json', 'zip']) {
+    const response = await app.inject({
+      url: `/admin/settings/data-transfer/export/${format}?selection=custom&collections=updates&collections=glossary`,
+      headers: { cookie },
+    });
+    expect(response.statusCode).toBe(200);
+    const result = format === 'zip' ? readArchive(response.rawPayload) : { snapshot: response.json() };
+    expect(Object.keys(result.snapshot.collections).sort()).toEqual(['glossary', 'updates']);
+    expect(result.snapshot.collections.updates[0].id).toBe('selected');
+    expect(result.snapshot.system).toBeUndefined();
+    if (format === 'zip') expect([...result.media.keys()]).toEqual(['selected.webp']);
+  }
+  const one = await app.inject({url:'/admin/settings/data-transfer/export/json?collections=moves',headers:{cookie}});
+  expect(Object.keys(one.json().collections)).toEqual(['moves']);
+});
+
+it('rejects empty and unknown export selections instead of exporting everything', async () => {
+  for (const query of ['selection=custom', 'collections=unknown', 'collections=pages&collections=unknown']) {
+    const response = await app.inject({url:`/admin/settings/data-transfer/export/json?${query}`,headers:{cookie}});
+    expect(response.statusCode).toBe(400);
+    expect(response.payload).toContain('Select at least one valid collection');
+  }
+  await expect(exportData(false, [])).rejects.toThrow('Select at least one');
+});
+
+it('shows all collection choices selected by default and blocks incomplete archives', async () => {
+  const response = await app.inject({url:'/admin/settings/data-transfer',headers:{cookie}});
+  const $ = load(response.payload);
+  expect($('[data-transfer-export] input[name="collections"]:checked').length).toBe(8);
+  getDatabase().data.moves = [{ id: 'missing-image', media: [{type:'image',url:'/uploads/not-present.webp'}] }];
+  await expect(exportData(true, ['moves'])).rejects.toThrow('Missing uploaded media');
+});

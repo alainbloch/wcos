@@ -48,3 +48,22 @@ if (form)
       button.disabled = false;
     }
   });
+
+const exportForm = document.querySelector("[data-transfer-export]");
+if (exportForm) {
+  const boxes = [...exportForm.querySelectorAll('[name="collections"]')];
+  const status = exportForm.querySelector('[data-export-status]');
+  exportForm.querySelectorAll('[data-export-select]').forEach(button => {
+    button.addEventListener('click', () => {
+      boxes.forEach(box => { box.checked = button.dataset.exportSelect === 'all'; });
+      status.textContent = '';
+    });
+  });
+  exportForm.addEventListener('submit', event => {
+    if (!boxes.some(box => box.checked)) {
+      event.preventDefault();
+      status.textContent = 'Select at least one collection to export.';
+      boxes[0]?.focus();
+    } else status.textContent = '';
+  });
+}
