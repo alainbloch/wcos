@@ -386,14 +386,15 @@ export async function applyImport(token, owner) {
     );
   for (const user of plan.result.users) {
     const old = original.users.find((item) => item.id === user.id);
-    user.role = "admin";
-    user.authVersion =
-      meta.mode === "restore" ||
-      !old ||
-      old.password !== user.password ||
-      old.email !== user.email
-        ? randomUUID()
-        : old.authVersion || 0;
+    // Preserve unchanged accounts exactly, including their session version.
+    if (meta.mode === "restore" || !old || old.password !== user.password || old.email !== user.email) {
+      user.role = "admin";
+      user.authVersion = randomUUID();
+    } else if (Object.hasOwn(old, "authVersion")) {
+      user.authVersion = old.authVersion;
+    } else {
+      delete user.authVersion;
+    }
   }
   const backups = path.join(transferRoot(), "backups");
   await privateDirectory(backups);

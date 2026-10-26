@@ -1,3 +1,4 @@
+import { authService } from "../services/authService.js";
 import { COLLECTIONS } from "../services/dataTransfer/validation.js";
 import { BaseController } from "./baseController.js";
 import { usersController } from "./usersController.js";
@@ -109,11 +110,16 @@ export class DataTransferController extends BaseController {
         request.body.token,
         this.owner(request),
       );
+      const user = await authService.getUserById(request.user.id);
+      const sessionChanged = !user || (user.authVersion || 0) !== (request.user.authVersion || 0);
       request.session.adminFlash = {
-        success: `Import completed. Recovery archive: ${backupName}. Sign in with an account from the resulting database.`,
+        success: `Import completed. Recovery archive: ${backupName}.${sessionChanged ? " Sign in with an account from the resulting database." : ""}`,
       };
-      reply.clearCookie("wcos_session", { path: "/" });
-      return reply.redirect("/login");
+      if (sessionChanged) {
+        reply.clearCookie("wcos_session", { path: "/" });
+        return reply.redirect("/login");
+      }
+      return reply.redirect("/admin/settings/data-transfer");
     } catch (error) {
       reply.code(400);
       return this.page(request, reply, null, error.message);

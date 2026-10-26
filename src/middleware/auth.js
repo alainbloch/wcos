@@ -17,7 +17,7 @@ export async function authMiddleware(request, reply) {
 
   const user = await authService.getUserById(decoded.id);
   if (!user || (decoded.authVersion || 0) !== (user.authVersion || 0)) {
-    return reply.code(401).send({ error: "User not found" });
+    return reply.code(401).send({ error: "Your session is no longer valid. Please sign in again." });
   }
 
   request.user = user;
