@@ -79,6 +79,10 @@ export function sanitizePageContent(content) {
         color: [/^#[\da-f]{3,8}$/i],
         "text-align": [/^(left|right|center|justify)$/],
         "background-image": [/^url\(['"]?\/images\/[\w.%-]+['"]?\)$/],
+        "border-left-color": [
+          /^#[\da-f]{6}$/i,
+          /^\{\{\s*rankColor\s*\}\}$/,
+        ],
       },
     },
     transformTags: {
