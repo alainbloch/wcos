@@ -2,6 +2,7 @@ import { BaseController } from "./baseController.js";
 import {
   getPublicPage,
   originalPages,
+  sanitizePageContent,
 } from "../services/referenceSiteService.js";
 import { dynamicPageService } from "../services/dynamicPageService.js";
 
@@ -31,6 +32,9 @@ export class PublicPageController extends BaseController {
         }
       }
     }
+
+    // Sanitize rendered values too, including HTML emitted by safe filters.
+    dynamicContent = sanitizePageContent(dynamicContent);
 
     const preparedPage = { ...page, ...dynamicData, content: dynamicContent };
 
