@@ -489,15 +489,17 @@ versioned seed and templates from source HTML, not the live database.
 
 Open **Admin → Settings → Data Transfer** (`/admin/settings/data-transfer`).
 
-- **Export Data (.json)** includes all eight database collections: pages, members,
+- Choose collections with checkboxes (all selected by default), or use Select all / Clear selection.
+- **Export Data (.json)** includes the selected database collections: pages, members,
   classes, glossary, updates, moves, site settings/layout, and users. IDs and
   relationships are preserved. Passwords remain bcrypt hashes; sessions and
   environment credentials are excluded.
-- Backup system metadata preserves the managed-roster flag and any retired `resources` data left in older databases. Restore reinstates that metadata; Populate/Override retain legacy resource entries from both databases without exposing a Resources admin section. Older backups without the roster flag restore as managed so an intentionally empty roster stays empty.
-- **Export Archive (.zip)** adds all images/videos in `UPLOAD_DIR`, plus a versioned
+- Full backups include system metadata; partial exports omit it. Backup system metadata preserves the managed-roster flag and any retired `resources` data left in older databases. Restore reinstates that metadata; Populate/Override retain legacy resource entries from both databases without exposing a Resources admin section. Older backups without the roster flag restore as managed so an intentionally empty roster stays empty.
+- **Export Archive (.zip)** adds uploads referenced by selected records. When all collections are selected, it includes every file in `UPLOAD_DIR`. Both include a versioned
   manifest with SHA-256 checksums and sizes. Built-in `/images` assets belong to the
   deployed codebase; external URLs remain links. ZIPs contain `database.json`,
   `manifest.json`, and `uploads/*`.
+- Partial exports support Populate and Override; Restore requires all collections. Include Members with Classes or Moves when their instructor/creator references need to transfer to another database. Exports preserve IDs without silently adding unselected collections.
 - Upload either format, choose a mode, inspect validation results and counts, then
   explicitly confirm. The preview never changes the live database. Imports fail
   if the database or uploaded files changed after preview; upload again to review.

@@ -239,9 +239,34 @@ export async function buildPlan(
     fingerprint: fingerprint(current, currentMedia),
   };
 }
-export async function exportData(archive = false) {
+export async function exportData(archive = false, collections = COLLECTIONS) {
+  if (!Array.isArray(collections) || !collections.length ||
+      collections.some(key => !COLLECTIONS.includes(key)))
+    throw new Error("Select at least one valid collection to export.");
+  const selected = new Set(collections);
   const snapshot = snapshotOf(getDatabase().data);
-  if (archive) return makeArchive(snapshot, await scanMedia());
+  const partial = selected.size !== COLLECTIONS.length;
+  if (partial) {
+    snapshot.collections = Object.fromEntries(
+      Object.entries(snapshot.collections).filter(([key]) => selected.has(key)),
+    );
+    // Global recovery metadata belongs only in a full database backup.
+    delete snapshot.system;
+  }
+  if (archive) {
+    let media = await scanMedia();
+    if (partial) {
+      const needed = new Set();
+      transformStrings(snapshot.collections, text => {
+        for (const match of text.matchAll(uploadPattern)) needed.add(decodeName(match[2]));
+        return text;
+      });
+      const missing = [...needed].filter(name => !media.has(name));
+      if (missing.length) throw new Error(`Missing uploaded media: ${missing.join(", ")}`);
+      media = new Map([...media].filter(([name]) => needed.has(name)));
+    }
+    return makeArchive(snapshot, media);
+  }
   const bytes = jsonBytes(snapshot);
   if (bytes.length > MAX_FILE) throw new Error("Data export exceeds 128 MiB.");
   return bytes;

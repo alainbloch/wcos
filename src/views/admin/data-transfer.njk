@@ -3,7 +3,21 @@
 <div class="page-heading"><a class="btn" href="/admin/settings">← Back to Settings</a></div>
 <p>Transfer database records and uploaded images or videos. Backup files contain personal data and password hashes; keep them private.</p>
 <div class="dashboard-grid transfer-grid">
-<section class="admin-card"><h2>Export</h2><p>JSON includes all records, IDs, relationships, and layout settings. ZIP also includes the uploads folder with checksums.</p><div class="actions"><a class="btn btn-primary" href="/admin/settings/data-transfer/export/json">Export Data (.json)</a> <a class="btn" href="/admin/settings/data-transfer/export/zip">Export Archive (.zip)</a></div><p>Built-in site images stay with the application. External media URLs remain links. Sessions and environment secrets are excluded.</p></section>
+<section class="admin-card"><h2>Export</h2>
+<p>Choose the collections to include. JSON contains records, IDs, and relationships. ZIP also includes uploaded media.</p>
+<form method="get" action="/admin/settings/data-transfer/export/json" data-transfer-export>
+<input type="hidden" name="selection" value="custom">
+<fieldset><legend>Collections</legend>
+<div class="actions"><button type="button" class="btn" data-export-select="all">Select all</button><button type="button" class="btn" data-export-select="none">Clear selection</button></div>
+{% for collection in exportCollections %}
+<label class="check-label"><input type="checkbox" name="collections" value="{{ collection.key }}" checked> {{ collection.label }}</label>
+{% endfor %}
+</fieldset>
+<p>Partial exports support Populate and Override. Restore requires all collections. Include Members when transferring Classes or Moves to another database so instructor and creator IDs can be resolved.</p>
+<div class="actions"><button class="btn btn-primary" type="submit">Export Data (.json)</button><button class="btn" type="submit" formaction="/admin/settings/data-transfer/export/zip">Export Archive (.zip)</button></div>
+<p data-export-status role="status"></p>
+</form>
+<p>Partial ZIPs include only uploads referenced by the selected records; full ZIPs include all uploads. Built-in images stay with the application and external media URLs remain links. Users includes password hashes. Sessions and environment secrets are excluded.</p></section>
 <section class="admin-card"><h2>Import</h2>
 <form data-transfer-upload class="admin-form">
 <input type="hidden" name="_csrf" value="{{ csrf }}">
