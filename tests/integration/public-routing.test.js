@@ -80,3 +80,33 @@ it("serves a new CMS slug and returns 404 for missing pages", async () => {
     await pagesRepo.delete(page.id);
   }
 });
+
+it('renders rank colors before sanitizing styles and removes unsafe rendered HTML', async () => {
+  const { load } = await import('cheerio');
+  const page = await pagesRepo.findBySlug('member-profiles');
+  const created = [];
+  try {
+    for (const level of ['L7', 'L6', 'L5', 'L4', 'L3', 'L2', 'L1']) {
+      created.push(await membersRepo.create({ level, position: `Color ${level}`, active: true,
+        biography: '<script>alert(1)</script><img src="/images/test.jpg" onerror="alert(2)"><a href="javascript:alert(3)">Unsafe link</a>' }));
+    }
+    await pagesRepo.update(page.id, { dataSources: ['members'], content: `
+      {% set rankColors = {'L7':'#B8860B','L6':'#333333','L5':'#4A0000','L4':'#CC0000','L3':'#777777','L2':'#002600','L1':'#000000'} %}
+      {% for member in members %}
+      {% set rankColor = rankColors[member.level] or '#000000' %}
+      <div data-test-member="{{ member.id }}" style="border-left-color: {{ rankColor }}; position:fixed;">{{ member.level }}{{ member.biography | safe }}</div>
+      {% endfor %}` });
+    const response = await app.inject('/member-profiles');
+    expect(response.statusCode).toBe(200);
+    const $ = load(response.payload);
+    const colors = ['#B8860B','#333333','#4A0000','#CC0000','#777777','#002600','#000000'];
+    for (const [index, member] of created.entries()) {
+      const panel = $(`[data-test-member="${member.id}"]`);
+      expect(panel.attr('style')).toBe(`border-left-color:${colors[index]}`);
+      expect(panel.find('script,[onerror],a[href^="javascript:"]').length).toBe(0);
+    }
+  } finally {
+    await pagesRepo.update(page.id, page);
+    for (const member of created) await membersRepo.delete(member.id);
+  }
+});

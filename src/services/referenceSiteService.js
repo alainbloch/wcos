@@ -79,10 +79,7 @@ export function sanitizePageContent(content) {
         color: [/^#[\da-f]{3,8}$/i],
         "text-align": [/^(left|right|center|justify)$/],
         "background-image": [/^url\(['"]?\/images\/[\w.%-]+['"]?\)$/],
-        "border-left-color": [
-          /^#[\da-f]{6}$/i,
-          /^\{\{\s*rankColor\s*\}\}$/,
-        ],
+        "border-left-color": [/^#[\da-f]{6}$/i],
       },
     },
     transformTags: {
@@ -124,12 +121,9 @@ export async function getPublicPage(slug) {
     ...stored,
     styles: source?.styles || originalPages.find((p) => p.slug === "").styles,
     bodyClass: source?.bodyClass || "elementor-kit-12",
-    // Original pages are reviewed, immutable build artifacts. Editor changes pass
-    // through the sanitizer so script execution cannot be introduced in the CMS.
-    content:
-      stored.content === source?.content
-        ? stored.content
-        : sanitizePageContent(stored.content),
+    // Keep template expressions intact. The public controller sanitizes the
+    // final HTML after rendering, when CSS values are concrete colors.
+    content: stored.content || "",
   };
 }
 
