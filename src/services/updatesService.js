@@ -1,4 +1,4 @@
-import { updatesRepo } from "../models/updatesRepository.js";
+import { updatesRepo } from "../models/database.js";
 import { sanitizePageContent } from "./referenceSiteService.js";
 import sanitizeHtml from "sanitize-html";
 export function readUpdateForm(body = {}) {
@@ -30,7 +30,7 @@ export function validUpdateDate(date) {
 }
 export class UpdatesService {
   async getAll(category) {
-    return (await updatesRepo.findAll())
+    return (await updatesRepo.findAll()).sort((a,b)=>b.date.localeCompare(a.date))
       .filter((item) => !category || item.category === category)
       .map((item) => ({
         ...item,

@@ -1,9 +1,0 @@
-{% extends 'layouts/admin.njk' %}
-{% block content %}
-<div class="admin-content">
-<form class="admin-form admin-card" method="POST" action="{% if item.id %}/admin/glossary/{{ item.id }}/edit{% else %}/admin/glossary{% endif %}">
-<div class="form-field"><label for="name">Name</label><input id="name" name="name" value="{{ item.name }}" required maxlength="200"></div>
-<div class="form-field"><label for="definition">Definition</label><textarea id="definition" name="definition" rows="16" required maxlength="50000">{{ item.definition }}</textarea><small>Plain text or HTML paragraphs, lists, emphasis and links. Unsafe markup is removed on save.</small></div>
-<div class="form-actions"><button type="submit" class="btn btn-primary">Save glossary item</button> <a href="/admin/glossary" class="btn btn-secondary">Cancel</a></div>
-</form></div>
-{% endblock %}

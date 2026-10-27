@@ -1,3 +1,4 @@
+import { prepareRecord, validateDeletion, afterWrite } from "./rules.js";
 import { validateViews } from "./views.js";
 import { randomUUID, createHash } from "node:crypto";
 import { getDatabase } from "../../models/database.js";
@@ -6,6 +7,8 @@ import {
   normalizeDefinition,
   systemDefinitions,
   SYSTEM,
+  LOCKED,
+  builtins,
   validateRecord,
   SYSTEM_FIELDS,
 } from "./schema.js";
@@ -17,10 +20,17 @@ export const emptyState = () => ({
   history: [],
 });
 export const stateOf = (data) => data.dynamic || emptyState();
-export const definitionsOf = (data) => [
-  ...systemDefinitions(data),
-  ...stateOf(data).definitions,
-];
+export const definitionsOf = (data) => {
+  const saved = stateOf(data).definitions;
+  return [
+    ...systemDefinitions(data).filter((d) => !saved.some((s) => s.id === d.id)),
+    ...saved,
+  ];
+};
+function setRows(data, id, rows) {
+  if (SYSTEM.includes(id)) data[id] = rows;
+  else data.dynamic.records[id] = rows;
+}
 export const rowsOf = (data, collection) =>
   SYSTEM.includes(collection)
     ? data[collection] || []
@@ -70,7 +80,11 @@ export function validateState(data) {
       const clean = validateRecord(def, row);
       // Imports must not bypass sanitization; reject unsafe rich text rather than silently changing a backup.
       for (const f of def.fields)
-        if (f.type === "richtext" && clean[f.name] !== row[f.name])
+        if (
+          builtins[def.id]?.[f.name] !== "richtext" &&
+          f.type === "richtext" &&
+          clean[f.name] !== row[f.name]
+        )
           throw new Error(`Unsafe rich text in ${def.id}.${f.name}`);
     }
     for (const f of def.fields) {
@@ -80,7 +94,11 @@ export function validateState(data) {
       const targetIds = new Set(rowsOf(data, f.target).map((row) => row.id));
       for (const row of rows) {
         const value = row[f.name];
-        if (value === undefined) continue;
+        if (
+          value === undefined ||
+          (!f.required && (value === null || value === ""))
+        )
+          continue;
         if (f.unique) {
           const key = JSON.stringify(value);
           if (seen.has(key)) throw new Error(`${f.label} must be unique.`);
@@ -92,7 +110,10 @@ export function validateState(data) {
               throw new Error(`${f.label}: referenced record does not exist.`);
           }
       }
-      if (f.type === "relationship" && f.cardinality !== "many-to-many") {
+      if (
+        f.type === "relationship" &&
+        ["one-to-one", "one-to-many"].includes(f.cardinality)
+      ) {
         const owners = new Set();
         for (const row of rows)
           for (const id of [row[f.name]].flat().filter(Boolean)) {
@@ -128,7 +149,7 @@ export function validateState(data) {
   return true;
 }
 export function assertNotReferenced(data, collection, id) {
-  for (const def of stateOf(data).definitions)
+  for (const def of definitionsOf(data))
     for (const f of def.fields) {
       if (f.type !== "relationship" || f.target !== collection) continue;
       if (rowsOf(data, def.id).some((row) => [row[f.name]].flat().includes(id)))
@@ -191,9 +212,7 @@ export class CollectionStore {
       data = this.data(),
       candidate = structuredClone(data);
     candidate.dynamic ||= emptyState();
-    const previous = candidate.dynamic.definitions.find(
-      (d) => d.id === definition.id,
-    );
+    const previous = definitionsOf(data).find((d) => d.id === definition.id);
     const errors = [];
     if (previous)
       for (const f of previous.fields)
@@ -207,11 +226,14 @@ export class CollectionStore {
     candidate.dynamic.definitions = candidate.dynamic.definitions
       .filter((d) => d.id !== definition.id)
       .concat(definition);
-    candidate.dynamic.records[definition.id] ||= [];
     try {
-      candidate.dynamic.records[definition.id] = candidate.dynamic.records[
-        definition.id
-      ].map((row) => validateRecord(definition, row));
+      setRows(
+        candidate,
+        definition.id,
+        rowsOf(candidate, definition.id).map((row) =>
+          validateRecord(definition, row, { sanitize: false }),
+        ),
+      );
       validateState(candidate);
     } catch (error) {
       errors.push(error.message);
@@ -232,7 +254,7 @@ export class CollectionStore {
       const preview = this.preview(input);
       if (preview.errors.length) throw new Error(preview.errors.join(" "));
       const state = data.dynamic,
-        previous = state.definitions.find((d) => d.id === input.id);
+        previous = definitionsOf(this.data()).find((d) => d.id === input.id);
       state.history.push({
         id: randomUUID(),
         collection: input.id,
@@ -243,14 +265,18 @@ export class CollectionStore {
       state.definitions = state.definitions
         .filter((d) => d.id !== input.id)
         .concat(preview.definition);
-      state.records[input.id] = (state.records[input.id] || []).map((row) =>
-        validateRecord(preview.definition, row),
+      setRows(
+        data,
+        input.id,
+        rowsOf(data, input.id).map((row) =>
+          validateRecord(preview.definition, row, { sanitize: false }),
+        ),
       );
       return preview.definition;
     });
   }
   async deleteDefinition(id) {
-    if (this.definition(id).system)
+    if (SYSTEM.includes(id))
       throw new Error("System collections are protected.");
     return this.mutate((data) => {
       if (rowsOf(data, id).length)
@@ -270,36 +296,81 @@ export class CollectionStore {
       delete data.dynamic.records[id];
     });
   }
-  async saveRecord(collection, input, id, replace = false) {
-    const def = this.definition(collection);
-    if (def.system)
-      throw new Error("Use the existing system collection editor.");
+  async saveRecord(
+    collection,
+    input,
+    id,
+    replace = false,
+    { internal = false } = {},
+  ) {
+    if (LOCKED.includes(collection))
+      throw new Error(
+        "Authentication and site settings use protected administration.",
+      );
     return this.mutate((data) => {
+      const def = definitionsOf(data).find((d) => d.id === collection);
+      if (!def) throw new Error("Collection not found.");
       assertSafe(input);
-      if (SYSTEM_FIELDS.some((k) => Object.hasOwn(input, k)))
+      if (!internal && SYSTEM_FIELDS.some((k) => Object.hasOwn(input, k)))
         throw new Error("System fields cannot be edited.");
-      const rows = data.dynamic.records[collection];
+      const rows = rowsOf(data, collection);
       const old = id ? rows.find((r) => r.id === id) : null;
       if (id && !old) throw new Error("Record not found.");
+      const values = { ...(replace ? {} : old), ...input };
+      const prepared = prepareRecord(collection, values, data, old, input);
       const record = validateRecord(def, {
-        ...(replace ? {} : old),
-        ...input,
-        id: id || randomUUID(),
-        createdAt: old?.createdAt || new Date().toISOString(),
+        ...prepared,
+        id: id || (internal && input.id) || randomUUID(),
+        createdAt:
+          old?.createdAt ||
+          (internal && input.createdAt) ||
+          new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
       if (old) rows.splice(rows.indexOf(old), 1, record);
       else rows.push(record);
+      setRows(data, collection, rows);
+      afterWrite(collection, data);
       return record;
     });
   }
   async deleteRecord(collection, id) {
-    if (this.definition(collection).system)
-      throw new Error("Use the existing system collection editor.");
+    if (LOCKED.includes(collection))
+      throw new Error("System collection is protected.");
     return this.mutate((data) => {
+      this.definition(collection);
       assertNotReferenced(data, collection, id);
-      data.dynamic.records[collection] = rowsOf(data, collection).filter(
-        (r) => r.id !== id,
+      validateDeletion(collection, id, data);
+      const existed = rowsOf(data, collection).some((r) => r.id === id);
+      setRows(
+        data,
+        collection,
+        rowsOf(data, collection).filter((r) => r.id !== id),
+      );
+      afterWrite(collection, data);
+      return existed;
+    });
+  }
+  async reorder(collection, ids, field = "order") {
+    return this.mutate((data) => {
+      const rows = rowsOf(data, collection);
+      if (
+        !Array.isArray(ids) ||
+        ids.length !== rows.length ||
+        new Set(ids).size !== ids.length ||
+        ids.some((id) => !rows.some((r) => r.id === id))
+      )
+        throw new Error("The list changed. Reload before reordering.");
+      const def = this.definition(collection);
+      setRows(
+        data,
+        collection,
+        ids.map((id, index) =>
+          validateRecord(def, {
+            ...rows.find((r) => r.id === id),
+            [field]: index,
+          }),
+        ),
       );
     });
   }

@@ -71,7 +71,7 @@ describe("Schema repository", () => {
       store.preview({ ...event, fields: [] }).errors.length,
     ).toBeGreaterThan(0);
     expect(() => normalizeDefinition({ ...event, id: "__proto__" })).toThrow();
-    expect(() => normalizeDefinition({ ...event, id: "members" })).toThrow();
+    expect(() => normalizeDefinition({ ...event, id: "users" })).toThrow();
     await expect(
       store.saveRecord("events", JSON.parse('{"__proto__":{"x":1}}')),
     ).rejects.toThrow();

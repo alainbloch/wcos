@@ -1,18 +1,23 @@
-import { prepareHonors, memberChampions, fallenHeroes } from '../utils/memberHonors.js';
+import {
+  councilMembers,
+  currentCouncilMembers,
+} from "../utils/councilMembership.js";
+import { memberChampions, fallenHeroes } from "../utils/memberHonors.js";
 /**
  * Member Service
  * Handles member profiles and rankings
  */
 import { membersRepo, getDatabase } from "../models/database.js";
 
-import {
-  prepareDalmater,
-  kaidenColorOptions,
-} from "../utils/memberDalmater.js";
+import { kaidenColorOptions } from "../utils/memberDalmater.js";
 
 export class MemberService {
-  async getChampions() { return memberChampions(await membersRepo.findAll()); }
-  async getFallenHeroes() { return fallenHeroes(await membersRepo.findAll()); }
+  async getChampions() {
+    return memberChampions(await membersRepo.findAll());
+  }
+  async getFallenHeroes() {
+    return fallenHeroes(await membersRepo.findAll());
+  }
 
   async getKaidenColorOptions(excludeId) {
     return kaidenColorOptions(await membersRepo.findAll(), excludeId);
@@ -23,10 +28,10 @@ export class MemberService {
   }
 
   async getCouncilMembers() {
-    return membersRepo.findCouncilMembers();
+    return councilMembers(await membersRepo.findAll());
   }
   async getCurrentCouncilMembers() {
-    return membersRepo.findCurrentCouncilMembers();
+    return currentCouncilMembers(await membersRepo.findAll());
   }
 
   async getMemberById(id) {
@@ -52,28 +57,15 @@ export class MemberService {
     );
   }
 
-  async markRosterManaged() {
-    const db = getDatabase();
-    db.data.memberRosterManaged = true;
-    await db.write();
-  }
-
   async createMember(data) {
-    data = prepareHonors(data, await membersRepo.findAll());
-    data = prepareDalmater(data, await membersRepo.findAll());
-    await this.markRosterManaged();
     return membersRepo.create(data);
   }
 
   async updateMember(id, data) {
-    data = prepareHonors(data, await membersRepo.findAll(), id);
-    data = prepareDalmater(data, await membersRepo.findAll(), id);
-    await this.markRosterManaged();
     return membersRepo.update(id, data);
   }
 
   async deleteMember(id) {
-    await this.markRosterManaged();
     return membersRepo.delete(id);
   }
 

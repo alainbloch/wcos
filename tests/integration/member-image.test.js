@@ -1,3 +1,4 @@
+import { collectionStore } from "../../src/services/collections/store.js";
 import {
   beforeAll,
   afterAll,
@@ -87,8 +88,8 @@ it("renders a multipart file picker with the existing preview", async () => {
     headers: { cookie },
   });
   const $ = load(response.payload);
-  expect($("form.admin-form").attr("enctype")).toBe("multipart/form-data");
-  expect($('[name="image"]').attr("type")).toBe("file");
+  expect($("[data-collection-app]").attr("data-record")).toBe(member.id);
+  expect($('[name="image"]').val()).toBe("/images/original.jpg");
   expect($(".image-preview img").attr("src")).toBe("/images/original.jpg");
 });
 it("uploads, decodes, and serves an image immediately", async () => {
@@ -125,7 +126,7 @@ it("cleans up a new upload if saving the member fails", async () => {
   const files = await readdir(directory);
   const image = (await membersRepo.findById(member.id)).image;
   jest
-    .spyOn(memberService, "updateMember")
+    .spyOn(collectionStore, "saveRecord")
     .mockRejectedValueOnce(new Error("Save failed"));
   expect((await submit({ bytes: png })).statusCode).toBe(400);
   expect(await readdir(directory)).toEqual(files);

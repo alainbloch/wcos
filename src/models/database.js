@@ -54,22 +54,8 @@ export function getDatabase() {
   return dbInstance;
 }
 
-// Re-export all repositories from their individual files
-export { pagesRepo } from './pagesRepository.js';
-export { membersRepo } from './membersRepository.js';
-export { classesRepo } from './classesRepository.js';
-export { movesRepo } from './movesRepository.js';
-export { siteSettingsRepo } from './siteSettingsRepository.js';
-export { usersRepo } from './usersRepository.js';
-
-// Also export the repository classes for testing/extension
+// Content collections share one schema-driven repository; names remain compatibility aliases.
+export { CollectionRepository, repositoryFor, pagesRepo, membersRepo, classesRepo, movesRepo, glossaryRepo, updatesRepo } from './collectionRepository.js';
+export { usersRepo, UsersRepository } from './usersRepository.js';
+export { siteSettingsRepo, SiteSettingsRepository } from './siteSettingsRepository.js';
 export { BaseRepository } from './baseRepository.js';
-export { PagesRepository } from './pagesRepository.js';
-export { MembersRepository } from './membersRepository.js';
-export { ClassesRepository } from './classesRepository.js';
-export { MovesRepository } from './movesRepository.js';
-export { SiteSettingsRepository } from './siteSettingsRepository.js';
-export { UsersRepository } from './usersRepository.js';
-export { glossaryRepo, GlossaryRepository } from './glossaryRepository.js';
-
-export { updatesRepo, UpdatesRepository } from './updatesRepository.js';

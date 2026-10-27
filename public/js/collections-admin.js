@@ -136,7 +136,7 @@
     table(catalog.definitions, ["label", "id"], list, (definition, cell) =>
       cell.append(
         button(
-          definition.system ? "Inspect protected schema" : "Edit schema",
+          definition.locked ? "Inspect protected schema" : "Edit schema",
           () => schemaForm(definition),
         ),
       ),
@@ -146,12 +146,12 @@
     pending = null;
     workspace.replaceChildren();
     const form = card(
-      definition.system
+      definition.locked
         ? "Protected system collection"
         : "Collection definition",
     );
     form.append(button("Back", schemaHome));
-    if (definition.system) {
+    if (definition.locked) {
       form.append(
         node(
           "p",
@@ -234,7 +234,7 @@
             node("textarea", (field.options || []).join("\n")),
             options,
           );
-        if (type === "relationship") {
+        if (type === "relationship" || field.control === "reference") {
           controls.target = label(
             "Related collection",
             select(
@@ -250,7 +250,7 @@
           controls.cardinality = label(
             "Cardinality",
             select(
-              ["one-to-one", "one-to-many", "many-to-many"],
+              ["one-to-one", "many-to-one", "one-to-many", "many-to-many"],
               field.cardinality,
             ),
             options,
@@ -271,7 +271,7 @@
         if (["string", "text"].includes(type))
           controls.control = label(
             "Form control",
-            select(["input", "textarea"], field.control),
+            select(["input", "textarea", "reference"], field.control),
             options,
           );
       }
@@ -303,6 +303,12 @@
           label: c.label.value,
           type: c.type.value,
           required: c.required.checked,
+          nullable:
+            definition.fields.find((field) => field.name === c.name.value)
+              ?.nullable === true,
+          optionRule: definition.fields.find(
+            (field) => field.name === c.name.value,
+          )?.optionRule,
           unique: c.unique.checked,
         };
         for (const key of ["pattern", "target", "cardinality", "control"])
@@ -354,7 +360,7 @@
         showPreview(await api("preview-schema", { definition: read() })),
       ),
     );
-    if (definition.id) {
+    if (definition.id && !definition.system) {
       form.append(
         button("Delete empty collection", async () => {
           if (
@@ -368,6 +374,8 @@
           schemaHome();
         }),
       );
+    }
+    if (definition.id) {
       const history = catalog.history.filter(
         (h) => h.collection === definition.id && h.definition,
       );
@@ -418,7 +426,7 @@
         recordsHome(selected, 1, search.value, sorting.value, order.value),
       ),
     );
-    if (!def.system)
+    if (!def.locked)
       panel.append(button("Create record", () => recordForm(def)));
     const result = await api("records", undefined, {
       collection: selected,
@@ -431,17 +439,10 @@
       def.columns.length ? def.columns : ["id"],
       panel,
       (row, cell) => {
-        if (def.system)
-          cell.append(
-            node("a", "Edit in existing editor", {
-              href: `/admin/${def.id}/${encodeURIComponent(row.id)}/edit`,
-            }),
-          );
-        else
-          cell.append(
-            button("View", () => recordForm(def, row.id, true)),
-            button("Edit", () => recordForm(def, row.id)),
-          );
+        cell.append(
+          button("View", () => recordForm(def, row.id, true)),
+          button("Edit", () => recordForm(def, row.id)),
+        );
       },
     );
     panel.append(
@@ -472,6 +473,13 @@
       `${readonly ? "View" : id ? "Edit" : "Create"} ${def.label}`,
     );
     panel.append(button("Back to records", () => recordsHome(def.id)));
+    if (def.id === "pages" && id)
+      panel.append(
+        node("a", "Open page layout editor", {
+          href: `/admin/page-design/${encodeURIComponent(id)}`,
+          class: "btn",
+        }),
+      );
     const form = node("form", undefined, { class: "admin-form" });
     panel.append(form);
     const controls = new Map(),
@@ -498,9 +506,13 @@
         control.checked = value === true;
       } else if (field.type === "enum")
         control = select([["", "Choose…"], ...field.options], value);
-      else if (field.type === "relationship") {
+      else if (field.type === "relationship" || field.control === "reference") {
         control = select([]);
-        if (field.cardinality !== "one-to-one") control.multiple = true;
+        if (
+          field.type === "relationship" &&
+          !["one-to-one", "many-to-one"].includes(field.cardinality)
+        )
+          control.multiple = true;
         else control.append(node("option", "Choose…", { value: "" }));
         const selected = new Set([value].flat().filter(Boolean));
         selected.forEach((id) => {
@@ -514,6 +526,7 @@
           if (reset) relationshipPage = 1;
           const result = await api("records", undefined, {
             collection: field.target,
+            optionRule: field.optionRule || "",
             q: find.value,
             page: relationshipPage,
           });
@@ -966,7 +979,25 @@
       notice("Ready.");
       if (root.dataset.mode === "schema") schemaHome();
       else if (root.dataset.mode === "views") viewsHome();
-      else recordsHome();
+      else {
+        if (root.dataset.hasErrors === "true") {
+          notice(
+            "Your unsaved values are shown below. Correct the validation errors and save again.",
+          );
+          return;
+        }
+        const definition = catalog.definitions.find(
+          (d) => d.id === root.dataset.initialCollection,
+        );
+        if (definition && (root.dataset.record || root.dataset.new === "true"))
+          recordForm(definition, root.dataset.record || undefined).catch(
+            report,
+          );
+        else
+          recordsHome(root.dataset.initialCollection || undefined).catch(
+            report,
+          );
+      }
     })
     .catch(report);
 })();

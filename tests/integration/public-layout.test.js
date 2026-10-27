@@ -126,7 +126,7 @@ describe("One public layout through category controllers", () => {
         headers: { cookie },
       });
       expect(editForm.statusCode).toBe(200);
-      expect(load(editForm.payload)("[name=circleName]").val()).toBe("Gad");
+      expect(load(editForm.payload)("[name=position]").val()).toBe("Gad");
       await post(`/admin/members/${member.id}/edit`, {
         ...fields,
         circleName: "Changed name",
