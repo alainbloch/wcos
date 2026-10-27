@@ -1,4 +1,5 @@
-import { prepareHonors } from '../utils/memberHonors.js';
+import { validateSystemRecord } from "../services/collections/schema.js";
+import { prepareHonors } from "../utils/memberHonors.js";
 /**
  * Members Repository
  * Handles member profiles and rankings
@@ -17,11 +18,22 @@ export class MembersRepository extends BaseRepository {
 
   async create(data) {
     data = prepareHonors(data, this.collection);
-    const record = { ...data, id: this.generateId(), createdAt: new Date().toISOString() };
+    const record = {
+      ...data,
+      id: this.generateId(),
+      createdAt: new Date().toISOString(),
+    };
+    validateSystemRecord(this.collectionName, record);
     JSON.stringify(record);
     this.collection.push(record);
-    try { await this.db.write(); return record; }
-    catch (error) { const index=this.collection.indexOf(record); if(index!==-1)this.collection.splice(index,1); throw error; }
+    try {
+      await this.db.write();
+      return record;
+    } catch (error) {
+      const index = this.collection.indexOf(record);
+      if (index !== -1) this.collection.splice(index, 1);
+      throw error;
+    }
   }
 
   async update(id, data) {
@@ -35,6 +47,7 @@ export class MembersRepository extends BaseRepository {
       updatedAt: new Date().toISOString(),
     };
     // Reject non-serializable data before it can poison the shared database object.
+    validateSystemRecord(this.collectionName, updated);
     JSON.stringify(updated);
     this.collection[index] = updated;
     try {

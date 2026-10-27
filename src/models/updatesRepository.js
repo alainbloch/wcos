@@ -1,3 +1,5 @@
+import { validateSystemRecord } from "../services/collections/schema.js";
+import { assertNotReferenced } from "../services/collections/store.js";
 import { BaseRepository } from "./baseRepository.js";
 export class UpdatesRepository extends BaseRepository {
   constructor() {
@@ -19,6 +21,7 @@ export class UpdatesRepository extends BaseRepository {
     }
   }
   async create(data) {
+    validateSystemRecord(this.collectionName, data);
     const record = {
       ...data,
       id: this.generateId(),
@@ -28,6 +31,7 @@ export class UpdatesRepository extends BaseRepository {
     return record;
   }
   async update(id, data) {
+    validateSystemRecord(this.collectionName, data);
     const current = await this.findById(id);
     if (!current) throw new Error("Updates item not found");
     const record = {
@@ -42,6 +46,7 @@ export class UpdatesRepository extends BaseRepository {
     return record;
   }
   async delete(id) {
+    assertNotReferenced(this.db.data, this.collectionName, id);
     if (!(await this.findById(id))) throw new Error("Updates item not found");
     await this.commit(this.collection.filter((item) => item.id !== id));
     return true;

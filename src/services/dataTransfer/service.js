@@ -131,8 +131,11 @@ function rewrite(value, mapping) {
 }
 function mediaErrors(data, files) {
   const errors = [];
-  for (const key of COLLECTIONS)
-    for (const row of data[key] || []) {
+  for (const [key, rows] of [
+    ...COLLECTIONS.map((key) => [key, data[key] || []]),
+    ...Object.entries(data.dynamic?.records || {}),
+  ])
+    for (const row of rows) {
       transformStrings(row, (text) => {
         for (const match of text.matchAll(uploadPattern)) {
           const name = decodeName(match[2]);
@@ -209,6 +212,8 @@ export async function buildPlan(
       return skipped ? row : rewrite(row, mapping);
     });
   }
+  if (adjusted.system?.dynamic)
+    adjusted.system.dynamic = rewrite(adjusted.system.dynamic, mapping);
   const { result, counts } = mergeCollections(current, adjusted, mode);
   errors.push(...validateDatabase(result), ...mediaErrors(result, finalMedia));
   const warnings = [];
@@ -240,8 +245,11 @@ export async function buildPlan(
   };
 }
 export async function exportData(archive = false, collections = COLLECTIONS) {
-  if (!Array.isArray(collections) || !collections.length ||
-      collections.some(key => !COLLECTIONS.includes(key)))
+  if (
+    !Array.isArray(collections) ||
+    !collections.length ||
+    collections.some((key) => !COLLECTIONS.includes(key))
+  )
     throw new Error("Select at least one valid collection to export.");
   const selected = new Set(collections);
   const snapshot = snapshotOf(getDatabase().data);
@@ -257,12 +265,14 @@ export async function exportData(archive = false, collections = COLLECTIONS) {
     let media = await scanMedia();
     if (partial) {
       const needed = new Set();
-      transformStrings(snapshot.collections, text => {
-        for (const match of text.matchAll(uploadPattern)) needed.add(decodeName(match[2]));
+      transformStrings(snapshot.collections, (text) => {
+        for (const match of text.matchAll(uploadPattern))
+          needed.add(decodeName(match[2]));
         return text;
       });
-      const missing = [...needed].filter(name => !media.has(name));
-      if (missing.length) throw new Error(`Missing uploaded media: ${missing.join(", ")}`);
+      const missing = [...needed].filter((name) => !media.has(name));
+      if (missing.length)
+        throw new Error(`Missing uploaded media: ${missing.join(", ")}`);
       media = new Map([...media].filter(([name]) => needed.has(name)));
     }
     return makeArchive(snapshot, media);
@@ -387,7 +397,12 @@ export async function applyImport(token, owner) {
   for (const user of plan.result.users) {
     const old = original.users.find((item) => item.id === user.id);
     // Preserve unchanged accounts exactly, including their session version.
-    if (meta.mode === "restore" || !old || old.password !== user.password || old.email !== user.email) {
+    if (
+      meta.mode === "restore" ||
+      !old ||
+      old.password !== user.password ||
+      old.email !== user.email
+    ) {
       user.role = "admin";
       user.authVersion = randomUUID();
     } else if (Object.hasOwn(old, "authVersion")) {

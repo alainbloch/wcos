@@ -1,8 +1,10 @@
+import { validateSystemRecord } from "../services/collections/schema.js";
+import { assertNotReferenced } from "../services/collections/store.js";
 /**
  * Base Repository
  * Provides common CRUD operations for all repositories
  */
-import { getDatabase } from './database.js';
+import { getDatabase } from "./database.js";
 
 export class BaseRepository {
   constructor(collectionName) {
@@ -26,9 +28,13 @@ export class BaseRepository {
   }
 
   async findOne(query) {
-    return this.collection?.find((item) => {
-      return Object.entries(query).every(([key, value]) => item[key] === value);
-    }) || null;
+    return (
+      this.collection?.find((item) => {
+        return Object.entries(query).every(
+          ([key, value]) => item[key] === value,
+        );
+      }) || null
+    );
   }
 
   async findMany(query) {
@@ -45,6 +51,7 @@ export class BaseRepository {
       updatedAt: new Date().toISOString(),
       ...data,
     };
+    validateSystemRecord(this.collectionName, newItem);
     this.collection.push(newItem);
     await this.db.write();
     return newItem;
@@ -54,6 +61,10 @@ export class BaseRepository {
     const index = this.collection?.findIndex((item) => item.id === id);
     if (index === undefined || index === -1) return null;
 
+    validateSystemRecord(this.collectionName, {
+      ...this.collection[index],
+      ...data,
+    });
     this.collection[index] = {
       ...this.collection[index],
       ...data,
@@ -64,6 +75,7 @@ export class BaseRepository {
   }
 
   async delete(id) {
+    assertNotReferenced(this.db.data, this.collectionName, id);
     const index = this.collection?.findIndex((item) => item.id === id);
     if (index === undefined || index === -1) return false;
 
