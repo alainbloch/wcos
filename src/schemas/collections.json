@@ -1,0 +1,1091 @@
+{
+  "pages": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "parentSlug": {
+        "title": "Parent page",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "content": {
+        "title": "Page HTML",
+        "x-wcos": {
+          "type": "text",
+          "group": "Page content"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "dataSources": {
+        "title": "Data Sources",
+        "x-wcos": {
+          "type": "array",
+          "group": "Page content"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
+      },
+      "dataView": {
+        "title": "Data View",
+        "x-wcos": {
+          "type": "object",
+          "group": "Page content"
+        },
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "styleOverrides": {
+        "title": "Style Overrides",
+        "x-wcos": {
+          "type": "text",
+          "group": "Page content"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "title": {
+        "title": "Title",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "slug": {
+        "title": "Slug",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "published": {
+        "title": "Published",
+        "x-wcos": {
+          "type": "boolean"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "layout": {
+        "title": "Layout",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Pages",
+    "x-wcos": {
+      "singularLabel": "Page",
+      "columns": [
+        "title",
+        "slug",
+        "published"
+      ]
+    }
+  },
+  "members": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "position": {
+        "title": "Circle name",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "level": {
+        "title": "Level",
+        "x-wcos": {
+          "type": "string",
+          "control": "select"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "enum": [
+          "",
+          "L7",
+          "L6",
+          "L5",
+          "L4",
+          "L3",
+          "L2",
+          "L1",
+          null
+        ]
+      },
+      "steelRank": {
+        "title": "Steel Rank",
+        "x-wcos": {
+          "type": "string",
+          "control": "select"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "enum": [
+          "",
+          "L7",
+          "L6",
+          "L5",
+          "L4",
+          "L3",
+          "L2",
+          "L1",
+          null
+        ]
+      },
+      "circleName": {
+        "title": "Rank display",
+        "x-wcos": {
+          "type": "string",
+          "control": "hidden"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "biography": {
+        "title": "Biography",
+        "x-wcos": {
+          "type": "richtext"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "image": {
+        "title": "Profile image",
+        "x-wcos": {
+          "type": "media"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "pattern": "^(https?://[^\\s]+|/(uploads|images)/[^\\s]+|)$"
+      },
+      "active": {
+        "title": "Active",
+        "x-wcos": {
+          "type": "boolean"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "region": {
+        "title": "Region",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "merits": {
+        "title": "Titles and merits",
+        "x-wcos": {
+          "type": "array"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
+      },
+      "championships": {
+        "title": "Championships",
+        "x-wcos": {
+          "type": "array",
+          "group": "Honors"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000,
+        "items": {
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "number"
+            },
+            "note": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      },
+      "fallenHero": {
+        "title": "Fallen Hero",
+        "x-wcos": {
+          "type": "boolean",
+          "group": "Honors"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "councilCurrent": {
+        "title": "Current council member",
+        "x-wcos": {
+          "type": "boolean",
+          "group": "Council"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "councilPosition": {
+        "title": "Council Position",
+        "x-wcos": {
+          "type": "string",
+          "group": "Council"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "councilTitle": {
+        "title": "Council Title",
+        "x-wcos": {
+          "type": "string",
+          "group": "Council"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "councilTermStart": {
+        "title": "Council Term Start",
+        "x-wcos": {
+          "type": "string",
+          "group": "Council"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "councilTermEnd": {
+        "title": "Council Term End",
+        "x-wcos": {
+          "type": "string",
+          "group": "Council"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "councilHistoricalDate": {
+        "title": "Council Historical Date",
+        "x-wcos": {
+          "type": "string",
+          "group": "Council"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "councilHistory": {
+        "title": "Council History",
+        "x-wcos": {
+          "type": "array",
+          "group": "Council"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000,
+        "items": {
+          "type": "object",
+          "properties": {
+            "position": {
+              "type": "string",
+              "default": ""
+            },
+            "start": {
+              "type": "string",
+              "default": ""
+            },
+            "end": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        }
+      },
+      "dalmaterMode": {
+        "title": "Dalmater color",
+        "x-wcos": {
+          "type": "string",
+          "control": "select",
+          "group": "Dalmater"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "enum": [
+          "",
+          "kaiden",
+          "custom",
+          null
+        ]
+      },
+      "dalmaterKaidenId": {
+        "title": "Kaiden",
+        "x-wcos": {
+          "type": "string",
+          "control": "reference",
+          "group": "Dalmater",
+          "target": "members",
+          "optionRule": "kaiden-color"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "dalmaterColorName": {
+        "title": "Color name",
+        "x-wcos": {
+          "type": "string",
+          "group": "Dalmater"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "dalmaterColorHex": {
+        "title": "Hex color",
+        "x-wcos": {
+          "type": "string",
+          "group": "Dalmater"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "memberSince": {
+        "title": "Member Since",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "email": {
+        "title": "Email",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "yearsFought": {
+        "title": "Years Fought",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "battlesFought": {
+        "title": "Battles Fought",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "steelBattlesFought": {
+        "title": "Steel Battles Fought",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "opponentsFought": {
+        "title": "Opponents Fought",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "weaponType": {
+        "title": "Weapon Type",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "statsUpdated": {
+        "title": "Stats Updated",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Members",
+    "x-wcos": {
+      "singularLabel": "Member",
+      "columns": [
+        "position",
+        "level",
+        "steelRank",
+        "active"
+      ]
+    }
+  },
+  "classes": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "instructorIds": {
+        "title": "Instructors",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "members",
+          "cardinality": "many-to-many",
+          "optionRule": "kaiden"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "maxItems": 1000
+      },
+      "name": {
+        "title": "Name",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "description": {
+        "title": "Description",
+        "x-wcos": {
+          "type": "text"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "location": {
+        "title": "Location",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "schedule": {
+        "title": "Schedule",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "region": {
+        "title": "Region",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "active": {
+        "title": "Active",
+        "x-wcos": {
+          "type": "boolean"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Classes",
+    "x-wcos": {
+      "singularLabel": "Class",
+      "columns": [
+        "name",
+        "location",
+        "schedule",
+        "active"
+      ]
+    }
+  },
+  "glossary": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "name": {
+        "title": "Name",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "definition": {
+        "title": "Definition",
+        "x-wcos": {
+          "type": "richtext"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Glossary",
+    "x-wcos": {
+      "singularLabel": "Term",
+      "columns": [
+        "name",
+        "definition"
+      ]
+    }
+  },
+  "updates": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "category": {
+        "title": "Category",
+        "x-wcos": {
+          "type": "string",
+          "control": "select"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "enum": [
+          "",
+          "general",
+          "council",
+          "news",
+          null
+        ]
+      },
+      "body": {
+        "title": "Content",
+        "x-wcos": {
+          "type": "richtext"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "dateLabel": {
+        "title": "Date Label",
+        "x-wcos": {
+          "type": "string",
+          "control": "hidden"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "title": {
+        "title": "Title",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "subcategory": {
+        "title": "Subcategory",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "pageLink": {
+        "title": "Page Link",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "date": {
+        "title": "Date",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "image": {
+        "title": "Image",
+        "x-wcos": {
+          "type": "media"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000,
+        "pattern": "^(https?://[^\\s]+|/(uploads|images)/[^\\s]+|)$"
+      }
+    },
+    "required": [
+      "category"
+    ],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Updates",
+    "x-wcos": {
+      "singularLabel": "Update",
+      "columns": [
+        "title",
+        "category",
+        "dateLabel"
+      ]
+    }
+  },
+  "moves": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "name": {
+        "title": "Name",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "category": {
+        "title": "Category",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      },
+      "types": {
+        "title": "Move types",
+        "x-wcos": {
+          "type": "array",
+          "control": "multiselect"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000,
+        "items": {
+          "type": "string",
+          "enum": [
+            "Straight Offense",
+            "Offensive Defense",
+            "Initiated Response"
+          ]
+        },
+        "uniqueItems": true
+      },
+      "creatorId": {
+        "title": "Creator",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "members",
+          "cardinality": "many-to-one"
+        },
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "core": {
+        "title": "Core move",
+        "x-wcos": {
+          "type": "boolean"
+        },
+        "type": [
+          "boolean",
+          "null"
+        ]
+      },
+      "description": {
+        "title": "Description",
+        "x-wcos": {
+          "type": "text"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "details": {
+        "title": "Details / instructions",
+        "x-wcos": {
+          "type": "text"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 2000000
+      },
+      "media": {
+        "title": "Images and videos",
+        "x-wcos": {
+          "type": "array",
+          "control": "media-list"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000,
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "enum": [
+                "image",
+                "video"
+              ],
+              "default": "image"
+            },
+            "url": {
+              "type": "string",
+              "title": "URL",
+              "default": ""
+            },
+            "caption": {
+              "type": "string",
+              "title": "Caption",
+              "default": ""
+            }
+          },
+          "required": [
+            "type",
+            "url"
+          ]
+        }
+      },
+      "order": {
+        "title": "Order",
+        "x-wcos": {
+          "type": "number",
+          "control": "hidden"
+        },
+        "type": [
+          "number",
+          "null"
+        ]
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Moves",
+    "description": "Manage techniques, instructions, and training media.",
+    "x-wcos": {
+      "singularLabel": "Move",
+      "columns": [
+        "name",
+        "core",
+        "types"
+      ],
+      "orderField": "order"
+    }
+  },
+  "siteSettings": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "siteName": {
+        "title": "Site Name",
+        "x-wcos": {
+          "type": "string"
+        },
+        "type": [
+          "string",
+          "null"
+        ],
+        "maxLength": 10000
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Site Settings",
+    "x-wcos": {
+      "singularLabel": "siteSettings",
+      "columns": [
+        "siteName"
+      ]
+    }
+  },
+  "users": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "readOnly": true
+      },
+      "createdAt": {
+        "type": "string",
+        "readOnly": true
+      },
+      "updatedAt": {
+        "type": "string",
+        "readOnly": true
+      }
+    },
+    "required": [],
+    "additionalProperties": true,
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Users",
+    "x-wcos": {
+      "singularLabel": "users",
+      "columns": []
+    }
+  }
+}
