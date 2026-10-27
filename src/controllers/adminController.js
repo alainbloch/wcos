@@ -1,11 +1,15 @@
-import { BaseController } from './baseController.js';
-import { pagesService } from '../services/pagesService.js';
-import { siteService } from '../services/siteService.js';
-import { originalPages, sanitizePageContent } from '../services/referenceSiteService.js';
-import { renderView } from '../utils/viewEngine.js';
-import { renderPageContent } from '../services/pageRenderingService.js';
-import { readBinding } from '../services/collections/render.js';
-import { viewService } from '../services/collections/views.js';
+import { collectionStore } from "../services/collections/store.js";
+import { BaseController } from "./baseController.js";
+import { pagesService } from "../services/pagesService.js";
+import { siteService } from "../services/siteService.js";
+import {
+  originalPages,
+  sanitizePageContent,
+} from "../services/referenceSiteService.js";
+import { renderView } from "../utils/viewEngine.js";
+import { renderPageContent } from "../services/pageRenderingService.js";
+import { readBinding } from "../services/collections/render.js";
+import { viewService } from "../services/collections/views.js";
 
 export class AdminController extends BaseController {
   async dashboard(request, reply) {
@@ -26,10 +30,16 @@ export class AdminController extends BaseController {
   }
 
   // Pages management
-  async previewPage(request, reply) {
+  async previewRecord(request, reply) {
+    const definition = request.collectionDefinition;
+    const contentField = definition.contentField || "content";
     const page = request.body.id
-      ? await pagesService.getPageById(request.body.id)
+      ? collectionStore
+          .rows(definition.id)
+          .find((row) => row.id === request.body.id)
       : null;
+    if (request.body.id && !page)
+      return reply.code(404).send("Record not found.");
     const source = originalPages.find((item) => item.slug === page?.slug);
 
     let content;
@@ -37,7 +47,11 @@ export class AdminController extends BaseController {
       const draft = {
         ...page,
         content:
-          typeof request.body.content === "string" ? request.body.content : "",
+          typeof request.body.content === "string"
+            ? request.body.content
+            : typeof request.body[contentField] === "string"
+              ? request.body[contentField]
+              : page?.[contentField] || "",
         dataSources: Object.hasOwn(request.body, "dataSources")
           ? Array.isArray(request.body.dataSources)
             ? request.body.dataSources
@@ -61,28 +75,43 @@ export class AdminController extends BaseController {
       return reply.code(400).type("text/plain").send(error.message);
     }
 
-    const html = await renderView(request.server, "admin/pages/preview.njk", {
-      content,
-      styles: source?.styles || [],
-      bodyClass: source?.bodyClass || "",
-    });
+    const html = await renderView(
+      request.server,
+      "admin/collections/preview.njk",
+      {
+        content,
+        styles: source?.styles || [],
+        bodyClass: source?.bodyClass || "",
+      },
+    );
     return reply
       .header("Cache-Control", "no-store")
       .type("text/html")
       .send(html);
   }
 
-  async editPage(request, reply) {
-    const page = await pagesService.getPageById(request.params.id);
+  async designRecord(request, reply) {
+    const definition = request.collectionDefinition;
+    const page = collectionStore
+      .rows(definition.id)
+      .find((row) => row.id === request.params.id);
     if (!page) {
       return reply.code(404).send("Page not found");
     }
-    const pages = await pagesService.getAllPages();
-    await this.renderAdmin(request, reply, "admin/pages/form.njk", {
+    const pages = collectionStore.rows(definition.id);
+    const collectionBase = `/admin/collections/${encodeURIComponent(definition.id)}`;
+    await this.renderAdmin(request, reply, "admin/collections/design.njk", {
       dataViews: viewService.list().filter((v) => v.public),
-      pageTitle: "Edit Page",
-      page,
+      pageTitle: `Design ${definition.singularLabel || definition.label}`,
+      page: {
+        ...page,
+        content: page[definition.contentField || "content"] || "",
+      },
       pages,
+      definition,
+      collectionBase,
+      previewUrl: `${collectionBase}/preview`,
+      csrf: request.session.schemaCsrf,
     });
   }
 

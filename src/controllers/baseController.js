@@ -1,4 +1,4 @@
-import { renderLayout } from '../services/layoutService.js';
+import { renderLayout } from "../services/layoutService.js";
 /**
  * Base Controller
  * Provides common functionality for all controllers
@@ -40,15 +40,34 @@ export class BaseController {
       request.session?.adminFlash || { success: null, error: null };
     if (request.session) delete request.session.adminFlash;
 
+    const path = request.url.split("?")[0];
+    const adminCollections = collectionStore
+      .definitions()
+      .filter((definition) => !definition.locked)
+      .map((definition) => {
+        const href = `/admin/collections/${encodeURIComponent(definition.id)}`;
+        const legacyHref = `/admin/${definition.id}`;
+        return {
+          id: definition.id,
+          label: definition.label,
+          href,
+          active:
+            path === href ||
+            path.startsWith(`${href}/`) ||
+            path === legacyHref ||
+            path.startsWith(`${legacyHref}/`),
+        };
+      });
     const context = {
       request: {
         ...request,
-        path: request.url,
+        path,
       },
       user: request.user,
       flash,
       ...footerData,
       isAdmin: true,
+      adminCollections,
       ...additionalContext,
     };
 

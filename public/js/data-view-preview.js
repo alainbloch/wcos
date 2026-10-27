@@ -20,7 +20,7 @@
     if (editor && !form.querySelector("[data-visual-panel]").hidden)
       body.content = editor.innerHTML;
     try {
-      const response = await fetch("/admin/pages/preview", {
+      const response = await fetch(form.dataset.previewUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

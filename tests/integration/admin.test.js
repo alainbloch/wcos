@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { load } from "cheerio";
@@ -12,12 +14,13 @@ beforeAll(async () => {
   await app.ready();
   const admin = await usersRepo.findByEmail("admin@wcos.org");
   cookie = `wcos_session=${authService.generateToken(admin)}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
   home = await pagesRepo.findBySlug("");
 });
 afterAll(async () => app.close());
-const get = (url) => app.inject({ url, headers: { cookie } });
+const get = (url) => app.inject({ url, headers: {"x-csrf-token": schemaCsrf, cookie } });
 const post = (url, payload) =>
-  app.inject({ method: "POST", url, payload, headers: { cookie } });
+  app.inject({ method: "POST", url, payload, headers: {"x-csrf-token": schemaCsrf, cookie } });
 
 describe("Admin editing workflow", () => {
   it("loads every admin screen with the independent admin stylesheet", async () => {
@@ -48,7 +51,7 @@ describe("Admin editing workflow", () => {
     expect((await app.inject("/css/admin.css")).statusCode).toBe(200);
   });
   it("loads complete imported content into exactly one submitted field", async () => {
-    const $ = load((await get(`/admin/page-design/${home.id}`)).payload);
+    const $ = load((await get(`/admin/collections/pages/${home.id}/design`)).payload);
     expect($('textarea[name="content"]').length).toBe(1);
     expect($('textarea[name="content"]').val()).toBe(home.content);
     expect($('input[name="slug"]').val()).toBe("");
@@ -115,12 +118,12 @@ describe("Admin editing workflow", () => {
       (
         await app.inject({
           method: "POST",
-          url: "/admin/pages/preview",
+          url: "/admin/collections/pages/preview",
           payload: { content: "secret" },
         })
       ).statusCode,
     ).toBe(401);
-    const response = await post("/admin/pages/preview", {
+    const response = await post("/admin/collections/pages/preview", {
       id: home.id,
       content:
         '<p>Hello</p><script>alert(1)</script><img src="/x" onerror="alert(2)">',
@@ -140,7 +143,7 @@ describe("Admin editing workflow", () => {
     });
     expect(response.statusCode).toBe(400);
     const $ = load(response.payload);
-    expect($("form.admin-form").attr("action")).toBe("/admin/pages");
+    expect($("form.admin-form").attr("action")).toBe("/admin/collections/pages");
     expect($('textarea[name="content"]').val()).toBe("<p>Keep me</p>");
   });
 });

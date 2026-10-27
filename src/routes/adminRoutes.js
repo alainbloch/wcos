@@ -90,23 +90,6 @@ export async function adminRoutes(fastify) {
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
 
-  // Preserve page preview and layout editing.
-  fastify.post(
-    "/pages/preview",
-    adminController.previewPage.bind(adminController),
-  );
-
-  fastify.get(
-    "/page-design/:id",
-    adminController.editPage.bind(adminController),
-  );
-
-  fastify.post(
-    "/updates/preview",
-    { preHandler: usersController.guard.bind(usersController) },
-    adminController.previewPage.bind(adminController),
-  );
-
   // Shared routes for every registered content collection.
   const collectionRoutes = [
     ["get", "", "screen"],
@@ -117,24 +100,22 @@ export async function adminRoutes(fastify) {
     ["post", "/:id/delete", "remove"],
     ["post", "/order", "reorder"],
     ["post", "/media", "upload"],
+    ["get", "/:id/design", "design"],
+    ["post", "/preview", "preview"],
   ];
 
-  for (const prefix of [
-    "/collections/:collection",
-    "/:collection",
-  ]) {
+  for (const prefix of ["/collections/:collection", "/:collection"]) {
     const legacyAlias = prefix === "/:collection";
 
     for (const [method, suffix, action] of collectionRoutes) {
       fastify[method](
         `${prefix}${suffix}`,
         {
+          config: { legacyCollectionAlias: legacyAlias },
           preHandler: async (request, reply) => {
             const definition = collectionStore
               .definitions()
-              .find(
-                (item) => item.id === request.params.collection,
-              );
+              .find((item) => item.id === request.params.collection);
 
             if (!definition) {
               return reply.code(404).send({
@@ -151,62 +132,35 @@ export async function adminRoutes(fastify) {
             request.collection = definition.id;
             request.collectionDefinition = definition;
 
-            // Preserve the existing legacy-form behavior.
-            // Canonical /collections/... routes retain schema CSRF checks.
-            request.collectionCompatibility = legacyAlias;
-
-            await collectionsController.guard(request, reply);
-            if (reply.sent) return;
-
-            // Compatibility with existing Updates forms and their token.
-            if (legacyAlias && definition.id === "updates") {
-              if (request.isMultipart()) {
-                request.body = Object.fromEntries(
-                  Object.entries(request.body || {}).map(
-                    ([key, value]) => [
-                      key,
-                      value?.type === "field"
-                        ? value.value
-                        : value,
-                    ],
-                  ),
-                );
-              }
-
-              await usersController.guard(request, reply);
+            if (request.isMultipart()) {
+              request.body = Object.fromEntries(
+                Object.entries(request.body || {}).map(([key, value]) => [
+                  key,
+                  value?.type === "field" ? value.value : value,
+                ]),
+              );
             }
+            await collectionsController.guard(request, reply);
           },
         },
         async (request, reply) => {
-          if (action === "reorder") {
-            const definition = request.collectionDefinition;
-
-            if (!definition.orderField) {
-              return reply.code(400).send({
-                error: "Ordering is not configured for this collection.",
-              });
-            }
-
-            try {
-              await collectionStore.reorder(
-                definition.id,
-                request.body?.ids,
-                definition.orderField,
-              );
-
-              return reply.send({ success: true });
-            } catch (error) {
-              return reply.code(400).send({
-                error: error.message,
-              });
-            }
+          if (action === "design" || action === "preview") {
+            if (request.collectionDefinition.capabilities?.[action] !== true)
+              return reply
+                .code(404)
+                .send({
+                  error: "This collection does not support that operation.",
+                });
+            return action === "design"
+              ? adminController.designRecord(request, reply)
+              : adminController.previewRecord(request, reply);
           }
 
           return collectionsController[action](request, reply);
         },
       );
     }
-  };
+  }
 
   // Settings (admin only)
   fastify.get("/settings", adminController.settings.bind(adminController));

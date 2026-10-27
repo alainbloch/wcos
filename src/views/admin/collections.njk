@@ -6,7 +6,7 @@
 {% if hasErrors %}<pre hidden data-unsaved>{{ unsavedJson }}</pre><pre hidden data-unsaved-errors>{{ unsavedErrorsJson }}</pre>{% endif %}
 <div data-workspace>
 {% if definition and (recordId or isNew or flash.error) %}{% include 'admin/collection-form.njk' %}
-{% elif definition %}<a class="btn" href="/admin/{{ definition.id }}/new">Create record</a><div class="admin-table-container"><table class="admin-table"><thead><tr>{% for field in definition.columns %}<th>{{ field }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>{% for row in records %}<tr>{% for field in definition.columns %}<td>{{ row[field] }}</td>{% endfor %}<td><a href="/admin/{{ definition.id }}/{{ row.id }}/edit">Edit</a></td></tr>{% endfor %}</tbody></table></div><input type="hidden" name="_csrf" value="{{ csrf }}">{% endif %}
+{% elif definition %}<a class="btn" href="/admin/collections/{{ definition.id }}/new">Create record</a><div class="admin-table-container"><table class="admin-table"><thead><tr>{% for field in definition.columns %}<th>{{ field }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>{% for row in records %}<tr>{% for field in definition.columns %}<td>{{ row[field] }}</td>{% endfor %}<td><a href="/admin/collections/{{ definition.id }}/{{ row.id }}/edit">Edit</a></td></tr>{% endfor %}</tbody></table></div><input type="hidden" name="_csrf" value="{{ csrf }}">{% endif %}
 </div>
 </div>
 <noscript>Enable JavaScript to use the schema and data view builders.</noscript>

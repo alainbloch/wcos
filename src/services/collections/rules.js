@@ -8,11 +8,6 @@ import { sanitizeDefinition, glossaryNameKey } from "../../utils/glossary.js";
 import { sanitizePageContent } from "../referenceSiteService.js";
 import { readBinding } from "./render.js";
 
-export const MOVE_TYPES = [
-  "Straight Offense",
-  "Offensive Defense",
-  "Initiated Response",
-];
 const hasText = (value) => typeof value === "string" && value.trim();
 function fail(field, message) {
   const error = new Error(message);
@@ -66,8 +61,6 @@ const rules = {
     return record;
   },
   updates(record, _data, old) {
-    if (!["general", "council", "news"].includes(record.category))
-      fail("category", "Choose General Update, Council, or News.");
     if (!validUpdateDate(record.date))
       fail(
         "date",
@@ -117,12 +110,6 @@ const rules = {
   moves(record, data, old) {
     if (!hasText(record.name)) fail("name", "Move name is required");
     if (
-      record.types !== undefined &&
-      (!Array.isArray(record.types) ||
-        record.types.some((type) => !MOVE_TYPES.includes(type)))
-    )
-      fail("types", "Choose valid move types");
-    if (
       record.creatorId &&
       !(data.members || []).some((m) => m.id === record.creatorId)
     )
@@ -160,9 +147,6 @@ const rules = {
       ].some((key) => Object.hasOwn(submitted, key))
     )
       record = prepareDalmater(record, data.members || [], old?.id);
-    for (const field of ["level", "steelRank"])
-      if (record[field] && !/^L[1-7]$/.test(record[field]))
-        fail(field, "Select a valid level or steel rank");
     if (
       record.level &&
       (!old || record.level !== old.level || record.steelRank !== old.steelRank)

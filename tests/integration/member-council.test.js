@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { collectionStore } from "../../src/services/collections/store.js";
 import {
   beforeAll,
@@ -34,6 +36,7 @@ const fields = {
 beforeAll(async () => {
   app = await buildApp();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail("admin@wcos.org"))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
 });
 afterEach(() => jest.restoreAllMocks());
 afterAll(async () => {
@@ -47,6 +50,7 @@ const post = (url, values) =>
     url,
     headers: {
       cookie,
+      "x-csrf-token": schemaCsrf,
       "content-type": "multipart/form-data; boundary=council-fields",
     },
     payload:
@@ -61,7 +65,7 @@ const post = (url, values) =>
 it("creates and updates council details on the member form including checkbox clearing", async () => {
   const response = await post("/admin/members", fields);
   expect(response.statusCode).toBe(302);
-  const id = response.headers.location.split("/")[3];
+  const id = response.headers.location.split("/").at(-2);
   ids.push(id);
   expect(await membersRepo.findById(id)).toMatchObject({
     councilPosition: "Secretary",

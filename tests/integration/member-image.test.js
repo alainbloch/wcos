@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { collectionStore } from "../../src/services/collections/store.js";
 import {
   beforeAll,
@@ -26,6 +28,7 @@ beforeAll(async () => {
   config.maxFileSize = 4096;
   app = await buildApp();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail("admin@wcos.org"))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
   member = await membersRepo.create({
     position: "Wind",
     level: "L3",
@@ -77,7 +80,7 @@ function submit({
     url: create ? "/admin/members" : `/admin/members/${member.id}/edit`,
     headers: {
       "content-type": `multipart/form-data; boundary=${boundary}`,
-      ...(auth ? { cookie } : {}),
+      ...(auth ? { cookie, "x-csrf-token": schemaCsrf } : {}),
     },
     payload: Buffer.concat(parts),
   });
@@ -85,7 +88,7 @@ function submit({
 it("renders a multipart file picker with the existing preview", async () => {
   const response = await app.inject({
     url: `/admin/members/${member.id}/edit`,
-    headers: { cookie },
+    headers: {"x-csrf-token": schemaCsrf, cookie },
   });
   const $ = load(response.payload);
   expect($("[data-collection-app]").attr("data-record")).toBe(member.id);
@@ -143,7 +146,7 @@ it("validates fields before storing files and requires authentication", async ()
 it("supports uploading while creating a member", async () => {
   const response = await submit({ bytes: png, create: true });
   expect(response.statusCode).toBe(302);
-  const id = response.headers.location.split("/")[3];
+  const id = response.headers.location.split("/").at(-2);
   expect((await membersRepo.findById(id)).image).toMatch(/^\/uploads\/member-/);
   await membersRepo.delete(id);
 });

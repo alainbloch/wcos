@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import {
   beforeAll,
   afterAll,
@@ -38,6 +40,7 @@ beforeAll(async () => {
   app = await buildApp();
   await app.ready();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail("admin@wcos.org"))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
   member = await membersRepo.create({
     position: "Original",
     circleName: "L1",
@@ -53,7 +56,7 @@ afterAll(async () => {
 });
 const url = () => `/admin/members/${member.id}/edit`;
 function post(payload, encoding = "json", target = url()) {
-  const headers = { cookie };
+  const headers = { cookie, "x-csrf-token": schemaCsrf };
   if (encoding === "urlencoded") {
     headers["content-type"] = "application/x-www-form-urlencoded";
     payload = new URLSearchParams(payload).toString();
@@ -87,7 +90,7 @@ it.each(["json", "urlencoded", "multipart"])(
     });
     expect(() => JSON.stringify(getDatabase().data)).not.toThrow();
     const $ = load(
-      (await app.inject({ url: url(), headers: { cookie } })).payload,
+      (await app.inject({ url: url(), headers: {"x-csrf-token": schemaCsrf, cookie } })).payload,
     );
     for (const [key, value] of Object.entries(values)) {
       if (!["merits", "circleName", "position"].includes(key)) expect($(`[name="${key}"]`).val()).toBe(value);
@@ -157,7 +160,7 @@ it("preserves submitted fields and unchecked state after a service failure", asy
   expect(response.statusCode).toBe(400);
   const $ = load(response.payload);
   expect($(".alert-error").text()).toContain("Save unavailable");
-  expect($("form.admin-form").attr("action")).toBe(url());
+  expect($("form.admin-form").attr("action")).toBe(url().replace("/admin/", "/admin/collections/"));
   for (const [key, value] of Object.entries(values)) {
     if (key !== "merits") expect($(`[name="${key}"]`).val()).toBe(value);
   }
@@ -192,12 +195,12 @@ it("keeps failed creates on the create form and shares the same mapping", async 
   );
   expect(failed.statusCode).toBe(400);
   const $ = load(failed.payload);
-  expect($("form.admin-form").attr("action")).toBe("/admin/members");
+  expect($("form.admin-form").attr("action")).toBe("/admin/collections/members");
   expect($('[name="circleName"]').val()).toBe("Steel Wind");
   expect($('button[type="submit"]').text()).toBe("Save record");
   const created = await post(values, "multipart", "/admin/members");
   expect(created.statusCode).toBe(302);
-  const id = created.headers.location.split("/")[3];
+  const id = created.headers.location.split("/").at(-2);
   expect(await membersRepo.findById(id)).toMatchObject({
     position: "Steel Wind",
     merits: ["Instructor", "Council", "Medical Officer"],

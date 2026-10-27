@@ -1,9 +1,13 @@
-import { validateState, emptyState } from "../collections/store.js";
+import {
+  validateState,
+  emptyState,
+  definitionsOf,
+} from "../collections/store.js";
 import { FORMAT, VERSION } from "./format.js";
 import { validUpdateDate } from "../updatesService.js";
 import { renderLayoutTemplate, layoutContext } from "../layoutService.js";
 import { isKaiden } from "../../utils/memberDalmater.js";
-import { MOVE_TYPES } from "../movesService.js";
+
 export const COLLECTIONS = [
   "pages",
   "members",
@@ -258,6 +262,7 @@ export function validateDatabase(data) {
     if (errors.length < 1000)
       errors.push(`${key}[${row.id}].${field}: ${message}`);
   };
+  const schemas = definitionsOf(data);
   const required = {
     pages: ["title", "slug", "content"],
     members: ["position"],
@@ -309,6 +314,19 @@ export function validateDatabase(data) {
   ];
   for (const key of COLLECTIONS)
     for (const row of data[key] || []) {
+      for (const field of schemas.find((schema) => schema.id === key)?.fields ||
+        []) {
+        const value = row[field.name];
+        if (
+          field.options?.length &&
+          value != null &&
+          value !== "" &&
+          (Array.isArray(value) ? value : [value]).some(
+            (item) => !field.options.includes(item),
+          )
+        )
+          fail(key, row, field.name, "unknown schema choice.");
+      }
       for (const field of required[key])
         if (
           !text(row[field]) ||
@@ -338,11 +356,7 @@ export function validateDatabase(data) {
             row[field].some((value) => !text(value)))
         )
           fail(key, row, field, "must be an array of strings.");
-      if (
-        key === "updates" &&
-        (!validUpdateDate(row.date) ||
-          !["general", "council", "news"].includes(row.category))
-      )
+      if (key === "updates" && !validUpdateDate(row.date))
         fail(key, row, "date/category", "invalid date or category.");
       if (
         key === "users" &&
@@ -363,11 +377,6 @@ export function validateDatabase(data) {
           (!Number.isInteger(row.order) || row.order < 0)
         )
           fail(key, row, "order", "must be a non-negative integer.");
-        if (
-          Array.isArray(row.types) &&
-          row.types.some((type) => !MOVE_TYPES.includes(type))
-        )
-          fail(key, row, "types", "unknown move type.");
         if (
           row.media !== undefined &&
           (!Array.isArray(row.media) ||

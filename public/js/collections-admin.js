@@ -241,6 +241,21 @@
       ),
       metadata,
     );
+    const designEnabled = check(
+      "Enable layout designer",
+      definition.capabilities?.design,
+      metadata,
+    );
+    const previewEnabled = check(
+      "Enable preview",
+      definition.capabilities?.preview,
+      metadata,
+    );
+    const contentField = label(
+      "Content field",
+      input(definition.contentField || "content"),
+      metadata,
+    );
     const rows = node("div");
     form.append(
       button("Expand all fields", () => {
@@ -430,7 +445,12 @@
         label: title.value,
         singularLabel: singular.value,
         description: description.value,
-        orderField: orderField.value,
+        orderField: orderField.value || (definition.id ? "" : undefined),
+        capabilities: {
+          design: designEnabled.checked,
+          preview: previewEnabled.checked,
+        },
+        contentField: contentField.value,
         fields,
         columns,
       };
@@ -665,7 +685,7 @@
         ),
       );
   }
-  function structuredControl(field, value, parent) {
+  function structuredControl(field, value, parent, collection) {
     const hidden = input("", "hidden");
     const section = node("fieldset", undefined, {
       class: "collection-structured",
@@ -730,11 +750,14 @@
           if (!file.files[0]) throw new Error("Choose a file.");
           const payload = new FormData();
           payload.append("file", file.files[0]);
-          const response = await fetch("/admin/schema-api/upload", {
-            method: "POST",
-            headers: { "X-CSRF-Token": root.dataset.csrf },
-            body: payload,
-          });
+          const response = await fetch(
+            `/admin/collections/${encodeURIComponent(collection)}/media`,
+            {
+              method: "POST",
+              headers: { "X-CSRF-Token": root.dataset.csrf },
+              body: payload,
+            },
+          );
           const result = await response.json();
           if (!response.ok) throw new Error(result.error);
           item.url = result.url;
@@ -771,10 +794,10 @@
           const type = label(
             "Type",
             select(
-              [
-                ["image", "Image"],
-                ["video", "Video"],
-              ],
+              (field.items?.properties?.type?.enum || []).map((value) => [
+                value,
+                human(value),
+              ]),
               value.type,
             ),
             row,
@@ -872,11 +895,7 @@
     section.append(
       button(media ? "Add image or video" : "Add item", () => {
         if (isArray)
-          data.push(
-            media
-              ? { type: "image", url: "", caption: "" }
-              : structuredClone(field.itemTemplate ?? newValue()),
-          );
+          data.push(structuredClone(field.itemTemplate ?? newValue()));
         else {
           if (
             !key.value ||
@@ -908,10 +927,10 @@
     if (heading)
       heading.textContent = `${readonly ? "View" : id ? "Edit" : "Add"} ${def.singularLabel || def.label}`;
     panel.append(button(`Back to ${def.label}`, () => recordsHome(def.id)));
-    if (def.id === "pages" && id)
+    if (def.capabilities?.design && id)
       panel.append(
         node("a", "Open page layout editor", {
-          href: `/admin/page-design/${encodeURIComponent(id)}`,
+          href: `/admin/collections/${encodeURIComponent(def.id)}/${encodeURIComponent(id)}/design`,
           class: "btn",
         }),
       );
@@ -969,7 +988,7 @@
         update();
         label(field.label, choices, fieldParent);
       } else if (field.type === "array" || field.type === "object") {
-        control = structuredControl(field, value, fieldParent);
+        control = structuredControl(field, value, fieldParent, def.id);
       } else if (field.type === "enum" || field.control === "select")
         control = select([["", "Choose…"], ...(field.options || [])], value);
       else if (field.type === "relationship" || field.control === "reference") {
@@ -1145,11 +1164,14 @@
             if (!upload.files[0]) throw new Error("Choose a file.");
             const payload = new FormData();
             payload.append("file", upload.files[0]);
-            const response = await fetch("/admin/schema-api/upload", {
-              method: "POST",
-              headers: { "X-CSRF-Token": root.dataset.csrf },
-              body: payload,
-            });
+            const response = await fetch(
+              `/admin/collections/${encodeURIComponent(def.id)}/media`,
+              {
+                method: "POST",
+                headers: { "X-CSRF-Token": root.dataset.csrf },
+                body: payload,
+              },
+            );
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
             control.value = data.url;

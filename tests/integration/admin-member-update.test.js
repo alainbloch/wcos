@@ -1,3 +1,4 @@
+import {adminSession} from "../helpers/admin-session.js";
 import { beforeAll, afterAll, it, expect } from "@jest/globals";
 import { buildApp } from "../../src/app.js";
 import { authService } from "../../src/services/authService.js";
@@ -18,12 +19,14 @@ it("updates an existing member with authenticated multipart data without circula
     merits: [],
   });
   const token = authService.generateToken(user);
+  const {cookie, csrf} = await adminSession(app, `wcos_session=${token}`);
   const response = await app.inject({
     method: "POST",
     url: `/admin/members/${member.id}/edit`,
     headers: {
       "content-type": "multipart/form-data; boundary=test",
-      cookie: `wcos_session=${token}`,
+      cookie,
+      "x-csrf-token": csrf,
     },
     payload: Buffer.from(
       '--test\r\nContent-Disposition: form-data; name="circleName"\r\n\r\nGad\r\n' +

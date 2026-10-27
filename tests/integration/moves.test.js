@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { beforeAll, afterAll, it, expect, jest } from '@jest/globals';
 import fs from 'node:fs';
 import nunjucks from 'nunjucks';
@@ -11,14 +13,15 @@ let app, cookie, creator;
 beforeAll(async () => {
   app = await buildApp();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
   getDatabase().data.moves = [];
   creator = await membersRepo.create({ position: 'Creator' });
 });
 afterAll(async () => { await app.close(); });
-const post = (url, payload) => app.inject({ method:'POST', url, headers:{cookie}, payload });
+const post = (url, payload) => app.inject({ method:'POST', url, headers: {"x-csrf-token": schemaCsrf, cookie}, payload });
 it('requires authentication and renders create and list pages', async () => {
   expect((await app.inject({url:'/admin/moves'})).statusCode).toBe(401);
-  for (const url of ['/admin/moves','/admin/moves/new']) expect((await app.inject({url,headers:{cookie}})).statusCode).toBe(200);
+  for (const url of ['/admin/moves','/admin/moves/new']) expect((await app.inject({url,headers: {"x-csrf-token": schemaCsrf, cookie}})).statusCode).toBe(200);
 });
 it('creates, validates, updates and deletes moves, preserving invalid form data', async () => {
   const media = [{type:'image',url:'https://example.com/a.png',caption:'A'},{type:'video',url:'/uploads/video.mp4',caption:'B'}];
@@ -32,7 +35,7 @@ it('creates, validates, updates and deletes moves, preserving invalid form data'
   expect((await post(url,{name:'Test', media:JSON.stringify([...media].reverse())})).statusCode).toBe(302);
   expect(await movesRepo.findById(move.id)).toMatchObject({core:false,media:[...media].reverse()});
   expect((await post(url,{name:'Test',media:'[{"type":"image","url":"javascript:alert(1)"}]'})).statusCode).toBe(400);
-  expect((await post('/admin/moves',{name:'',media:'[]'})).payload).toContain('action="/admin/moves"');
+  expect((await post('/admin/moves',{name:'',media:'[]'})).payload).toContain('action="/admin/collections/moves"');
   expect((await post(`/admin/moves/${move.id}/delete`,{})).statusCode).toBe(302);
   expect((await post(url,{name:'Gone'})).statusCode).toBe(404);
 });
@@ -65,19 +68,19 @@ it('renders only ordered core moves, with escaped content and ordered media', as
 it('rejects fake video uploads and accepts a decoded image', async () => {
   const sharp=(await import('sharp')).default;
   const image=await sharp({create:{width:2,height:2,channels:3,background:'red'}}).png().toBuffer();
-  const upload = (bytes,type,name) => app.inject({method:'POST',url:'/admin/moves/media',headers:{cookie,'content-type':'multipart/form-data; boundary=media'},payload:Buffer.concat([Buffer.from(`--media\r\nContent-Disposition: form-data; name="file"; filename="${name}"\r\nContent-Type: ${type}\r\n\r\n`),bytes,Buffer.from('\r\n--media--\r\n')])});
+  const upload = (bytes,type,name) => app.inject({method:'POST',url:'/admin/moves/media',headers: {"x-csrf-token": schemaCsrf, cookie,'content-type':'multipart/form-data; boundary=media'},payload:Buffer.concat([Buffer.from(`--media\r\nContent-Disposition: form-data; name="file"; filename="${name}"\r\nContent-Type: ${type}\r\n\r\n`),bytes,Buffer.from('\r\n--media--\r\n')])});
   expect((await upload(Buffer.from('not video'),'video/mp4','fake.mp4')).statusCode).toBe(400);
   const response=await upload(image,'image/png','test.png'); expect(response.statusCode).toBe(200); expect(response.json().type).toBe('image');
   const {memberImageService}=await import('../../src/services/memberImageService.js'); await memberImageService.discard(response.json().url);
 });
 it('saves multiple move types, restores selections on errors, and clears unchecked types', async () => {
   const { load } = await import('cheerio');
-  const response = await app.inject({ method:'POST',url:'/admin/moves',headers:{cookie,'content-type':'application/x-www-form-urlencoded'},payload:'name=Typed&types=Straight+Offense&types=Initiated+Response' });
+  const response = await app.inject({ method:'POST',url:'/admin/moves',headers: {"x-csrf-token": schemaCsrf, cookie,'content-type':'application/x-www-form-urlencoded'},payload:'name=Typed&types=Straight+Offense&types=Initiated+Response' });
   expect(response.statusCode).toBe(302);
   const url=response.headers.location;
-  const id=url.split('/')[3];
+  const id=url.split('/').at(-2);
   expect((await movesRepo.findById(id)).types).toEqual(['Straight Offense','Initiated Response']);
-  let $=load((await app.inject({url,headers:{cookie}})).payload);
+  let $=load((await app.inject({url,headers: {"x-csrf-token": schemaCsrf, cookie}})).payload);
   expect(JSON.parse($('[name=types]').val())).toEqual(['Straight Offense','Initiated Response']);
   const failed=await post(url,{name:'',types:['Offensive Defense','Initiated Response']});
   expect(failed.statusCode).toBe(400);
