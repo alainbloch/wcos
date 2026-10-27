@@ -70,7 +70,7 @@ it("creates, edits, filters, previews and deletes updates", async () => {
     url: created.headers.location,
     headers: { cookie },
   });
-  expect(load(response.payload)('textarea[name="content"]').val()).toBe(
+  expect(load(response.payload)('textarea[name="body"]').val()).toBe(
     item.body,
   );
   expect(
@@ -115,8 +115,8 @@ it("rejects impossible dates and invalid categories without losing form content"
     });
     expect(r.statusCode).toBe(400);
     const $ = load(r.payload);
-    expect($("#title").val()).toBe("Keep title");
-    expect($("textarea").val()).toBe("<p>Keep body</p>");
+    expect($("[name=title]").val()).toBe("Keep title");
+    expect($("[name=body]").val()).toBe("<p>Keep body</p>");
   }
   expect((await post("/admin/updates/missing/edit", {})).statusCode).toBe(404);
 });
@@ -209,8 +209,8 @@ it("saves multipart updates with images and preserves images when no replacement
   const invalid = await multipartPost(created.headers.location, { ...fields, date: "invalid" }, image);
   expect(invalid.statusCode).toBe(400);
   const $ = load(invalid.payload);
-  expect($("#title").val()).toBe(fields.title);
-  expect($("#content").val()).toBe(fields.content);
+  expect($("[name=title]").val()).toBe(fields.title);
+  expect($("[name=body]").val()).toBe(fields.content);
   expect(invalid.payload).toContain(item.image);
   expect(fs.readdirSync(config.uploadDir).sort()).toEqual(before);
   expect((await updatesRepo.findById(item.id)).title).toBe("Multipart news");

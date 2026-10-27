@@ -1,10 +1,8 @@
 import { collectionsController } from "../controllers/collectionsController.js";
 import { dataTransferController } from "../controllers/dataTransferController.js";
 import { MAX_FILE } from "../services/dataTransfer/format.js";
-import { updatesController } from "../controllers/updatesController.js";
 import { layoutController } from "../controllers/layoutController.js";
 import { usersController } from "../controllers/usersController.js";
-import { glossaryController } from "../controllers/glossaryController.js";
 /**
  * Admin Routes
  * CMS administration routes
@@ -15,25 +13,6 @@ import { authMiddleware } from "../middleware/auth.js";
 export async function adminRoutes(fastify) {
   // Apply auth middleware to all admin routes
   fastify.addHook("preHandler", authMiddleware);
-
-  fastify.get("/glossary", glossaryController.list.bind(glossaryController));
-  fastify.get(
-    "/glossary/new",
-    glossaryController.newItem.bind(glossaryController),
-  );
-  fastify.post("/glossary", glossaryController.create.bind(glossaryController));
-  fastify.get(
-    "/glossary/:id/edit",
-    glossaryController.edit.bind(glossaryController),
-  );
-  fastify.post(
-    "/glossary/:id/edit",
-    glossaryController.update.bind(glossaryController),
-  );
-  fastify.post(
-    "/glossary/:id/delete",
-    glossaryController.delete.bind(glossaryController),
-  );
 
   for (const [method, path, action] of [
     ["get", "/users", "list"],
@@ -64,21 +43,6 @@ export async function adminRoutes(fastify) {
       path,
       { preHandler: layoutController.guard.bind(layoutController) },
       (request, reply) => layoutController[action](request, reply),
-    );
-
-  for (const [method, path, action] of [
-    ["get", "/updates", "list"],
-    ["get", "/updates/new", "newItem"],
-    ["post", "/updates", "create"],
-    ["post", "/updates/preview", "preview"],
-    ["get", "/updates/:id/edit", "edit"],
-    ["post", "/updates/:id/edit", "update"],
-    ["post", "/updates/:id/delete", "delete"],
-  ])
-    fastify[method](
-      path,
-      { preHandler: updatesController.guard.bind(updatesController) },
-      (request, reply) => updatesController[action](request, reply),
     );
 
   fastify.addContentTypeParser(
@@ -129,83 +93,81 @@ export async function adminRoutes(fastify) {
     adminController.previewPage.bind(adminController),
   );
 
-  // Pages
-  fastify.get("/pages", adminController.listPages.bind(adminController));
-  fastify.get("/pages/new", adminController.newPage.bind(adminController));
-  fastify.post("/pages", adminController.createPage.bind(adminController));
+  // Every content collection uses the same controller. Old URLs remain aliases,
+  // so bookmarks and existing form clients continue working after the migration.
+  const routes = [
+    ["get", "", "screen"],
+    ["get", "/new", "screen"],
+    ["get", "/:id/edit", "screen"],
+    ["post", "", "save"],
+    ["post", "/:id/edit", "save"],
+    ["post", "/:id/delete", "remove"],
+  ];
+  for (const collection of [
+    "pages",
+    "members",
+    "classes",
+    "glossary",
+    "updates",
+    "moves",
+  ]) {
+    for (const [method, suffix, action] of routes)
+      fastify[method](
+        `/${collection}${suffix}`,
+        {
+          preHandler: async (request, reply) => {
+            request.collection = collection;
+            request.collectionCompatibility = true;
+            await collectionsController.guard(request, reply);
+            if (!reply.sent && collection === "updates") {
+              if (request.isMultipart())
+                request.body = Object.fromEntries(
+                  Object.entries(request.body || {}).map(([key, value]) => [
+                    key,
+                    value?.type === "field" ? value.value : value,
+                  ]),
+                );
+              await usersController.guard(request, reply);
+            }
+          },
+        },
+        collectionsController[action].bind(collectionsController),
+      );
+  }
+  for (const [method, suffix, action] of routes)
+    fastify[method](
+      `/collections/:collection${suffix}`,
+      { preHandler: collectionsController.guard.bind(collectionsController) },
+      collectionsController[action].bind(collectionsController),
+    );
   fastify.get(
-    "/pages/:id/edit",
+    "/page-design/:id",
     adminController.editPage.bind(adminController),
   );
   fastify.post(
-    "/pages/:id/edit",
-    adminController.updatePage.bind(adminController),
+    "/updates/preview",
+    { preHandler: usersController.guard.bind(usersController) },
+    adminController.previewPage.bind(adminController),
   );
-  fastify.post(
-    "/pages/:id/delete",
-    adminController.deletePage.bind(adminController),
-  );
-
-  // Members
-  fastify.get("/members", adminController.listMembers.bind(adminController));
-  fastify.get("/members/new", adminController.newMember.bind(adminController));
-  fastify.post("/members", adminController.createMember.bind(adminController));
-  fastify.get(
-    "/members/:id/edit",
-    adminController.editMember.bind(adminController),
-  );
-  fastify.post(
-    "/members/:id/edit",
-    adminController.updateMember.bind(adminController),
-  );
-  fastify.post(
-    "/members/:id/delete",
-    adminController.deleteMember.bind(adminController),
-  );
-
-  // Classes
-  fastify.get("/classes", adminController.listClasses.bind(adminController));
-  fastify.get("/classes/new", adminController.newClass.bind(adminController));
-  fastify.post("/classes", adminController.createClass.bind(adminController));
-  fastify.get(
-    "/classes/:id/edit",
-    adminController.editClass.bind(adminController),
-  );
-  fastify.post(
-    "/classes/:id/edit",
-    adminController.updateClass.bind(adminController),
-  );
-  fastify.post(
-    "/classes/:id/delete",
-    adminController.deleteClass.bind(adminController),
-  );
-
-  // Moves
+  const compatibilityGuard = async (request, reply) => {
+    request.collectionCompatibility = true;
+    return collectionsController.guard(request, reply);
+  };
   fastify.post(
     "/moves/order",
-    adminController.reorderMoves.bind(adminController),
+    { preHandler: compatibilityGuard },
+    (request, reply) => {
+      request.collection = "moves";
+      return collectionsController.reorder(request, reply);
+    },
   );
   fastify.post(
     "/moves/media",
-    adminController.uploadMoveMedia.bind(adminController),
+    { preHandler: compatibilityGuard },
+    collectionsController.upload.bind(collectionsController),
   );
-  fastify.get("/core-moves", (request, reply) =>
+  fastify.get("/core-moves", (_request, reply) =>
     reply.redirect("/admin/moves"),
-  );
-  fastify.get("/moves", adminController.listMoves.bind(adminController));
-  fastify.get("/moves/new", adminController.newMove.bind(adminController));
-  fastify.post("/moves", adminController.createMove.bind(adminController));
-  fastify.get(
-    "/moves/:id/edit",
-    adminController.editMove.bind(adminController),
-  );
-  fastify.post(
-    "/moves/:id/edit",
-    adminController.updateMove.bind(adminController),
-  );
-  fastify.post(
-    "/moves/:id/delete",
-    adminController.deleteMove.bind(adminController),
   );
   // Settings (admin only)
   fastify.get("/settings", adminController.settings.bind(adminController));

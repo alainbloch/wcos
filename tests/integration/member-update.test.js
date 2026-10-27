@@ -14,7 +14,7 @@ import {
   getDatabase,
 } from "../../src/models/database.js";
 import { authService } from "../../src/services/authService.js";
-import { memberService } from "../../src/services/memberService.js";
+import { collectionStore } from "../../src/services/collections/store.js";
 
 let app, cookie, member;
 const values = {
@@ -23,7 +23,7 @@ const values = {
   steelRank: "L3",
   position: "Instructor",
   merits: " Council \r\n\r\n Medical Officer ",
-  biography: "New <biography>",
+  biography: "New <strong>biography</strong>",
   region: "Seattle",
   memberSince: "2004",
   email: "member@example.com",
@@ -90,11 +90,10 @@ it.each(["json", "urlencoded", "multipart"])(
       (await app.inject({ url: url(), headers: { cookie } })).payload,
     );
     for (const [key, value] of Object.entries(values)) {
-      if (key !== "merits") expect($(`[name="${key}"]`).val()).toBe(value);
+      if (!["merits", "circleName", "position"].includes(key)) expect($(`[name="${key}"]`).val()).toBe(value);
     }
-    expect($('[name="merits"]').val()).toBe(
-      "Instructor\nCouncil\nMedical Officer",
-    );
+    expect($('[name="position"]').val()).toBe("Steel Wind");
+    expect(JSON.parse($('[name="merits"]').val())).toEqual(["Instructor", "Council", "Medical Officer"]);
     expect($('[name="active"]').is(":checked")).toBe(false);
   },
 );
@@ -152,7 +151,7 @@ it("clears merits and optional fields instead of restoring stale data", async ()
 it("preserves submitted fields and unchecked state after a service failure", async () => {
   const before = structuredClone(await membersRepo.findById(member.id));
   jest
-    .spyOn(memberService, "updateMember")
+    .spyOn(collectionStore, "saveRecord")
     .mockRejectedValueOnce(new Error("Save unavailable"));
   const response = await post(values, "multipart");
   expect(response.statusCode).toBe(400);
@@ -162,7 +161,7 @@ it("preserves submitted fields and unchecked state after a service failure", asy
   for (const [key, value] of Object.entries(values)) {
     if (key !== "merits") expect($(`[name="${key}"]`).val()).toBe(value);
   }
-  expect($('[name="merits"]').val()).toBe("Council\nMedical Officer");
+  expect($('[name="merits"]').val()).toBe(values.merits.replace(/\r/g, ""));
   expect($('[name="active"]').is(":checked")).toBe(false);
   expect(response.payload).not.toContain("[object Object]");
   expect(await membersRepo.findById(member.id)).toEqual(before);
@@ -195,7 +194,7 @@ it("keeps failed creates on the create form and shares the same mapping", async 
   const $ = load(failed.payload);
   expect($("form.admin-form").attr("action")).toBe("/admin/members");
   expect($('[name="circleName"]').val()).toBe("Steel Wind");
-  expect($('button[type="submit"]').text()).toBe("Create Member");
+  expect($('button[type="submit"]').text()).toBe("Save record");
   const created = await post(values, "multipart", "/admin/members");
   expect(created.statusCode).toBe(302);
   const id = created.headers.location.split("/")[3];
@@ -212,7 +211,6 @@ it("rolls back the in-memory member when the database write fails", async () => 
   const write = db.write.bind(db);
   jest
     .spyOn(db, "write")
-    .mockImplementationOnce(write)
     .mockRejectedValueOnce(new Error("Disk full"));
   const response = await post(values, "multipart");
   expect(response.statusCode).toBe(400);

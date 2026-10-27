@@ -9,7 +9,7 @@ export function readMoveForm(body = {}) {
   return data;
 }
 export class MovesService {
-  async getAllMoves() { return movesRepo.findAll(); }
+  async getAllMoves() { return (await movesRepo.findAll()).sort((a,b)=>(a.order ?? 0)-(b.order ?? 0)); }
   async getMoveById(id) { return movesRepo.findById(id); }
   async validate(body) {
     const data = readMoveForm(body);

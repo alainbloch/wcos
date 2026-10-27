@@ -18,12 +18,12 @@ afterAll(async()=>{await app.close();});
 const post=(url,payload)=>app.inject({method:'POST',url,headers:{cookie},payload});
 it('offers all three Kaiden merits and saves multi, single and cleared selections',async()=>{
  const form=await app.inject({url:'/admin/classes/new',headers:{cookie}});expect(form.statusCode).toBe(200);const $=load(form.payload);
- for(const teacher of teachers) expect($(`[name=instructorIds][value="${teacher.id}"]`).length).toBe(1);
- expect($(`[name=instructorIds][value="${other.id}"]`).length).toBe(0);
+ for(const teacher of teachers) expect($(`[name=instructorIds] option[value="${teacher.id}"]`).length).toBe(1);
+ expect($(`[name=instructorIds] option[value="${other.id}"]`).length).toBe(0);
  const created=await app.inject({method:'POST',url:'/admin/classes',headers:{cookie,'content-type':'application/x-www-form-urlencoded'},payload:`name=Class&active=on&instructorIds=${teachers[0].id}&instructorIds=${teachers[1].id}`});
  expect(created.statusCode).toBe(302);const url=created.headers.location,id=url.split('/')[3];
  expect(await classesRepo.findById(id)).toMatchObject({instructorIds:[teachers[0].id,teachers[1].id],active:true});
- const edit=load((await app.inject({url,headers:{cookie}})).payload);expect(edit('[name=instructorIds]:checked').length).toBe(2);
+ const edit=load((await app.inject({url,headers:{cookie}})).payload);expect(edit('[name=instructorIds] option:selected').length).toBe(2);
  await post(url,{name:'Class',instructorIds:teachers[2].id});expect(await classesRepo.findById(id)).toMatchObject({instructorIds:[teachers[2].id],active:false});
  await post(url,{name:'Class'});expect((await classesRepo.findById(id)).instructorIds).toEqual([]);
 });
@@ -32,7 +32,7 @@ it('rejects invalid instructors without changing data and restores failed forms'
  for(const instructorIds of [other.id,'missing',{id:teachers[0].id}]) expect((await post(url,{name:'Changed',instructorIds})).statusCode).toBe(400);
  expect((await classesRepo.findById(cls.id)).name).toBe('Original');
  const failed=await post(url,{name:'',instructorIds:[teachers[0].id,teachers[2].id]});const $=load(failed.payload);
- expect($('[name=instructorIds]:checked').length).toBe(2);expect($('[name=active]:checked').length).toBe(0);
+ expect($('[name=instructorIds] option:selected').length).toBe(2);expect($('[name=active]:checked').length).toBe(0);
  const create=await post('/admin/classes',{name:'',instructorIds:teachers[1].id});expect(create.statusCode).toBe(400);expect(load(create.payload)('form.admin-form').attr('action')).toBe('/admin/classes');
  expect((await post('/admin/classes/missing/edit',{name:'Missing'})).statusCode).toBe(404);
 });

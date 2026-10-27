@@ -78,11 +78,11 @@ it('saves multiple move types, restores selections on errors, and clears uncheck
   const id=url.split('/')[3];
   expect((await movesRepo.findById(id)).types).toEqual(['Straight Offense','Initiated Response']);
   let $=load((await app.inject({url,headers:{cookie}})).payload);
-  expect($('[name=types]:checked').map((i,el)=>$(el).val()).get()).toEqual(['Straight Offense','Initiated Response']);
+  expect(JSON.parse($('[name=types]').val())).toEqual(['Straight Offense','Initiated Response']);
   const failed=await post(url,{name:'',types:['Offensive Defense','Initiated Response']});
   expect(failed.statusCode).toBe(400);
   $=load(failed.payload);
-  expect($('[name=types]:checked').map((i,el)=>$(el).val()).get()).toEqual(['Offensive Defense','Initiated Response']);
+  expect(JSON.parse($('[name=types]').val())).toEqual(['Offensive Defense','Initiated Response']);
   expect((await post(url,{name:'Typed',types:'Unknown'})).statusCode).toBe(400);
   expect((await movesRepo.findById(id)).types).toEqual(['Straight Offense','Initiated Response']);
   expect((await post(url,{name:'Typed',types:'Offensive Defense'})).statusCode).toBe(302);

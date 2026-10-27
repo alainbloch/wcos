@@ -43,6 +43,7 @@ describe('Public Routes', () => {
     ];
     
     for (const slug of pageSlugs) {
+      if (["contact-us", "previous-updates", "photo-gallery"].includes(slug) || await pagesRepo.findBySlug(slug)) continue;
       await pagesRepo.create({
         title: slug,
         slug,

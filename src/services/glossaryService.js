@@ -6,7 +6,7 @@ export function readGlossaryForm(body={}) {
 }
 export class GlossaryService {
   async getAll() {
-    return (await glossaryRepo.findAll()).map(item=>({...item,definition:sanitizeDefinition(item.definition),letter:glossaryLetter(item.name)}));
+    return (await glossaryRepo.findAll()).sort((a,b)=>a.name.localeCompare(b.name,'en',{sensitivity:'base',numeric:true})).map(item=>({...item,definition:sanitizeDefinition(item.definition),letter:glossaryLetter(item.name)}));
   }
   async getById(id) { return glossaryRepo.findById(id); }
   async validate(body,id) {

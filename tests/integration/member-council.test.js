@@ -1,3 +1,4 @@
+import { collectionStore } from "../../src/services/collections/store.js";
 import {
   beforeAll,
   afterAll,
@@ -69,7 +70,7 @@ it("creates and updates council details on the member form including checkbox cl
     position: "Council Person",
   });
   const $ = load((await get(response.headers.location)).payload);
-  expect($("legend").text()).toContain("Council Service");
+  expect($("[name=councilPosition]").length).toBe(1);
   expect($("[name=councilTermStart]").val()).toBe("January 2024");
   expect($("[name=councilCurrent]").is(":checked")).toBe(true);
   expect(
@@ -90,7 +91,7 @@ it("preserves council edits after validation or storage failure without changing
   const id = ids[0];
   const before = structuredClone(await membersRepo.findById(id));
   jest
-    .spyOn(memberService, "updateMember")
+    .spyOn(collectionStore, "saveRecord")
     .mockRejectedValueOnce(new Error("Write failed"));
   for (const values of [fields, { ...fields, level: "" }]) {
     const response = await post(`/admin/members/${id}/edit`, values);
@@ -127,7 +128,7 @@ it("filters admin lists, repositories, and page data consistently", async () => 
   ]);
   expect(data.councilMembers.map((m) => m.id)).toEqual([ids[0], current.id]);
   expect(data.currentCouncilMembers.map((m) => m.id)).toEqual([current.id]);
-  expect(await membersRepo.findCurrentCouncilMembers()).toEqual(
+  expect(await memberService.getCurrentCouncilMembers()).toEqual(
     data.currentCouncilMembers,
   );
   expect((await get("/admin/council")).statusCode).toBe(404);

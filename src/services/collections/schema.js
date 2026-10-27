@@ -27,6 +27,8 @@ export const SYSTEM = [
   "siteSettings",
   "users",
 ];
+export const LOCKED = ["users", "siteSettings"];
+export const CONTENT = SYSTEM.filter((id) => !LOCKED.includes(id));
 export const SYSTEM_FIELDS = ["id", "createdAt", "updatedAt"];
 export function assertSafe(value, depth = 0) {
   if (depth > 20) throw new Error("Data nesting exceeds 20 levels.");
@@ -60,7 +62,7 @@ export function normalizeDefinition(input) {
   assertSafe(input);
   const id = identifier(input.id);
   if (
-    SYSTEM.includes(id) ||
+    LOCKED.includes(id) ||
     ["dynamic", "resources", "migrations"].includes(id)
   )
     throw new Error("System collections are protected.");
@@ -92,6 +94,8 @@ export function normalizeDefinition(input) {
       "target",
       "cardinality",
       "control",
+      "nullable",
+      "optionRule",
     ])
       if (raw[key] !== undefined && raw[key] !== "")
         field[key] = structuredClone(raw[key]);
@@ -130,14 +134,15 @@ export function normalizeDefinition(input) {
         field.options.some((v) => typeof v !== "string"))
     )
       throw new Error(`Enter enum choices for ${name}`);
-    if (field.type === "relationship") {
+    if (field.type === "relationship" || field.control === "reference") {
       identifier(field.target);
       if (["users", "siteSettings", "pages"].includes(field.target))
         throw new Error(
           "Relationships to private system collections are not allowed.",
         );
       if (
-        !["one-to-one", "one-to-many", "many-to-many"].includes(
+        field.type === "relationship" &&
+        !["one-to-one", "many-to-one", "one-to-many", "many-to-many"].includes(
           field.cardinality,
         )
       )
@@ -155,7 +160,8 @@ export function normalizeDefinition(input) {
     label: input.label.trim(),
     fields,
     columns,
-    system: false,
+    system: SYSTEM.includes(id),
+    locked: false,
   };
   definition.jsonSchema = jsonSchema(definition);
   ajv.compile(definition.jsonSchema);
@@ -168,27 +174,33 @@ export function jsonSchema(definition) {
   for (const f of definition.fields) {
     let schema;
     if (f.type === "relationship")
-      schema =
-        f.cardinality === "one-to-one"
-          ? { type: "string" }
-          : {
-              type: "array",
-              items: { type: "string" },
-              uniqueItems: true,
-              maxItems: 1000,
-            };
+      schema = ["one-to-one", "many-to-one"].includes(f.cardinality)
+        ? { type: "string" }
+        : {
+            type: "array",
+            items: { type: "string" },
+            uniqueItems: true,
+            maxItems: 1000,
+          };
     else if (f.type === "array") schema = { type: "array", maxItems: 1000 };
     else if (f.type === "object") schema = { type: "object" };
     else if (["number", "boolean"].includes(f.type)) schema = { type: f.type };
     else
       schema = {
         type: "string",
-        maxLength: f.type === "richtext" || f.type === "text" ? 100000 : 10000,
+        maxLength:
+          f.type === "richtext" || f.type === "text"
+            ? SYSTEM.includes(definition.id)
+              ? 2000000
+              : 100000
+            : 10000,
       };
     if (f.type === "enum") schema.enum = f.options;
     if (f.type === "date") schema.pattern = "^\\d{4}-\\d{2}-\\d{2}$";
     if (f.type === "media")
-      schema.pattern = "^(https?://[^\\s]+|/(uploads|images)/[^\\s]+)$";
+      schema.pattern = f.required
+        ? "^(https?://[^\\s]+|/(uploads|images)/[^\\s]+)$"
+        : "^(https?://[^\\s]+|/(uploads|images)/[^\\s]+|)$";
     if (f.pattern) schema.pattern = f.pattern;
     if (f.required && schema.type === "string") schema.minLength = 1;
     if (f.min !== undefined)
@@ -208,16 +220,21 @@ export function jsonSchema(definition) {
             : "maxLength"
       ] = f.max;
     if (f.default !== undefined) schema.default = f.default;
+    if (f.type === "relationship" && schema.type === "string" && !f.required) {
+      /* Empty optional references remain valid legacy values. */
+    }
+    if (f.nullable && !f.required)
+      schema = { anyOf: [schema, { type: "null" }] };
     properties[f.name] = schema;
   }
   return {
     type: "object",
     properties,
     required: definition.fields.filter((f) => f.required).map((f) => f.name),
-    additionalProperties: false,
+    additionalProperties: definition.legacy === true,
   };
 }
-export function validateRecord(definition, input) {
+export function validateRecord(definition, input, { sanitize = true } = {}) {
   assertSafe(input);
   const record = structuredClone(input);
   const schema = jsonSchema(definition),
@@ -238,9 +255,14 @@ export function validateRecord(definition, input) {
     throw error;
   }
   for (const f of definition.fields) {
-    if (f.type === "richtext" && record[f.name] !== undefined)
+    if (
+      sanitize &&
+      f.type === "richtext" &&
+      record[f.name] != null &&
+      !(builtins[definition.id]?.[f.name] === "richtext")
+    )
       record[f.name] = sanitizeHtml(record[f.name]);
-    if (f.type === "date" && record[f.name] !== undefined) {
+    if (f.type === "date" && record[f.name] != null) {
       const date = new Date(record[f.name]);
       if (
         !Number.isFinite(date.getTime()) ||
@@ -255,13 +277,17 @@ export function validateRecord(definition, input) {
   return record;
 }
 // Stable built-in metadata remains available even when a collection is empty.
-const builtins = {
+export const builtins = {
   pages: {
     title: "string",
     slug: "string",
     content: "text",
     published: "boolean",
     dataSources: "array",
+    parentSlug: "string",
+    layout: "string",
+    styleOverrides: "text",
+    dataView: "object",
   },
   members: {
     position: "string",
@@ -280,16 +306,46 @@ const builtins = {
     councilHistory: "array",
     fallenHero: "boolean",
     championships: "array",
+    memberSince: "string",
+    email: "string",
+    councilPosition: "string",
+    councilTitle: "string",
+    dalmaterMode: "string",
+    dalmaterKaidenId: {
+      type: "string",
+      control: "reference",
+      target: "members",
+      optionRule: "kaiden-color",
+    },
+    dalmaterColorName: "string",
+    dalmaterColorHex: "string",
+    yearsFought: "string",
+    battlesFought: "string",
+    steelBattlesFought: "string",
+    opponentsFought: "string",
+    weaponType: "string",
+    statsUpdated: "string",
   },
   classes: {
     name: "string",
     description: "text",
     location: "string",
     schedule: "string",
-    instructorIds: "array",
+    instructorIds: {
+      type: "relationship",
+      target: "members",
+      cardinality: "many-to-many",
+      optionRule: "kaiden",
+    },
+    region: "string",
+    active: "boolean",
   },
-  glossary: { name: "string", definition: "text" },
+  glossary: { name: "string", definition: "richtext" },
   updates: {
+    title: "string",
+    subcategory: "string",
+    pageLink: "string",
+    dateLabel: "string",
     date: "string",
     category: "string",
     body: "richtext",
@@ -302,7 +358,13 @@ const builtins = {
     types: "array",
     media: "array",
     order: "number",
-    creatorId: "string",
+    creatorId: {
+      type: "relationship",
+      target: "members",
+      cardinality: "many-to-one",
+    },
+    category: "string",
+    details: "text",
   },
   siteSettings: { siteName: "string" },
   users: {},
@@ -312,7 +374,12 @@ export function systemDefinitions(data) {
     const fields = new Map(
       Object.entries(builtins[id]).map(([name, type]) => [
         name,
-        { name, label: name, type, protected: true },
+        {
+          name,
+          label: name,
+          ...(typeof type === "object" ? type : { type }),
+          nullable: true,
+        },
       ]),
     );
     for (const row of data[id] || [])
@@ -334,16 +401,18 @@ export function systemDefinitions(data) {
               : ["number", "boolean"].includes(typeof value)
                 ? typeof value
                 : "string",
-          protected: true,
+          nullable: true,
         });
       }
     return {
       id,
       label: id,
       system: true,
+      locked: LOCKED.includes(id),
+      legacy: true,
       fields: [...fields.values()],
       columns: [...fields.keys()].slice(0, 4),
-      jsonSchema: systemSchema(id),
+      jsonSchema: jsonSchema({ fields: [...fields.values()], legacy: true }),
     };
   });
 }

@@ -214,7 +214,7 @@ it("renders actual paginated records in unsaved previews and public pages with m
   });
   expect(changed.statusCode).toBe(302);
   expect((await app.inject("/events")).payload).toContain("data-view-more");
-  const edit = await request(`/admin/pages/${stored.id}/edit`);
+  const edit = await request(`/admin/page-design/${stored.id}`);
   expect(edit.payload).toContain("Data view: Upcoming Events");
   expect(edit.payload).toContain("data-live-preview");
   previewDoc.window.close();

@@ -48,7 +48,7 @@ describe("Admin editing workflow", () => {
     expect((await app.inject("/css/admin.css")).statusCode).toBe(200);
   });
   it("loads complete imported content into exactly one submitted field", async () => {
-    const $ = load((await get(`/admin/pages/${home.id}/edit`)).payload);
+    const $ = load((await get(`/admin/page-design/${home.id}`)).payload);
     expect($('textarea[name="content"]').length).toBe(1);
     expect($('textarea[name="content"]').val()).toBe(home.content);
     expect($('input[name="slug"]').val()).toBe("");
@@ -140,7 +140,7 @@ describe("Admin editing workflow", () => {
     });
     expect(response.statusCode).toBe(400);
     const $ = load(response.payload);
-    expect($("form[data-page-editor]").attr("action")).toBe("/admin/pages");
+    expect($("form.admin-form").attr("action")).toBe("/admin/pages");
     expect($('textarea[name="content"]').val()).toBe("<p>Keep me</p>");
   });
 });

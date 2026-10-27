@@ -2,7 +2,17 @@
 
 ## Review and integration
 
-All work originates from `develop`. Review the storage, administration, and page-integration PRs in that order. The later branches contain their prerequisites to permit testing without merging unreviewed changes. Keep all PR targets on `develop`; rebase dependent branches after a prerequisite is merged. Nothing in this feature deploys or migrates production automatically.
+The unified CRUD correction branches from `develop`, where the original storage, administration and page-integration PRs are already integrated. Review the correction PR against `develop`; do not deploy or merge to `main` as part of this migration. Nothing in this feature migrates production automatically.
+
+## Editing existing collections
+
+Members, Pages, Classes, Glossary, Updates and Moves use the same schema editor and generated CRUD as custom collections. In **Settings → Database Schema**, choose **Edit schema**, edit labels, constraints, types, field order or list columns, and add fields. Preview against existing records, then apply. Only account/site settings administration and system record IDs/timestamps remain locked. Existing collections cannot be deleted because public routes depend on them, and populated fields cannot be removed without an explicit data migration.
+
+The effective schema starts from compatibility field definitions plus fields discovered in existing records. On the first schema edit, its complete definition is saved in `dynamic.definitions`. Existing records stay in their original top-level LowDB arrays. No startup migration or reseed occurs. Later writes, including calls from old services, use that saved schema through `CollectionRepository` and `CollectionStore`.
+
+Old content administration URLs are aliases to `CollectionsController`. An Edit action opens the generated record form, not a collection index. `GlossaryController`, `UpdatesController`, collection-specific member/class/move CRUD methods, their templates, and the six content repository classes have been removed. Compatibility repository exports are instances of the one generic class. Shared domain rules in `collections/rules.js` preserve glossary uniqueness, member honors/colors, eligible instructors, move media, update dates, and page addresses.
+
+The page layout authoring interface remains available from a page record's **Open page layout editor** link at `/admin/page-design/:id`; it saves through the same generic controller/repository. Authentication and site settings keep their dedicated administration.
 
 ## Events acceptance walkthrough
 
@@ -21,9 +31,9 @@ LowDB retains all existing top-level collections. `dynamic` separates `definitio
 
 `LowCollectionAdapter.read/commit` is the persistence boundary. `CollectionStore` validates isolated candidates and serializes its own writes. The existing request reader/writer gate serializes HTTP mutations and import/export. LowDB remains single-process: run maintenance scripts only while the application is stopped.
 
-Custom record writes compile generated JSON Schemas through Ajv, apply defaults, sanitize rich text, enforce uniqueness and validate references. Built-ins expose protected schemas and retain domain-specific editors/services; known fields also receive JSON Schema type validation. Authentication and credential writes stay owned by the existing auth service.
+All content record writes compile generated JSON Schemas through Ajv, apply defaults, sanitize rich text, enforce uniqueness and validate references. Existing content schemas are editable; shared pure domain rules run before the same validated atomic write. Authentication and credential writes stay owned by the existing auth service.
 
-Relationships are directed. One-to-one permits one target per source and one owner per target. One-to-many stores multiple target IDs, each owned by one source. Many-to-many allows shared targets. Deleting referenced records or target collections is blocked. No implicit cascading delete or inverse-field rewrite occurs.
+Relationships are directed. One-to-one permits one target per source and one owner per target. Many-to-one permits a shared single target, such as a move creator. One-to-many stores multiple target IDs, each owned by one source. Many-to-many allows shared targets. Deleting referenced records or target collections is blocked. No implicit cascading delete or inverse-field rewrite occurs.
 
 Queries use allowlisted operators and structured AND/OR trees, not executable expressions. Related filtering/projection supports one relationship hop. Optional typed parameters can have defaults and required flags. `Today` uses the server's UTC calendar date. Queries limit page size to 100 and nesting to five levels. Public access is explicitly enabled per view; users/settings are unavailable, and page views exclude drafts. Search and interactive sorting are limited to selected output fields.
 
@@ -43,4 +53,4 @@ Full JSON and ZIP exports include schemas, custom records, views, schema history
 
 ## Validation
 
-Run `npm test -- --runInBand` for the entire Jest suite with coverage. The Events end-to-end test uses jsdom interactions with the actual Fastify routes and LowDB services; it does not substitute a real browser layout/accessibility audit. Additional tests cover JSON Schema types/constraints, relationship cardinalities, structured queries, role/CSRF checks, backup round trips, page bindings and preview/public parity.
+Run `npm test -- --runInBand` for the entire Jest suite with coverage. The Events and existing-Glossary-schema end-to-end tests use jsdom interactions with the actual Fastify routes and LowDB services; it does not substitute a real browser layout/accessibility audit. Additional tests cover JSON Schema types/constraints, relationship cardinalities, structured queries, role/CSRF checks, backup round trips, page bindings and preview/public parity.

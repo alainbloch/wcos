@@ -33,14 +33,7 @@ describe('Template Syntax Tests', () => {
     // Create admin user
     await authService.initializeAdmin();
     
-    // Create test pages including ones with complex logic
-    await pagesRepo.create({
-      title: 'WCOS Council',
-      slug: 'wcos-council',
-      content: '<p>Test council page</p>',
-      published: true,
-    });
-    
+
 
   });
 
@@ -56,7 +49,7 @@ describe('Template Syntax Tests', () => {
       });
       
       expect(response.statusCode).toBe(200);
-      expect(response.payload).toContain('WCOS Council');
+      expect(response.payload).toContain('WCoS Council');
       expect(response.payload).toContain('July 23, 2005');
     });
 
