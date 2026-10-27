@@ -3,6 +3,8 @@ import { dataTransferController } from "../controllers/dataTransferController.js
 import { MAX_FILE } from "../services/dataTransfer/format.js";
 import { layoutController } from "../controllers/layoutController.js";
 import { usersController } from "../controllers/usersController.js";
+import { collectionStore } from "../services/collections/store.js";
+
 /**
  * Admin Routes
  * CMS administration routes
@@ -88,87 +90,124 @@ export async function adminRoutes(fastify) {
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
 
+  // Preserve page preview and layout editing.
   fastify.post(
     "/pages/preview",
     adminController.previewPage.bind(adminController),
   );
 
-  // Every content collection uses the same controller. Old URLs remain aliases,
-  // so bookmarks and existing form clients continue working after the migration.
-  const routes = [
+  fastify.get(
+    "/page-design/:id",
+    adminController.editPage.bind(adminController),
+  );
+
+  fastify.post(
+    "/updates/preview",
+    { preHandler: usersController.guard.bind(usersController) },
+    adminController.previewPage.bind(adminController),
+  );
+
+  // Shared routes for every registered content collection.
+  const collectionRoutes = [
     ["get", "", "screen"],
     ["get", "/new", "screen"],
     ["get", "/:id/edit", "screen"],
     ["post", "", "save"],
     ["post", "/:id/edit", "save"],
     ["post", "/:id/delete", "remove"],
+    ["post", "/order", "reorder"],
+    ["post", "/media", "upload"],
   ];
-  for (const collection of [
-    "pages",
-    "members",
-    "classes",
-    "glossary",
-    "updates",
-    "moves",
+
+  for (const prefix of [
+    "/collections/:collection",
+    "/:collection",
   ]) {
-    for (const [method, suffix, action] of routes)
+    const legacyAlias = prefix === "/:collection";
+
+    for (const [method, suffix, action] of collectionRoutes) {
       fastify[method](
-        `/${collection}${suffix}`,
+        `${prefix}${suffix}`,
         {
           preHandler: async (request, reply) => {
-            request.collection = collection;
-            request.collectionCompatibility = true;
+            const definition = collectionStore
+              .definitions()
+              .find(
+                (item) => item.id === request.params.collection,
+              );
+
+            if (!definition) {
+              return reply.code(404).send({
+                error: "Collection not found.",
+              });
+            }
+
+            if (definition.locked) {
+              return reply.code(403).send({
+                error: "Use the protected administration screen.",
+              });
+            }
+
+            request.collection = definition.id;
+            request.collectionDefinition = definition;
+
+            // Preserve the existing legacy-form behavior.
+            // Canonical /collections/... routes retain schema CSRF checks.
+            request.collectionCompatibility = legacyAlias;
+
             await collectionsController.guard(request, reply);
-            if (!reply.sent && collection === "updates") {
-              if (request.isMultipart())
+            if (reply.sent) return;
+
+            // Compatibility with existing Updates forms and their token.
+            if (legacyAlias && definition.id === "updates") {
+              if (request.isMultipart()) {
                 request.body = Object.fromEntries(
-                  Object.entries(request.body || {}).map(([key, value]) => [
-                    key,
-                    value?.type === "field" ? value.value : value,
-                  ]),
+                  Object.entries(request.body || {}).map(
+                    ([key, value]) => [
+                      key,
+                      value?.type === "field"
+                        ? value.value
+                        : value,
+                    ],
+                  ),
                 );
+              }
+
               await usersController.guard(request, reply);
             }
           },
         },
-        collectionsController[action].bind(collectionsController),
+        async (request, reply) => {
+          if (action === "reorder") {
+            const definition = request.collectionDefinition;
+
+            if (!definition.orderField) {
+              return reply.code(400).send({
+                error: "Ordering is not configured for this collection.",
+              });
+            }
+
+            try {
+              await collectionStore.reorder(
+                definition.id,
+                request.body?.ids,
+                definition.orderField,
+              );
+
+              return reply.send({ success: true });
+            } catch (error) {
+              return reply.code(400).send({
+                error: error.message,
+              });
+            }
+          }
+
+          return collectionsController[action](request, reply);
+        },
       );
-  }
-  for (const [method, suffix, action] of routes)
-    fastify[method](
-      `/collections/:collection${suffix}`,
-      { preHandler: collectionsController.guard.bind(collectionsController) },
-      collectionsController[action].bind(collectionsController),
-    );
-  fastify.get(
-    "/page-design/:id",
-    adminController.editPage.bind(adminController),
-  );
-  fastify.post(
-    "/updates/preview",
-    { preHandler: usersController.guard.bind(usersController) },
-    adminController.previewPage.bind(adminController),
-  );
-  const compatibilityGuard = async (request, reply) => {
-    request.collectionCompatibility = true;
-    return collectionsController.guard(request, reply);
+    }
   };
-  fastify.post(
-    "/moves/order",
-    { preHandler: compatibilityGuard },
-    (request, reply) => {
-      request.collection = "moves";
-      return collectionsController.reorder(request, reply);
-    },
-  );
-  fastify.post(
-    "/moves/media",
-    { preHandler: compatibilityGuard },
-    collectionsController.upload.bind(collectionsController),
-  );
-  fastify.get("/core-moves", (_request, reply) =>
-    reply.redirect("/admin/moves"),
-  );
+
   // Settings (admin only)
   fastify.get("/settings", adminController.settings.bind(adminController));
   fastify.post(

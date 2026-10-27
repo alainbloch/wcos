@@ -5,6 +5,7 @@ import { renderLayout } from '../services/layoutService.js';
  */
 import { siteService } from "../services/siteService.js";
 import { renderView } from "../utils/viewEngine.js";
+import { collectionStore } from "../services/collections/store.js";
 
 export class BaseController {
   constructor() {
