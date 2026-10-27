@@ -1,0 +1,10 @@
+{% extends 'layouts/admin.njk' %}
+{% block content %}
+<div data-collection-app data-mode="{{ mode }}" data-csrf="{{ csrf }}">
+<nav class="form-actions" aria-label="Data management"><a class="btn" href="/admin/settings/database-schema">Database Schema</a><a class="btn" href="/admin/collections">Records</a><a class="btn" href="/admin/data-views">Data Views</a></nav>
+<p class="alert" role="status" data-message>Loading…</p>
+<div data-workspace></div>
+</div>
+<noscript>Enable JavaScript to use the schema and data view builders.</noscript>
+{% endblock %}
+{% block scripts %}<script src="/js/collections-admin.js" defer></script>{% endblock %}

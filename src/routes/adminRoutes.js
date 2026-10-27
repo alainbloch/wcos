@@ -1,7 +1,8 @@
-import { dataTransferController } from '../controllers/dataTransferController.js';
-import { MAX_FILE } from '../services/dataTransfer/format.js';
-import { updatesController } from '../controllers/updatesController.js';
-import { layoutController } from '../controllers/layoutController.js';
+import { collectionsController } from "../controllers/collectionsController.js";
+import { dataTransferController } from "../controllers/dataTransferController.js";
+import { MAX_FILE } from "../services/dataTransfer/format.js";
+import { updatesController } from "../controllers/updatesController.js";
+import { layoutController } from "../controllers/layoutController.js";
 import { usersController } from "../controllers/usersController.js";
 import { glossaryController } from "../controllers/glossaryController.js";
 /**
@@ -48,27 +49,77 @@ export async function adminRoutes(fastify) {
       usersController[action].bind(usersController),
     );
 
-  fastify.get('/layout', { preHandler: layoutController.guard.bind(layoutController) }, (request, reply) => layoutController.edit(request, reply));
+  fastify.get(
+    "/layout",
+    { preHandler: layoutController.guard.bind(layoutController) },
+    (request, reply) => layoutController.edit(request, reply),
+  );
   for (const [method, path, action] of [
-    ['get', '/layout/:section', 'edit'], ['post', '/layout/:section', 'update'],
-    ['post', '/layout/:section/preview', 'preview'], ['post', '/layout/:section/restore', 'restore'],
-  ]) fastify[method](path, { preHandler: layoutController.guard.bind(layoutController) }, (request, reply) => layoutController[action](request, reply));
+    ["get", "/layout/:section", "edit"],
+    ["post", "/layout/:section", "update"],
+    ["post", "/layout/:section/preview", "preview"],
+    ["post", "/layout/:section/restore", "restore"],
+  ])
+    fastify[method](
+      path,
+      { preHandler: layoutController.guard.bind(layoutController) },
+      (request, reply) => layoutController[action](request, reply),
+    );
 
   for (const [method, path, action] of [
-    ['get','/updates','list'], ['get','/updates/new','newItem'], ['post','/updates','create'],
-    ['post','/updates/preview','preview'], ['get','/updates/:id/edit','edit'],
-    ['post','/updates/:id/edit','update'], ['post','/updates/:id/delete','delete'],
-  ]) fastify[method](path,{preHandler:updatesController.guard.bind(updatesController)},(request,reply)=>updatesController[action](request,reply));
+    ["get", "/updates", "list"],
+    ["get", "/updates/new", "newItem"],
+    ["post", "/updates", "create"],
+    ["post", "/updates/preview", "preview"],
+    ["get", "/updates/:id/edit", "edit"],
+    ["post", "/updates/:id/edit", "update"],
+    ["post", "/updates/:id/delete", "delete"],
+  ])
+    fastify[method](
+      path,
+      { preHandler: updatesController.guard.bind(updatesController) },
+      (request, reply) => updatesController[action](request, reply),
+    );
 
-  fastify.addContentTypeParser('application/octet-stream', { parseAs: 'buffer', bodyLimit: MAX_FILE }, (_request, body, done) => done(null, body));
+  fastify.addContentTypeParser(
+    "application/octet-stream",
+    { parseAs: "buffer", bodyLimit: MAX_FILE },
+    (_request, body, done) => done(null, body),
+  );
   for (const [method, path, action] of [
-    ['get','/settings/data-transfer','page'],
-    ['get','/settings/data-transfer/export/:format','export'],
-    ['post','/settings/data-transfer/upload','upload'],
-    ['get','/settings/data-transfer/preview/:token','preview'],
-    ['post','/settings/data-transfer/apply','apply'],
-    ['get','/settings/data-transfer/backups/:name','backup'],
-  ]) fastify[method](path, { onRequest: authMiddleware, preHandler: dataTransferController.guard.bind(dataTransferController), bodyLimit: MAX_FILE }, (request, reply) => dataTransferController[action](request, reply));
+    ["get", "/settings/data-transfer", "page"],
+    ["get", "/settings/data-transfer/export/:format", "export"],
+    ["post", "/settings/data-transfer/upload", "upload"],
+    ["get", "/settings/data-transfer/preview/:token", "preview"],
+    ["post", "/settings/data-transfer/apply", "apply"],
+    ["get", "/settings/data-transfer/backups/:name", "backup"],
+  ])
+    fastify[method](
+      path,
+      {
+        onRequest: authMiddleware,
+        preHandler: dataTransferController.guard.bind(dataTransferController),
+        bodyLimit: MAX_FILE,
+      },
+      (request, reply) => dataTransferController[action](request, reply),
+    );
+
+  for (const path of [
+    "/settings/database-schema",
+    "/collections",
+    "/data-views",
+  ])
+    fastify.get(
+      path,
+      { preHandler: collectionsController.guard.bind(collectionsController) },
+      collectionsController.screen.bind(collectionsController),
+    );
+  for (const method of ["get", "post"])
+    fastify[method](
+      "/schema-api/:action",
+      { preHandler: collectionsController.guard.bind(collectionsController) },
+      collectionsController.api.bind(collectionsController),
+    );
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
