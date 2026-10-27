@@ -1,5 +1,8 @@
-import { movesRepo, membersRepo, getDatabase } from '../models/database.js';
-import { uploadMoveMedia } from '../services/moveMediaService.js';
+import { renderPageContent } from "../services/pageRenderingService.js";
+import { readBinding } from "../services/collections/render.js";
+import { viewService } from "../services/collections/views.js";
+import { movesRepo, membersRepo, getDatabase } from "../models/database.js";
+import { uploadMoveMedia } from "../services/moveMediaService.js";
 /**
  * Admin Controller
  * Handles admin dashboard and content management
@@ -8,7 +11,11 @@ import { BaseController } from "./baseController.js";
 import { pagesService } from "../services/pagesService.js";
 import { memberService } from "../services/memberService.js";
 import { readClassForm, classesService } from "../services/classesService.js";
-import { MOVE_TYPES, readMoveForm, movesService } from "../services/movesService.js";
+import {
+  MOVE_TYPES,
+  readMoveForm,
+  movesService,
+} from "../services/movesService.js";
 import { siteService } from "../services/siteService.js";
 import {
   originalPages,
@@ -17,7 +24,11 @@ import {
 import { renderView } from "../utils/viewEngine.js";
 import { dynamicPageService } from "../services/dynamicPageService.js";
 
-import { readMemberForm, memberFormToRecord, memberRecordToForm } from "../utils/memberForm.js";
+import {
+  readMemberForm,
+  memberFormToRecord,
+  memberRecordToForm,
+} from "../utils/memberForm.js";
 
 import { memberImageService } from "../services/memberImageService.js";
 
@@ -54,13 +65,33 @@ export class AdminController extends BaseController {
       : null;
     const source = originalPages.find((item) => item.slug === page?.slug);
 
-    let content = sanitizePageContent(
-      typeof request.body.content === "string" ? request.body.content : "",
-    );
-
-    // If the page uses dynamic sources, resolve and inject them into preview
-    if (page && page.dataSources && page.dataSources.length > 0) {
-      const data = await dynamicPageService.resolveDataSources(page.dataSources || []);
+    let content;
+    try {
+      const draft = {
+        ...page,
+        content:
+          typeof request.body.content === "string" ? request.body.content : "",
+        dataSources: Object.hasOwn(request.body, "dataSources")
+          ? Array.isArray(request.body.dataSources)
+            ? request.body.dataSources
+            : String(request.body.dataSources || "")
+                .split(",")
+                .filter(Boolean)
+          : page?.dataSources || [],
+        dataView: readBinding(request.body, page?.dataView),
+      };
+      content =
+        request.body.rawPreview === true
+          ? sanitizePageContent(draft.content)
+          : (
+              await renderPageContent(
+                request.server,
+                draft,
+                request.body.query || {},
+              )
+            ).content;
+    } catch (error) {
+      return reply.code(400).type("text/plain").send(error.message);
     }
 
     const html = await renderView(request.server, "admin/pages/preview.njk", {
@@ -77,6 +108,7 @@ export class AdminController extends BaseController {
   async newPage(request, reply) {
     const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
+      dataViews: viewService.list().filter((v) => v.public),
       pageTitle: "New Page",
       page: null,
       pages,
@@ -95,6 +127,7 @@ export class AdminController extends BaseController {
       reply.code(400);
       const pages = await pagesService.getAllPages();
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
+        dataViews: viewService.list().filter((v) => v.public),
         pageTitle: "New Page",
         page: { ...request.body, published: request.body.published === "on" },
         pages,
@@ -110,6 +143,7 @@ export class AdminController extends BaseController {
     }
     const pages = await pagesService.getAllPages();
     await this.renderAdmin(request, reply, "admin/pages/form.njk", {
+      dataViews: viewService.list().filter((v) => v.public),
       pageTitle: "Edit Page",
       page,
       pages,
@@ -129,6 +163,7 @@ export class AdminController extends BaseController {
       const pages = await pagesService.getAllPages();
       reply.code(existing ? 400 : 404);
       return this.renderAdmin(request, reply, "admin/pages/form.njk", {
+        dataViews: viewService.list().filter((v) => v.public),
         pageTitle: "Edit Page",
         page: {
           ...existing,
@@ -155,10 +190,15 @@ export class AdminController extends BaseController {
 
   // Members management
   async listMembers(request, reply) {
-    const councilFilter = ["all", "current"].includes(request.query.council) ? request.query.council : "";
-    const members = councilFilter === "current" ? await memberService.getCurrentCouncilMembers()
-      : councilFilter === "all" ? await memberService.getCouncilMembers()
-      : await memberService.getAllMembers();
+    const councilFilter = ["all", "current"].includes(request.query.council)
+      ? request.query.council
+      : "";
+    const members =
+      councilFilter === "current"
+        ? await memberService.getCurrentCouncilMembers()
+        : councilFilter === "all"
+          ? await memberService.getCouncilMembers()
+          : await memberService.getAllMembers();
     await this.renderAdmin(request, reply, "admin/members/list.njk", {
       pageTitle: "Manage Members",
       councilFilter,
@@ -170,7 +210,9 @@ export class AdminController extends BaseController {
 
   async newMember(request, reply) {
     await this.renderAdmin(request, reply, "admin/members/form.njk", {
-      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
+      kaidenColorOptions: await memberService.getKaidenColorOptions(
+        request.params?.id,
+      ),
       pageTitle: "New Member",
       member: null,
     });
@@ -189,14 +231,20 @@ export class AdminController extends BaseController {
       return reply.redirect(`/admin/members/${member.id}/edit`);
     } catch (error) {
       if (uploadedImage) {
-        await memberImageService.discard(uploadedImage).catch(cleanupError => request.log.error(cleanupError));
+        await memberImageService
+          .discard(uploadedImage)
+          .catch((cleanupError) => request.log.error(cleanupError));
       }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
-      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
+        kaidenColorOptions: await memberService.getKaidenColorOptions(
+          request.params?.id,
+        ),
         pageTitle: "New Member",
         member: form,
-        flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
+        flash: {
+          error: `${error.message}. If you selected an image, please select it again before saving.`,
+        },
       });
     }
   }
@@ -205,7 +253,9 @@ export class AdminController extends BaseController {
     const member = await memberService.getMemberById(request.params.id);
     if (!member) return reply.code(404).send("Member not found");
     return this.renderAdmin(request, reply, "admin/members/form.njk", {
-      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
+      kaidenColorOptions: await memberService.getKaidenColorOptions(
+        request.params?.id,
+      ),
       pageTitle: "Edit Member",
       member: memberRecordToForm(member),
     });
@@ -218,23 +268,41 @@ export class AdminController extends BaseController {
     form.image = existing.image || "";
     let uploadedImage;
     try {
-      const record = memberFormToRecord(form, existing.importedFrom === "hall-of-heroes" && !existing.level);
+      const record = memberFormToRecord(
+        form,
+        existing.importedFrom === "hall-of-heroes" && !existing.level,
+      );
       uploadedImage = await memberImageService.save(request.body?.image);
       record.image = uploadedImage || form.image;
-      const updated = await memberService.updateMember(request.params.id, record);
+      const updated = await memberService.updateMember(
+        request.params.id,
+        record,
+      );
       if (!updated) throw new Error("Member not found");
       request.session.adminFlash = { success: "Member updated successfully" };
       return reply.redirect(`/admin/members/${request.params.id}/edit`);
     } catch (error) {
       if (uploadedImage) {
-        await memberImageService.discard(uploadedImage).catch(cleanupError => request.log.error(cleanupError));
+        await memberImageService
+          .discard(uploadedImage)
+          .catch((cleanupError) => request.log.error(cleanupError));
       }
       reply.code(400);
       return this.renderAdmin(request, reply, "admin/members/form.njk", {
-      kaidenColorOptions: await memberService.getKaidenColorOptions(request.params?.id),
+        kaidenColorOptions: await memberService.getKaidenColorOptions(
+          request.params?.id,
+        ),
         pageTitle: "Edit Member",
-        member: { ...form, importedFrom: existing.importedFrom, id: request.params.id, councilHistory: existing.councilHistory || [], dalmaterLegacyRecords: existing.dalmaterLegacyRecords || [] },
-        flash: { error: `${error.message}. If you selected an image, please select it again before saving.` },
+        member: {
+          ...form,
+          importedFrom: existing.importedFrom,
+          id: request.params.id,
+          councilHistory: existing.councilHistory || [],
+          dalmaterLegacyRecords: existing.dalmaterLegacyRecords || [],
+        },
+        flash: {
+          error: `${error.message}. If you selected an image, please select it again before saving.`,
+        },
       });
     }
   }
@@ -260,35 +328,46 @@ export class AdminController extends BaseController {
   }
 
   async classForm(request, reply, cls = { active: true }, flash) {
-    return this.renderAdmin(request, reply, 'admin/classes/form.njk', {
-      pageTitle: cls.id ? 'Edit Class' : 'New Class', class: cls,
-      instructors: await classesService.getInstructorOptions(), flash,
+    return this.renderAdmin(request, reply, "admin/classes/form.njk", {
+      pageTitle: cls.id ? "Edit Class" : "New Class",
+      class: cls,
+      instructors: await classesService.getInstructorOptions(),
+      flash,
     });
   }
-  async newClass(request, reply) { return this.classForm(request, reply); }
+  async newClass(request, reply) {
+    return this.classForm(request, reply);
+  }
   async createClass(request, reply) {
     try {
       const cls = await classesService.createClass(request.body);
       return reply.redirect(`/admin/classes/${cls.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.classForm(request, reply, readClassForm(request.body), { error: error.message });
+      return this.classForm(request, reply, readClassForm(request.body), {
+        error: error.message,
+      });
     }
   }
   async editClass(request, reply) {
     const cls = await classesService.getClassById(request.params.id);
-    if (!cls) return reply.code(404).send('Class not found');
+    if (!cls) return reply.code(404).send("Class not found");
     return this.classForm(request, reply, cls);
   }
   async updateClass(request, reply) {
     const existing = await classesService.getClassById(request.params.id);
-    if (!existing) return reply.code(404).send('Class not found');
+    if (!existing) return reply.code(404).send("Class not found");
     try {
       await classesService.updateClass(request.params.id, request.body);
       return reply.redirect(`/admin/classes/${request.params.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.classForm(request, reply, { ...existing, ...readClassForm(request.body), id: request.params.id }, { error: error.message });
+      return this.classForm(
+        request,
+        reply,
+        { ...existing, ...readClassForm(request.body), id: request.params.id },
+        { error: error.message },
+      );
     }
   }
 
@@ -305,20 +384,30 @@ export class AdminController extends BaseController {
 
   // Moves management
   async listMoves(request, reply) {
-    return this.renderAdmin(request, reply, 'admin/moves/list.njk', { pageTitle: 'Moves', moves: await movesService.getAllMoves() });
+    return this.renderAdmin(request, reply, "admin/moves/list.njk", {
+      pageTitle: "Moves",
+      moves: await movesService.getAllMoves(),
+    });
   }
   async moveForm(request, reply, move = {}, flash) {
-    return this.renderAdmin(request, reply, 'admin/moves/form.njk', {
-      pageTitle: move.id ? 'Edit Move' : 'New Move', move, flash,
-      mediaJson: typeof move.media === 'string' ? move.media : JSON.stringify(move.media || []),
+    return this.renderAdmin(request, reply, "admin/moves/form.njk", {
+      pageTitle: move.id ? "Edit Move" : "New Move",
+      move,
+      flash,
+      mediaJson:
+        typeof move.media === "string"
+          ? move.media
+          : JSON.stringify(move.media || []),
       creators: await membersRepo.findAll(),
       moveTypes: MOVE_TYPES,
     });
   }
-  async newMove(request, reply) { return this.moveForm(request, reply); }
+  async newMove(request, reply) {
+    return this.moveForm(request, reply);
+  }
   async editMove(request, reply) {
     const move = await movesService.getMoveById(request.params.id);
-    if (!move) return reply.code(404).send('Move not found');
+    if (!move) return reply.code(404).send("Move not found");
     return this.moveForm(request, reply, move);
   }
   async createMove(request, reply) {
@@ -327,31 +416,47 @@ export class AdminController extends BaseController {
       return reply.redirect(`/admin/moves/${move.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.moveForm(request, reply, readMoveForm(request.body), { error: error.message });
+      return this.moveForm(request, reply, readMoveForm(request.body), {
+        error: error.message,
+      });
     }
   }
   async updateMove(request, reply) {
-    if (!await movesService.getMoveById(request.params.id)) return reply.code(404).send('Move not found');
+    if (!(await movesService.getMoveById(request.params.id)))
+      return reply.code(404).send("Move not found");
     try {
       await movesService.updateMove(request.params.id, request.body);
       return reply.redirect(`/admin/moves/${request.params.id}/edit`);
     } catch (error) {
       reply.code(400);
-      return this.moveForm(request, reply, { ...readMoveForm(request.body), id: request.params.id }, { error: error.message });
+      return this.moveForm(
+        request,
+        reply,
+        { ...readMoveForm(request.body), id: request.params.id },
+        { error: error.message },
+      );
     }
   }
   async deleteMove(request, reply) {
-    if (!await movesService.getMoveById(request.params.id)) return reply.code(404).send('Move not found');
+    if (!(await movesService.getMoveById(request.params.id)))
+      return reply.code(404).send("Move not found");
     await movesService.deleteMove(request.params.id);
-    return reply.redirect('/admin/moves');
+    return reply.redirect("/admin/moves");
   }
   async reorderMoves(request, reply) {
-    try { await movesRepo.reorder(request.body?.ids); return { saved: true }; }
-    catch (error) { return reply.code(400).send({ error: error.message }); }
+    try {
+      await movesRepo.reorder(request.body?.ids);
+      return { saved: true };
+    } catch (error) {
+      return reply.code(400).send({ error: error.message });
+    }
   }
   async uploadMoveMedia(request, reply) {
-    try { return await uploadMoveMedia(request.body?.file); }
-    catch (error) { return reply.code(400).send({ error: error.message }); }
+    try {
+      return await uploadMoveMedia(request.body?.file);
+    } catch (error) {
+      return reply.code(400).send({ error: error.message });
+    }
   }
 
   // Settings
@@ -376,8 +481,6 @@ export class AdminController extends BaseController {
       reply.redirect("/admin/settings");
     }
   }
-
-
 }
 
 export const adminController = new AdminController();

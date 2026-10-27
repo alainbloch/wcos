@@ -116,15 +116,19 @@ function initPageEditor() {
     const contentAtRequest = source.value;
     status.textContent = "Loading visual editor…";
     try {
-      const response = await fetch(form.dataset.previewUrl || "/admin/pages/preview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _csrf: form.elements._csrf?.value,
-          id: form.dataset.pageId,
-          content: contentAtRequest,
-        }),
-      });
+      const response = await fetch(
+        form.dataset.previewUrl || "/admin/pages/preview",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            _csrf: form.elements._csrf?.value,
+            id: form.dataset.pageId,
+            content: contentAtRequest,
+            rawPreview: true,
+          }),
+        },
+      );
       if (!response.ok) throw new Error("Preview unavailable");
       const html = await response.text();
       // A slow preview must never replace typing or a newer mode selection.
@@ -527,141 +531,278 @@ function initImagePreview() {
 initImagePreview();
 
 // Keep both values available when switching modes; the server validates only the chosen source.
-document.querySelectorAll('[data-dalmater-fields]').forEach(section => {
+document.querySelectorAll("[data-dalmater-fields]").forEach((section) => {
   const mode = section.querySelector('[name="dalmaterMode"]');
   const update = () => {
-    section.querySelector('[data-dalmater-kaiden]').hidden = mode.value !== 'kaiden';
-    section.querySelector('[data-dalmater-custom]').hidden = mode.value !== 'custom';
+    section.querySelector("[data-dalmater-kaiden]").hidden =
+      mode.value !== "kaiden";
+    section.querySelector("[data-dalmater-custom]").hidden =
+      mode.value !== "custom";
   };
-  mode.addEventListener('change', update);
+  mode.addEventListener("change", update);
   update();
 });
 
 // The text field remains authoritative: never replace blank or invalid edits with black.
-document.querySelectorAll('[data-dalmater-picker]').forEach(picker => {
-  const hex = picker.closest('[data-dalmater-fields]').querySelector('[name="dalmaterColorHex"]');
+document.querySelectorAll("[data-dalmater-picker]").forEach((picker) => {
+  const hex = picker
+    .closest("[data-dalmater-fields]")
+    .querySelector('[name="dalmaterColorHex"]');
   const syncPicker = () => {
     let value = hex.value.trim();
-    if (/^#[0-9a-f]{3}$/i.test(value)) value = '#' + [...value.slice(1)].map(c => c + c).join('');
+    if (/^#[0-9a-f]{3}$/i.test(value))
+      value = "#" + [...value.slice(1)].map((c) => c + c).join("");
     if (/^#[0-9a-f]{6}$/i.test(value)) picker.value = value;
   };
-  const syncHex = () => { hex.value = picker.value.toUpperCase(); };
-  hex.addEventListener('input', syncPicker);
-  hex.addEventListener('change', syncPicker);
-  picker.addEventListener('input', syncHex);
-  picker.addEventListener('change', syncHex);
+  const syncHex = () => {
+    hex.value = picker.value.toUpperCase();
+  };
+  hex.addEventListener("input", syncPicker);
+  hex.addEventListener("change", syncPicker);
+  picker.addEventListener("input", syncHex);
+  picker.addEventListener("change", syncHex);
   syncPicker();
 });
 
 // Shared sortable behavior; keyboard-accessible buttons offer the same operation.
 function moveSortable(container, changed, locked = () => false) {
   let dragged;
-  container.addEventListener('dragstart', event => {
-    if (locked()) { event.preventDefault(); return; }
-    dragged = event.target.closest('[draggable]');
-    if (dragged) event.dataTransfer?.setData('text/plain', 'move');
+  container.addEventListener("dragstart", (event) => {
+    if (locked()) {
+      event.preventDefault();
+      return;
+    }
+    dragged = event.target.closest("[draggable]");
+    if (dragged) event.dataTransfer?.setData("text/plain", "move");
   });
-  container.addEventListener('dragover', event => { if (!locked()) event.preventDefault(); });
-  container.addEventListener('drop', event => {
+  container.addEventListener("dragover", (event) => {
+    if (!locked()) event.preventDefault();
+  });
+  container.addEventListener("drop", (event) => {
     event.preventDefault();
-    const target = event.target.closest('[draggable]');
-    if (locked() || !dragged || !target || target === dragged || target.parentNode !== container) return;
+    const target = event.target.closest("[draggable]");
+    if (
+      locked() ||
+      !dragged ||
+      !target ||
+      target === dragged ||
+      target.parentNode !== container
+    )
+      return;
     const children = [...container.children];
-    container.insertBefore(dragged, children.indexOf(dragged) < children.indexOf(target) ? target.nextSibling : target);
-    dragged = null; changed();
+    container.insertBefore(
+      dragged,
+      children.indexOf(dragged) < children.indexOf(target)
+        ? target.nextSibling
+        : target,
+    );
+    dragged = null;
+    changed();
   });
-  container.addEventListener('dragend', () => { dragged = null; });
-  container.addEventListener('click', event => {
-    const button = event.target.closest('[data-up], [data-down]');
+  container.addEventListener("dragend", () => {
+    dragged = null;
+  });
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-up], [data-down]");
     if (!button || locked()) return;
-    const row = button.closest('[draggable]');
-    if (button.hasAttribute('data-up') && row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); changed(); }
-    else if (button.hasAttribute('data-down') && row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); changed(); }
+    const row = button.closest("[draggable]");
+    if (button.hasAttribute("data-up") && row.previousElementSibling) {
+      container.insertBefore(row, row.previousElementSibling);
+      changed();
+    } else if (button.hasAttribute("data-down") && row.nextElementSibling) {
+      container.insertBefore(row.nextElementSibling, row);
+      changed();
+    }
   });
 }
-document.addEventListener('DOMContentLoaded', () => {
-  const list = document.querySelector('[data-move-order]');
+document.addEventListener("DOMContentLoaded", () => {
+  const list = document.querySelector("[data-move-order]");
   if (list) {
-    let busy = false, saved = [...list.children];
-    const status = document.querySelector('[data-move-order-status]');
-    moveSortable(list, async () => {
-      busy = true; status.textContent = 'Saving order…';
-      try {
-        const response = await fetch('/admin/moves/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: [...list.children].map(row => row.dataset.id) }) });
-        const result = await response.json();
-        if (!response.ok || !result.saved) throw new Error(result.error || 'Could not save order');
-        saved = [...list.children]; status.textContent = 'Order saved.';
-      } catch (error) { saved.forEach(row => list.append(row)); status.textContent = `${error.message}. Order restored; reload if the list changed.`; }
-      finally { busy = false; }
-    }, () => busy);
+    let busy = false,
+      saved = [...list.children];
+    const status = document.querySelector("[data-move-order-status]");
+    moveSortable(
+      list,
+      async () => {
+        busy = true;
+        status.textContent = "Saving order…";
+        try {
+          const response = await fetch("/admin/moves/order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ids: [...list.children].map((row) => row.dataset.id),
+            }),
+          });
+          const result = await response.json();
+          if (!response.ok || !result.saved)
+            throw new Error(result.error || "Could not save order");
+          saved = [...list.children];
+          status.textContent = "Order saved.";
+        } catch (error) {
+          saved.forEach((row) => list.append(row));
+          status.textContent = `${error.message}. Order restored; reload if the list changed.`;
+        } finally {
+          busy = false;
+        }
+      },
+      () => busy,
+    );
   }
-  const form = document.querySelector('[data-move-form]');
+  const form = document.querySelector("[data-move-form]");
   if (!form) return;
-  const input = form.querySelector('[name=media]'), container = form.querySelector('[data-move-media]'), status = form.querySelector('[data-media-status]');
-  const sync = () => { input.value = JSON.stringify([...container.children].map(row => ({ type: row.querySelector('select').value, url: row.querySelector('[data-url]').value, caption: row.querySelector('[data-caption]').value }))); };
-  function add(item = { type: 'image', url: '', caption: '' }) {
-    const row = document.createElement('div'); row.draggable = true; row.className = 'move-media-row';
-    row.innerHTML = '<label>Type <select><option value="image">Image</option><option value="video">Video</option></select></label><label>URL <input data-url required></label><label>Caption <input data-caption></label><button type="button" data-up aria-label="Move media up">↑</button><button type="button" data-down aria-label="Move media down">↓</button><button type="button" data-remove>Remove</button>';
-    row.querySelector('select').value = item.type; row.querySelector('[data-url]').value = item.url; row.querySelector('[data-caption]').value = item.caption || '';
-    row.querySelector('[data-remove]').addEventListener('click', () => { row.remove(); sync(); });
+  const input = form.querySelector("[name=media]"),
+    container = form.querySelector("[data-move-media]"),
+    status = form.querySelector("[data-media-status]");
+  const sync = () => {
+    input.value = JSON.stringify(
+      [...container.children].map((row) => ({
+        type: row.querySelector("select").value,
+        url: row.querySelector("[data-url]").value,
+        caption: row.querySelector("[data-caption]").value,
+      })),
+    );
+  };
+  function add(item = { type: "image", url: "", caption: "" }) {
+    const row = document.createElement("div");
+    row.draggable = true;
+    row.className = "move-media-row";
+    row.innerHTML =
+      '<label>Type <select><option value="image">Image</option><option value="video">Video</option></select></label><label>URL <input data-url required></label><label>Caption <input data-caption></label><button type="button" data-up aria-label="Move media up">↑</button><button type="button" data-down aria-label="Move media down">↓</button><button type="button" data-remove>Remove</button>';
+    row.querySelector("select").value = item.type;
+    row.querySelector("[data-url]").value = item.url;
+    row.querySelector("[data-caption]").value = item.caption || "";
+    row.querySelector("[data-remove]").addEventListener("click", () => {
+      row.remove();
+      sync();
+    });
     container.append(row);
   }
-  try { JSON.parse(input.value).forEach(add); } catch { status.textContent = 'Invalid media list. Add media again to replace it.'; }
-  container.addEventListener('input', sync); container.addEventListener('change', sync);
+  try {
+    JSON.parse(input.value).forEach(add);
+  } catch {
+    status.textContent = "Invalid media list. Add media again to replace it.";
+  }
+  container.addEventListener("input", sync);
+  container.addEventListener("change", sync);
   moveSortable(container, sync);
-  form.querySelector('[data-add-media]').addEventListener('click', () => { add(); sync(); });
-  let uploading = false;
-  form.addEventListener('submit', event => { if (uploading) { event.preventDefault(); status.textContent = 'Wait for uploads to finish.'; } });
-  form.querySelector('[data-upload-media]').addEventListener('change', async event => {
-    uploading = true; event.target.disabled = true;
-    try {
-      for (const file of event.target.files) {
-        status.textContent = `Uploading ${file.name}…`;
-        const body = new FormData(); body.append('file', file);
-        const response = await fetch('/admin/moves/media', { method: 'POST', body });
-        const result = await response.json();
-        if (!response.ok || !result.url) throw new Error(result.error || 'Upload failed');
-        add(result); sync();
-      }
-      status.textContent = 'Uploaded. Save the move to keep these associations.';
-    } catch (error) { status.textContent = error.message; }
-    finally { uploading = false; event.target.disabled = false; event.target.value = ''; }
+  form.querySelector("[data-add-media]").addEventListener("click", () => {
+    add();
+    sync();
   });
+  let uploading = false;
+  form.addEventListener("submit", (event) => {
+    if (uploading) {
+      event.preventDefault();
+      status.textContent = "Wait for uploads to finish.";
+    }
+  });
+  form
+    .querySelector("[data-upload-media]")
+    .addEventListener("change", async (event) => {
+      uploading = true;
+      event.target.disabled = true;
+      try {
+        for (const file of event.target.files) {
+          status.textContent = `Uploading ${file.name}…`;
+          const body = new FormData();
+          body.append("file", file);
+          const response = await fetch("/admin/moves/media", {
+            method: "POST",
+            body,
+          });
+          const result = await response.json();
+          if (!response.ok || !result.url)
+            throw new Error(result.error || "Upload failed");
+          add(result);
+          sync();
+        }
+        status.textContent =
+          "Uploaded. Save the move to keep these associations.";
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        uploading = false;
+        event.target.disabled = false;
+        event.target.value = "";
+      }
+    });
 });
 
 // Use the Pages checkbox-dropdown pattern for move types, with keyboard support.
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-move-types], [data-checkbox-dropdown]').forEach(group => {
-    const trigger = group.querySelector('.dropdown-trigger');
-    const panel = group.querySelector('.dropdown-panel');
-    const setOpen = open => {
-      panel.classList.toggle('open', open);
-      trigger.setAttribute('aria-expanded', String(open));
-    };
-    trigger.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
-    const updateDisplay = () => {
-      const types = [...group.querySelectorAll('input:checked')].map(input => input.dataset.label || input.value);
-      group.querySelector('.dropdown-display').textContent = types.join(', ') || group.dataset.placeholder || 'Select move types...';
-    };
-    group.addEventListener('change', updateDisplay);
-    updateDisplay();
-    group.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { setOpen(false); trigger.focus(); }
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .querySelectorAll("[data-move-types], [data-checkbox-dropdown]")
+    .forEach((group) => {
+      const trigger = group.querySelector(".dropdown-trigger");
+      const panel = group.querySelector(".dropdown-panel");
+      const setOpen = (open) => {
+        panel.classList.toggle("open", open);
+        trigger.setAttribute("aria-expanded", String(open));
+      };
+      trigger.addEventListener("click", () =>
+        setOpen(!panel.classList.contains("open")),
+      );
+      const updateDisplay = () => {
+        const types = [...group.querySelectorAll("input:checked")].map(
+          (input) => input.dataset.label || input.value,
+        );
+        group.querySelector(".dropdown-display").textContent =
+          types.join(", ") ||
+          group.dataset.placeholder ||
+          "Select move types...";
+      };
+      group.addEventListener("change", updateDisplay);
+      updateDisplay();
+      group.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setOpen(false);
+          trigger.focus();
+        }
+      });
+      document.addEventListener("click", (event) => {
+        if (!group.contains(event.target)) setOpen(false);
+      });
     });
-    document.addEventListener('click', event => { if (!group.contains(event.target)) setOpen(false); });
-  });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const fieldset=document.querySelector('[data-member-honors]');if(!fieldset)return;
-  const input=fieldset.querySelector('[name=championships]'),rows=fieldset.querySelector('[data-championship-rows]');
-  const sync=()=>{input.value=JSON.stringify([...rows.children].map(row=>({year:row.querySelector('[data-year]').value,note:row.querySelector('[data-note]').value})));};
-  function add(honor={year:'',note:''}){
-    const row=document.createElement('div');row.className='championship-row';
-    row.innerHTML='<label>Year <input type="number" min="1000" max="9999" step="1" required data-year></label><label>Note <input data-note></label><button type="button">Remove</button>';
-    row.querySelector('[data-year]').value=honor.year;row.querySelector('[data-note]').value=honor.note||'';
-    row.querySelector('button').addEventListener('click',()=>{row.remove();sync();});rows.append(row);
+document.addEventListener("DOMContentLoaded", () => {
+  const fieldset = document.querySelector("[data-member-honors]");
+  if (!fieldset) return;
+  const input = fieldset.querySelector("[name=championships]"),
+    rows = fieldset.querySelector("[data-championship-rows]");
+  const sync = () => {
+    input.value = JSON.stringify(
+      [...rows.children].map((row) => ({
+        year: row.querySelector("[data-year]").value,
+        note: row.querySelector("[data-note]").value,
+      })),
+    );
+  };
+  function add(honor = { year: "", note: "" }) {
+    const row = document.createElement("div");
+    row.className = "championship-row";
+    row.innerHTML =
+      '<label>Year <input type="number" min="1000" max="9999" step="1" required data-year></label><label>Note <input data-note></label><button type="button">Remove</button>';
+    row.querySelector("[data-year]").value = honor.year;
+    row.querySelector("[data-note]").value = honor.note || "";
+    row.querySelector("button").addEventListener("click", () => {
+      row.remove();
+      sync();
+    });
+    rows.append(row);
   }
-  try {JSON.parse(input.value).forEach(add);}catch {fieldset.querySelector('[data-honors-status]').textContent='Invalid award data. Add the entries again to replace it.';}
-  rows.addEventListener('input',sync);fieldset.querySelector('[data-add-championship]').addEventListener('click',()=>{add();sync();});
+  try {
+    JSON.parse(input.value).forEach(add);
+  } catch {
+    fieldset.querySelector("[data-honors-status]").textContent =
+      "Invalid award data. Add the entries again to replace it.";
+  }
+  rows.addEventListener("input", sync);
+  fieldset
+    .querySelector("[data-add-championship]")
+    .addEventListener("click", () => {
+      add();
+      sync();
+    });
 });
