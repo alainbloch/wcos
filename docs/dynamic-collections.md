@@ -54,3 +54,7 @@ Full JSON and ZIP exports include schemas, custom records, views, schema history
 ## Validation
 
 Run `npm test -- --runInBand` for the entire Jest suite with coverage. The Events and existing-Glossary-schema end-to-end tests use jsdom interactions with the actual Fastify routes and LowDB services; it does not substitute a real browser layout/accessibility audit. Additional tests cover JSON Schema types/constraints, relationship cardinalities, structured queries, role/CSRF checks, backup round trips, page bindings and preview/public parity.
+
+## Schema-owned field configuration
+
+`src/schemas/collections.json` contains the initial built-in JSON Schemas. Choices use `enum` (or `items.enum`), labels use `title`, and item defaults use `default` on item properties. UI-only annotations such as controls, grouping, list columns and manual ordering live under `x-wcos` in the same schema. There is no presentation preset registry. The generic `fieldsFromSchema` projection supplies the visual editor's controls; schemas saved through that editor retain these annotations and validation rules in their JSON Schema. Saved collection definitions take precedence over initial schemas and are included in backups. Reading the schemas never reseeds or rewrites records.

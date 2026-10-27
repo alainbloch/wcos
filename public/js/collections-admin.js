@@ -771,10 +771,10 @@
           const type = label(
             "Type",
             select(
-              [
-                ["image", "Image"],
-                ["video", "Video"],
-              ],
+              (field.items?.properties?.type?.enum || []).map((value) => [
+                value,
+                human(value),
+              ]),
               value.type,
             ),
             row,
@@ -872,11 +872,7 @@
     section.append(
       button(media ? "Add image or video" : "Add item", () => {
         if (isArray)
-          data.push(
-            media
-              ? { type: "image", url: "", caption: "" }
-              : structuredClone(field.itemTemplate ?? newValue()),
-          );
+          data.push(structuredClone(field.itemTemplate ?? newValue()));
         else {
           if (
             !key.value ||

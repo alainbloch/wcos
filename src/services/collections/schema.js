@@ -1,7 +1,9 @@
+import collectionSchemas from "../../schemas/collections.json" with { type: "json" };
 import Ajv from "ajv";
 import sanitizeHtml from "sanitize-html";
 
 const ajv = new Ajv({ allErrors: true, strict: true, useDefaults: true });
+ajv.addKeyword({ keyword: "x-wcos", valid: true });
 const validators = new Map();
 const forbidden = new Set(["__proto__", "prototype", "constructor"]);
 export const TYPES = [
@@ -98,6 +100,7 @@ export function normalizeDefinition(input) {
       "optionRule",
       "group",
       "itemTemplate",
+      "items",
     ])
       if (raw[key] !== undefined && raw[key] !== "")
         field[key] = structuredClone(raw[key]);
@@ -225,7 +228,10 @@ export function jsonSchema(definition) {
               : 100000
             : 10000,
       };
-    if (f.type === "enum") schema.enum = f.options;
+    if (f.items && schema.type === "array")
+      schema.items = structuredClone(f.items);
+    if (f.options?.length && schema.type === "string")
+      schema.enum = [...(f.required ? [] : [""]), ...f.options];
     if (f.type === "date") schema.pattern = "^\\d{4}-\\d{2}-\\d{2}$";
     if (f.type === "media")
       schema.pattern = f.required
@@ -253,11 +259,35 @@ export function jsonSchema(definition) {
     if (f.type === "relationship" && schema.type === "string" && !f.required) {
       /* Empty optional references remain valid legacy values. */
     }
-    if (f.nullable && !f.required)
-      schema = { anyOf: [schema, { type: "null" }] };
+    if (f.nullable && !f.required) {
+      schema.type = [schema.type, "null"];
+      if (schema.enum) schema.enum = [...schema.enum, null];
+    }
+    schema.title = f.label;
+    schema["x-wcos"] = Object.fromEntries(
+      [
+        "type",
+        "control",
+        "group",
+        "target",
+        "cardinality",
+        "optionRule",
+        "unique",
+      ]
+        .filter((key) => f[key] !== undefined)
+        .map((key) => [key, f[key]]),
+    );
     properties[f.name] = schema;
   }
   return {
+    $schema: "http://json-schema.org/draft-07/schema#",
+    title: definition.label || "Collection",
+    description: definition.description || "",
+    "x-wcos": {
+      singularLabel: definition.singularLabel || definition.label || "Record",
+      columns: definition.columns || [],
+      ...(definition.orderField ? { orderField: definition.orderField } : {}),
+    },
     type: "object",
     properties,
     required: definition.fields.filter((f) => f.required).map((f) => f.name),
@@ -306,112 +336,82 @@ export function validateRecord(definition, input, { sanitize = true } = {}) {
   }
   return record;
 }
-// Stable built-in metadata remains available even when a collection is empty.
-export const builtins = {
-  pages: {
-    title: "string",
-    slug: "string",
-    content: "text",
-    published: "boolean",
-    dataSources: "array",
-    parentSlug: "string",
-    layout: "string",
-    styleOverrides: "text",
-    dataView: "object",
-  },
-  members: {
-    position: "string",
-    level: "string",
-    steelRank: "string",
-    circleName: "string",
-    biography: "richtext",
-    image: "media",
-    active: "boolean",
-    region: "string",
-    merits: "array",
-    councilCurrent: "boolean",
-    councilTermStart: "string",
-    councilTermEnd: "string",
-    councilHistoricalDate: "string",
-    councilHistory: "array",
-    fallenHero: "boolean",
-    championships: "array",
-    memberSince: "string",
-    email: "string",
-    councilPosition: "string",
-    councilTitle: "string",
-    dalmaterMode: "string",
-    dalmaterKaidenId: {
-      type: "string",
-      control: "reference",
-      target: "members",
-      optionRule: "kaiden-color",
-    },
-    dalmaterColorName: "string",
-    dalmaterColorHex: "string",
-    yearsFought: "string",
-    battlesFought: "string",
-    steelBattlesFought: "string",
-    opponentsFought: "string",
-    weaponType: "string",
-    statsUpdated: "string",
-  },
-  classes: {
-    name: "string",
-    description: "text",
-    location: "string",
-    schedule: "string",
-    instructorIds: {
-      type: "relationship",
-      target: "members",
-      cardinality: "many-to-many",
-      optionRule: "kaiden",
-    },
-    region: "string",
-    active: "boolean",
-  },
-  glossary: { name: "string", definition: "richtext" },
-  updates: {
-    title: "string",
-    subcategory: "string",
-    pageLink: "string",
-    dateLabel: "string",
-    date: "string",
-    category: "string",
-    body: "richtext",
-    image: "media",
-  },
-  moves: {
-    name: "string",
-    description: "text",
-    core: "boolean",
-    types: "array",
-    media: "array",
-    order: "number",
-    creatorId: {
-      type: "relationship",
-      target: "members",
-      cardinality: "many-to-one",
-    },
-    category: "string",
-    details: "text",
-  },
-  siteSettings: { siteName: "string" },
-  users: {},
-};
-export function systemDefinitions(data) {
-  return SYSTEM.map((id) => {
-    const fields = new Map(
-      Object.entries(builtins[id]).map(([name, type]) => [
-        name,
-        {
-          name,
-          label: name,
-          ...(typeof type === "object" ? type : { type }),
-          nullable: true,
-        },
+// JSON Schemas own both validation and editor annotations. Fields are a generic
+// compatibility projection for the visual builder, never a second preset registry.
+const humanLabel = (value) =>
+  value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (c) => c.toUpperCase());
+function itemDefaults(schema) {
+  if (schema.default !== undefined) return structuredClone(schema.default);
+  if (schema.type === "object")
+    return Object.fromEntries(
+      Object.entries(schema.properties || {}).map(([key, property]) => [
+        key,
+        itemDefaults(property),
       ]),
     );
+  return schema.type === "number" || schema.type === "integer"
+    ? 0
+    : schema.type === "boolean"
+      ? false
+      : schema.type === "array"
+        ? []
+        : "";
+}
+export function fieldsFromSchema(schema) {
+  return Object.entries(schema.properties || {})
+    .filter(([name]) => !SYSTEM_FIELDS.includes(name))
+    .map(([name, property], order) => {
+      const raw = property.anyOf?.find((p) => p.type !== "null") || property;
+      const value = {
+        ...raw,
+        type: Array.isArray(raw.type)
+          ? raw.type.find((type) => type !== "null")
+          : raw.type,
+      };
+      const annotations = property["x-wcos"] || {};
+      const field = {
+        name,
+        label: property.title || humanLabel(name),
+        order,
+        type: annotations.type || (value.enum ? "enum" : value.type),
+        ...annotations,
+        required: (schema.required || []).includes(name),
+        nullable:
+          property.anyOf?.some((p) => p.type === "null") ||
+          (Array.isArray(raw.type) && raw.type.includes("null")) ||
+          false,
+      };
+      if (value.default !== undefined)
+        field.default = structuredClone(value.default);
+      if (value.enum)
+        field.options = value.enum.filter((v) => v !== "" && v !== null);
+      if (value.items?.enum) field.options = [...value.items.enum];
+      if (value.items && !value.items.enum && value.type === "array") {
+        field.items = structuredClone(value.items);
+        if (value.items.type === "object")
+          field.itemTemplate = itemDefaults(value.items);
+      }
+      if (value.pattern && !["media", "date"].includes(field.type))
+        field.pattern = value.pattern;
+      const min = value.minimum ?? value.minItems ?? value.minLength;
+      const max = value.maximum ?? value.maxItems ?? value.maxLength;
+      if (min !== undefined) field.min = min;
+      if (max !== undefined) field.max = max;
+      return field;
+    });
+}
+export const builtins = Object.fromEntries(
+  Object.entries(collectionSchemas).map(([id, schema]) => [
+    id,
+    Object.fromEntries(fieldsFromSchema(schema).map((f) => [f.name, f.type])),
+  ]),
+);
+export function systemDefinitions(data) {
+  return SYSTEM.map((id) => {
+    const source = structuredClone(collectionSchemas[id]);
+    const fields = new Map(fieldsFromSchema(source).map((f) => [f.name, f]));
     for (const row of data[id] || [])
       for (const [name, value] of Object.entries(row)) {
         if (
@@ -423,7 +423,7 @@ export function systemDefinitions(data) {
           continue;
         fields.set(name, {
           name,
-          label: name,
+          label: humanLabel(name),
           type: Array.isArray(value)
             ? "array"
             : value && typeof value === "object"
@@ -434,16 +434,18 @@ export function systemDefinitions(data) {
           nullable: true,
         });
       }
-    return {
+    const definition = {
       id,
-      label: id,
+      label: source.title,
+      description: source.description || "",
+      ...source["x-wcos"],
       system: true,
       locked: LOCKED.includes(id),
       legacy: true,
       fields: [...fields.values()],
-      columns: [...fields.keys()].slice(0, 4),
-      jsonSchema: jsonSchema({ fields: [...fields.values()], legacy: true }),
     };
+    definition.jsonSchema = jsonSchema(definition);
+    return definition;
   });
 }
 function systemSchema(id) {

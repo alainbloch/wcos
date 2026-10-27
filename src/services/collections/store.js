@@ -1,4 +1,3 @@
-import { withPresentation } from "./presentation.js";
 import { prepareRecord, validateDeletion, afterWrite } from "./rules.js";
 import { validateViews } from "./views.js";
 import { randomUUID, createHash } from "node:crypto";
@@ -12,6 +11,8 @@ import {
   builtins,
   validateRecord,
   SYSTEM_FIELDS,
+  jsonSchema,
+  fieldsFromSchema,
 } from "./schema.js";
 
 export const emptyState = () => ({
@@ -22,12 +23,29 @@ export const emptyState = () => ({
 });
 export const stateOf = (data) => data.dynamic || emptyState();
 export const definitionsOf = (data) => {
-  const saved = stateOf(data).definitions;
+  const initial = systemDefinitions(data);
+  const saved = stateOf(data).definitions.map((definition) => {
+    // Older backups predate schema annotations. Fill missing metadata from the
+    // initial schema, keeping every explicitly saved field choice and constraint.
+    if (definition.jsonSchema?.["x-wcos"])
+      return { ...definition, fields: fieldsFromSchema(definition.jsonSchema) };
+    const source = initial.find((d) => d.id === definition.id);
+    const fields = definition.fields.map((field) => ({
+      ...source?.fields.find(
+        (f) => f.name === field.name && f.type === field.type,
+      ),
+      ...field,
+    }));
+    const upgraded = { ...source, ...definition, fields };
+    upgraded.jsonSchema = jsonSchema(upgraded);
+    return { ...upgraded, fields: fieldsFromSchema(upgraded.jsonSchema) };
+  });
   return [
-    ...systemDefinitions(data).filter((d) => !saved.some((s) => s.id === d.id)),
+    ...initial.filter((d) => !saved.some((s) => s.id === d.id)),
     ...saved,
-  ].map(withPresentation);
+  ];
 };
+
 function setRows(data, id, rows) {
   if (SYSTEM.includes(id)) data[id] = rows;
   else data.dynamic.records[id] = rows;
