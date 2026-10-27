@@ -1,0 +1,177 @@
+[data-collection-app] [hidden] {
+  display: none !important;
+}
+[data-collection-app] .collection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+[data-collection-app] .collection-heading p {
+  margin: 0;
+  color: var(--text-muted, #617188);
+}
+[data-collection-app] .collection-toolbar {
+  display: grid;
+  grid-template-columns: minmax(12rem, 2fr) minmax(10rem, 1fr) minmax(
+      9rem,
+      1fr
+    ) auto;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+[data-collection-app] .collection-toolbar .form-group {
+  margin: 0;
+}
+[data-collection-app] .collection-row-actions .btn {
+  margin: 0.2rem;
+  white-space: nowrap;
+}
+[data-collection-app] .collection-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+[data-collection-app] .collection-checkbox input {
+  width: auto;
+  margin: 0;
+}
+[data-collection-app] .collection-directory {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+[data-collection-app] .schema-field {
+  border: 1px solid #dbe3ef;
+  border-radius: 0.6rem;
+  margin: 0.75rem 0;
+  padding: 1rem;
+}
+[data-collection-app] .schema-field summary {
+  cursor: pointer;
+  font-weight: 650;
+  padding: 0.35rem;
+}
+[data-collection-app] .schema-field[open] summary {
+  margin-bottom: 1rem;
+}
+[data-collection-app] .schema-field > .btn {
+  margin: 0.25rem;
+}
+[data-collection-app] .collection-multiselect {
+  border: 1px solid #c6d2e2;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  font-weight: 400;
+}
+[data-collection-app] .collection-multiselect summary {
+  cursor: pointer;
+}
+[data-collection-app] .collection-multiselect .form-group {
+  margin: 0.75rem 0;
+}
+[data-collection-app] .collection-structured {
+  border: 1px solid #dbe3ef;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin: 1.25rem 0;
+}
+[data-collection-app] .collection-structured legend {
+  font-weight: 650;
+  padding: 0 0.5rem;
+}
+[data-collection-app] .collection-item {
+  padding: 1rem;
+  background: #f7f9fc;
+  border: 1px solid #dbe3ef;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+}
+[data-collection-app] .collection-item .form-group {
+  margin: 0;
+}
+[data-collection-app] .collection-item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  grid-column: 1/-1;
+}
+[data-collection-app] .admin-form {
+  margin-top: 1.25rem;
+}
+[data-collection-app] .admin-card > .btn {
+  margin-right: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+[data-collection-app] .source-editor {
+  min-height: 10rem;
+  border: 1px solid #c6d2e2;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+@media (max-width: 800px) {
+  [data-collection-app] .collection-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+  [data-collection-app] .collection-heading {
+    align-items: flex-start;
+  }
+}
+@media (max-width: 500px) {
+  [data-collection-app] .collection-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+[data-collection-app] .collection-media-preview {
+  max-width: 180px;
+  max-height: 120px;
+  object-fit: contain;
+  border-radius: 0.4rem;
+}
+[data-collection-app] .schema-options > summary {
+  font-size: 0.9rem;
+  color: #617188;
+}
+[data-collection-app] .relationship-search {
+  margin: 0.5rem 0 1rem;
+}
+[data-collection-app] .admin-table td {
+  max-width: 28rem;
+  overflow-wrap: anywhere;
+}
+[data-collection-app] nav a[aria-current="page"] {
+  background: var(--accent, #ad2035);
+  color: white;
+}
+[data-collection-app] .schema-metadata {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.25rem;
+}
+[data-collection-app] .schema-field {
+  padding: 0.65rem 0.85rem;
+  margin: 0.5rem 0;
+}
+[data-collection-app] nav.form-actions {
+  margin-top: 0;
+  padding-top: 0;
+  border: 0;
+  margin-bottom: 1.25rem;
+}
+[data-collection-app] .admin-form + .btn {
+  margin-top: 1rem;
+}
+[data-collection-app] tbody tr[draggable="true"] {
+  cursor: grab;
+}
+@media (max-width: 600px) {
+  [data-collection-app] .schema-metadata {
+    grid-template-columns: 1fr;
+  }
+}

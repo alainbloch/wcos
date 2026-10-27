@@ -96,6 +96,8 @@ export function normalizeDefinition(input) {
       "control",
       "nullable",
       "optionRule",
+      "group",
+      "itemTemplate",
     ])
       if (raw[key] !== undefined && raw[key] !== "")
         field[key] = structuredClone(raw[key]);
@@ -148,6 +150,18 @@ export function normalizeDefinition(input) {
       )
         throw new Error(`Choose relationship cardinality for ${name}`);
     }
+    if (
+      field.options !== undefined &&
+      (!Array.isArray(field.options) ||
+        field.options.length > 100 ||
+        field.options.some((v) => typeof v !== "string"))
+    )
+      throw new Error(`Invalid choices for ${name}`);
+    if (
+      field.group !== undefined &&
+      (typeof field.group !== "string" || field.group.length > 120)
+    )
+      throw new Error(`Invalid group for ${name}`);
     if (field.type === "richtext" && typeof field.default === "string")
       field.default = sanitizeHtml(field.default);
     return field;
@@ -162,7 +176,16 @@ export function normalizeDefinition(input) {
     columns,
     system: SYSTEM.includes(id),
     locked: false,
+    presentationVersion: 1,
+    singularLabel: String(input.singularLabel || input.label).slice(0, 120),
+    description: String(input.description || "").slice(0, 500),
+    ...(input.orderField ? { orderField: input.orderField } : {}),
   };
+  if (
+    definition.orderField &&
+    !fields.some((f) => f.name === definition.orderField && f.type === "number")
+  )
+    throw new Error("Ordering requires a numeric field.");
   definition.jsonSchema = jsonSchema(definition);
   ajv.compile(definition.jsonSchema);
   return definition;
@@ -182,7 +205,14 @@ export function jsonSchema(definition) {
             uniqueItems: true,
             maxItems: 1000,
           };
-    else if (f.type === "array") schema = { type: "array", maxItems: 1000 };
+    else if (f.type === "array")
+      schema = {
+        type: "array",
+        maxItems: 1000,
+        ...(f.options?.length
+          ? { items: { type: "string", enum: f.options }, uniqueItems: true }
+          : {}),
+      };
     else if (f.type === "object") schema = { type: "object" };
     else if (["number", "boolean"].includes(f.type)) schema = { type: f.type };
     else

@@ -77,7 +77,7 @@ it("creates an Events schema and a record through the generated browser DOM inte
   };
   const control = (text) =>
     [...doc.querySelectorAll("label")]
-      .find((l) => l.firstElementChild?.textContent === text)
+      .find((l) => l.querySelector("span")?.textContent === text)
       ?.querySelector("input,select,textarea");
   await until(() => doc.body.textContent.includes("Create collection"));
   click("Create collection");
@@ -96,19 +96,15 @@ it("creates an Events schema and a record through the generated browser DOM inte
     collectionStore.definitions().some((d) => d.id === "events"),
   );
   dom.window.close();
-  const records = ui((await request("/admin/collections")).payload),
+  const records = ui((await request("/admin/collections/events")).payload),
     rd = records.window.document;
-  await until(() => rd.querySelector("select"));
-  const choice = rd.querySelector("select");
-  choice.value = "events";
-  choice.dispatchEvent(new records.window.Event("change"));
   await until(() =>
     [...rd.querySelectorAll("button")].some(
-      (b) => b.textContent === "Create record",
+      (b) => b.textContent === "Add Events",
     ),
   );
   [...rd.querySelectorAll("button")]
-    .find((b) => b.textContent === "Create record")
+    .find((b) => b.textContent === "Add Events")
     .click();
   await until(() => rd.querySelector("[name=title]"));
   rd.querySelector("[name=title]").value = "Public Tournament";
