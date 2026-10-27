@@ -1,7 +1,7 @@
 <form class="admin-form" method="POST" action="{{ formAction }}">
 <input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="_generated" value="true">
 {% for field in definition.fields %}
-{% if field.control != 'hidden' %}
+{% if field.control == 'hidden' %}<input type="hidden" name="{{ field.name }}" value="{{ formValues[field.name] }}">{% else %}
 <div class="form-group"><label for="record-{{ field.name }}">{{ field.label }}</label>
 {% if field.type == 'relationship' or field.control == 'reference' %}<select id="record-{{ field.name }}" name="{{ field.name }}" {% if field.cardinality in ['one-to-many','many-to-many'] %}multiple{% endif %}><option value="">Choose…</option>{% for option in choices[field.name] %}<option value="{{ option.id }}" {% if record[field.name] == option.id or (record[field.name] and option.id in record[field.name]) %}selected{% endif %}>{{ option.position or option.name or option.title or option.id }}</option>{% endfor %}</select>
 {% elif field.type == 'boolean' %}<input type="checkbox" id="record-{{ field.name }}" name="{{ field.name }}" {% if record[field.name] %}checked{% endif %}>
