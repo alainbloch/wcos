@@ -1,8 +1,9 @@
 {% extends 'layouts/admin.njk' %}
 {% block content %}
 <div data-collection-app data-mode="{{ mode }}" data-csrf="{{ csrf }}" data-initial-collection="{{ initialCollection }}" data-record="{{ recordId }}" data-new="{{ isNew }}" data-has-errors="{{ hasErrors }}">
-<nav class="form-actions" aria-label="Data management"><a class="btn" href="/admin/settings/database-schema">Database Schema</a><a class="btn" href="/admin/collections">Records</a><a class="btn" href="/admin/data-views">Data Views</a></nav>
+{% if not initialCollection %}<nav class="form-actions" aria-label="Data management"><a class="btn" href="/admin/settings/database-schema" {% if mode == "schema" %}aria-current="page"{% endif %}>Database Schema</a><a class="btn" href="/admin/collections" {% if mode == "records" %}aria-current="page"{% endif %}>Collections</a><a class="btn" href="/admin/data-views" {% if mode == "views" %}aria-current="page"{% endif %}>Data Views</a></nav>{% endif %}
 <p class="alert" role="status" data-message>Loading…</p>
+{% if hasErrors %}<pre hidden data-unsaved>{{ unsavedJson }}</pre><pre hidden data-unsaved-errors>{{ unsavedErrorsJson }}</pre>{% endif %}
 <div data-workspace>
 {% if definition and (recordId or isNew or flash.error) %}{% include 'admin/collection-form.njk' %}
 {% elif definition %}<a class="btn" href="/admin/{{ definition.id }}/new">Create record</a><div class="admin-table-container"><table class="admin-table"><thead><tr>{% for field in definition.columns %}<th>{{ field }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>{% for row in records %}<tr>{% for field in definition.columns %}<td>{{ row[field] }}</td>{% endfor %}<td><a href="/admin/{{ definition.id }}/{{ row.id }}/edit">Edit</a></td></tr>{% endfor %}</tbody></table></div><input type="hidden" name="_csrf" value="{{ csrf }}">{% endif %}
@@ -10,4 +11,5 @@
 </div>
 <noscript>Enable JavaScript to use the schema and data view builders.</noscript>
 {% endblock %}
+{% block head %}<link rel="stylesheet" href="/css/collections-admin.css">{% endblock %}
 {% block scripts %}<script src="/js/collections-admin.js" defer></script>{% endblock %}

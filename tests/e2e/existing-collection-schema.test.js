@@ -91,7 +91,7 @@ it("edits an existing Glossary schema through the visual builder, without redire
   row.querySelector("button").click();
   const control = (text) =>
     [...doc.querySelectorAll("label")]
-      .find((l) => l.firstElementChild?.textContent === text)
+      .find((l) => l.querySelector("span")?.textContent === text)
       ?.querySelector("input,select,textarea");
   await until(() => control("Display label"));
   control("Display label").value = "Terminology";
@@ -106,12 +106,10 @@ it("edits an existing Glossary schema through the visual builder, without redire
         (l) => l.firstElementChild?.textContent === "Field identifier",
       ).length === 3,
   );
-  const last = [...doc.querySelectorAll("section")]
-    .filter((s) => s.querySelector("h2")?.textContent === "Field")
-    .at(-1);
+  const last = [...doc.querySelectorAll("details.schema-field")].at(-1);
   const input = (text) =>
     [...last.querySelectorAll("label")]
-      .find((l) => l.firstElementChild?.textContent === text)
+      .find((l) => l.querySelector("span")?.textContent === text)
       ?.querySelector("input,select");
   input("Field identifier").value = "priority";
   input("Label").value = "Priority";

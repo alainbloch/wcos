@@ -75,6 +75,8 @@ export class CollectionsController extends BaseController {
       isNew,
       definition,
       record,
+      unsavedJson: JSON.stringify(record),
+      unsavedErrorsJson: JSON.stringify(request.formErrors || {}),
       formAction: request.url.split("?")[0].endsWith("/new")
         ? request.url.split("?")[0].slice(0, -4)
         : request.url.split("?")[0],
@@ -110,11 +112,13 @@ export class CollectionsController extends BaseController {
         : {},
       errors: request.formErrors || {},
       hasErrors: Boolean(request.flash?.error),
-      pageTitle: {
-        schema: "Database Schema",
-        views: "Data Views",
-        records: "Collections",
-      }[mode],
+      pageTitle: definition
+        ? `${recordId ? "Edit " : isNew ? "Add " : ""}${recordId || isNew ? definition.singularLabel : definition.label}`
+        : {
+            schema: "Database Schema",
+            views: "Data Views",
+            records: "Collections",
+          }[mode],
       mode,
       csrf:
         request.collection === "updates"
@@ -274,6 +278,9 @@ export class CollectionsController extends BaseController {
               collection: definition.id,
               fields,
               pageSize: 20,
+              ...(definition.orderField
+                ? { sort: [{ field: definition.orderField, direction: "asc" }] }
+                : {}),
             },
             request.query,
           );
@@ -339,6 +346,33 @@ export class CollectionsController extends BaseController {
             body.id,
             body.replace === true,
           );
+        if (action === "move-record") {
+          const def = collectionStore.definition(body.collection);
+          if (
+            def.locked ||
+            !def.orderField ||
+            (![-1, 1].includes(body.delta) && typeof body.beforeId !== "string")
+          )
+            throw new Error("Invalid ordering request.");
+          const ids = [...collectionStore.rows(def.id)]
+            .sort((a, b) => (a[def.orderField] ?? 0) - (b[def.orderField] ?? 0))
+            .map((row) => row.id);
+          const index = ids.indexOf(body.id),
+            target = body.beforeId
+              ? ids.indexOf(body.beforeId)
+              : index + body.delta;
+          if (index < 0) throw new Error("Record not found.");
+          if (target >= 0 && target < ids.length) {
+            if (body.beforeId) {
+              if (body.beforeId !== body.id) {
+                ids.splice(index, 1);
+                ids.splice(ids.indexOf(body.beforeId), 0, body.id);
+              }
+            } else [ids[index], ids[target]] = [ids[target], ids[index]];
+            await collectionStore.reorder(def.id, ids, def.orderField);
+          }
+          return { success: true };
+        }
         if (action === "delete-record") {
           await collectionStore.deleteRecord(body.collection, body.id);
           return { success: true };

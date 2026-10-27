@@ -1,3 +1,4 @@
+import { withPresentation } from "./presentation.js";
 import { prepareRecord, validateDeletion, afterWrite } from "./rules.js";
 import { validateViews } from "./views.js";
 import { randomUUID, createHash } from "node:crypto";
@@ -25,7 +26,7 @@ export const definitionsOf = (data) => {
   return [
     ...systemDefinitions(data).filter((d) => !saved.some((s) => s.id === d.id)),
     ...saved,
-  ];
+  ].map(withPresentation);
 };
 function setRows(data, id, rows) {
   if (SYSTEM.includes(id)) data[id] = rows;
