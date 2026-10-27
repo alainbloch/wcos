@@ -7,12 +7,14 @@
 <div class="form-group"><label for="slug">Page address</label><input id="slug" name="slug" value="{{ page.slug }}" {% if page.id %}data-manually-edited="true"{% endif %} pattern="[a-z0-9]+(-[a-z0-9]+)*|" aria-describedby="slug-help"><small id="slug-help">{% if page.id and page.slug == '' %}This is your homepage. Leave the address empty to keep it at /.{% else %}Use lowercase words separated by hyphens, such as sword-training.{% endif %}</small></div>
 <div class="form-group"><label for="layout">Layout template</label><input id="layout" name="layout" value="{{ page.layout or '' }}" placeholder="pages/reference.njk"><small>Leave empty for default layout.</small></div>
 <div class="form-group dropdown-group" data-checkbox-dropdown data-placeholder="Select data sources..." style="position:relative;">
+<input type="hidden" name="dataSourcesPresent" value="true">
 <label id="sources-label">Data sources</label>
 <button type="button" class="dropdown-trigger" aria-labelledby="sources-label sources-display" aria-expanded="false" aria-controls="sources-panel">
   <span id="sources-display" class="dropdown-display">Select data sources...</span>
   <span aria-hidden="true">▼</span>
 </button>
 <div id="sources-panel" class="dropdown-panel">
+  {% for view in dataViews %}<label class="dropdown-option"><input type="checkbox" name="dataSources" value="view:{{ view.id }}" {% if page.dataSources and ('view:' + view.id) in page.dataSources %}checked{% endif %}>Data view: {{ view.name }}</label>{% endfor %}
   {% for source in ['updates','generalUpdates','councilUpdates','newsUpdates'] %}<label class="dropdown-option"><input type="checkbox" name="dataSources" value="{{ source }}" {% if page.dataSources and source in page.dataSources %}checked{% endif %}> {{ source }}</label>{% endfor %}
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="glossary" {% if page.dataSources and 'glossary' in page.dataSources %}checked{% endif %}> glossary</label>
   <label class="dropdown-option"><input type="checkbox" name="dataSources" value="members" {% if page.dataSources and 'members' in page.dataSources %}checked{% endif %}> members</label>
@@ -28,6 +30,16 @@
 </div>
 
 
+<fieldset data-view-settings><legend>Data view component</legend>
+<p>Select a public data view above, then choose its presentation here. Records are rendered automatically after the page content.</p>
+<label>Data view <select name="viewId"><option value="">None</option>{% for view in dataViews %}<option value="{{ view.id }}" {% if page.dataView.id == view.id %}selected{% endif %}>{{ view.name }}</option>{% endfor %}</select></label>
+<label>Heading <input name="viewHeading" value="{{ page.dataView.heading }}"></label>
+<label>Layout <select name="viewLayout">{% for value in ['list','grid','detail'] %}<option value="{{ value }}" {% if page.dataView.layout == value %}selected{% endif %}>{{ value | capitalize }}</option>{% endfor %}</select></label>
+<label>Pagination <select name="viewPagination">{% for value in ['numbered','more'] %}<option value="{{ value }}" {% if page.dataView.pagination == value %}selected{% endif %}>{{ value | capitalize }}</option>{% endfor %}</select></label>
+<label>Detail record ID (optional) <input name="viewRecord" value="{{ page.dataView.record }}"></label>
+<label><input type="checkbox" name="viewSearch" {% if page.dataView.search %}checked{% endif %}>Search</label>
+<label><input type="checkbox" name="viewSorting" {% if page.dataView.sorting %}checked{% endif %}>Sorting controls</label>
+</fieldset>
 <div class="form-group"><label for="parentSlug">Parent page</label><select id="parentSlug" name="parentSlug"><option value="" {% if not page.parentSlug %}selected{% endif %}>— None (root) —</option>{% for p in pages %}{% if p.id != page.id %}<option value="{{ p.slug }}" {% if page.parentSlug == p.slug %}selected{% endif %}>{{ p.title }} ({{ p.slug }})</option>{% endif %}{% endfor %}</select><small>Leave empty for root pages.</small></div>
 <div class="form-group"><label for="styleOverrides">Style overrides</label><textarea id="styleOverrides" name="styleOverrides" rows="3" placeholder="Optional CSS snippet">{{ page.styleOverrides or '' }}</textarea><small>Optional custom CSS for this page.</small></div>
 <h2>Page content</h2>
@@ -37,4 +49,6 @@
 <div data-visual-panel hidden><div class="editor-toolbar" aria-label="Text formatting">{% for command, label in [['bold', 'Bold'], ['italic', 'Italic'], ['h2', 'Heading'], ['p', 'Paragraph'], ['insertUnorderedList', 'Bullet list'], ['createLink', 'Link'], ['undo', 'Undo']] %}<button type="button" class="editor-btn" data-command="{{ command }}">{{ label }}</button>{% endfor %}</div><iframe class="editor-frame" title="Page content visual editor" sandbox="allow-same-origin"></iframe></div>
 <label for="content" class="eyebrow" data-source-label>HTML content</label><textarea id="content" name="content" class="source-editor" rows="24" spellcheck="false">{{ page.content }}</textarea>
 </section><aside class="admin-card editor-sidebar"><h2>Publishing</h2><p class="text-muted">Save as a draft to keep a page off the public website.</p><label class="check-label"><input type="checkbox" name="published" {% if page and page.published %}checked{% endif %}> Published</label><p class="editor-status" data-save-status role="status">{% if flash.error %}Unsaved changes{% elif page.id %}All changes saved{% else %}New draft{% endif %}</p><button class="btn btn-primary" type="submit">{% if page.id %}Save changes{% else %}Create page{% endif %}</button>{% if page and page.published %}<a class="btn" href="/{{ page.slug }}" target="_blank" rel="noopener">View published page ↗</a>{% endif %}<a class="btn" href="/admin/pages">Back to pages</a><hr><small>Visual mode edits the page body. Use HTML source for layout, images, and embedded content. Changes go live only when you save a published page.</small></aside></div></form>
+<section class="admin-card"><h2>Live page preview</h2><p>Shows unsaved content and actual data view records. Changes here do not publish the page.</p><p role="status" data-live-status></p><iframe title="Live page preview" data-live-preview sandbox="allow-same-origin" style="width:100%;height:600px;border:1px solid #ddd"></iframe></section>
+<script src="/js/data-view-preview.js" defer></script>
 {% endblock %}

@@ -1,6 +1,7 @@
-import { updatesService } from './updatesService.js';
-import { glossaryService } from './glossaryService.js';
-import { classesService } from './classesService.js';
+import { viewService } from "./collections/views.js";
+import { updatesService } from "./updatesService.js";
+import { glossaryService } from "./glossaryService.js";
+import { classesService } from "./classesService.js";
 /**
  * Dynamic Page Service
  * Resolves page dataSources to repositories and renders partial templates.
@@ -16,9 +17,9 @@ import { memberService } from "./memberService.js";
 
 const repoMapping = {
   updates: { findAll: () => updatesService.getAll() },
-  newsUpdates: { findAll: () => updatesService.getAll('news') },
-  generalUpdates: { findAll: () => updatesService.getAll('general') },
-  councilUpdates: { findAll: () => updatesService.getAll('council') },
+  newsUpdates: { findAll: () => updatesService.getAll("news") },
+  generalUpdates: { findAll: () => updatesService.getAll("general") },
+  councilUpdates: { findAll: () => updatesService.getAll("council") },
   glossary: { findAll: () => glossaryService.getAll() },
   members: membersRepo,
   champions: { findAll: () => memberService.getChampions() },
@@ -30,7 +31,10 @@ const repoMapping = {
   },
   classes: { findAll: () => classesService.getAllClasses() },
   moves: movesRepo,
-  coreMoves: { findAll: async () => (await movesRepo.findAll()).filter(move => move.core) },
+  coreMoves: {
+    findAll: async () =>
+      (await movesRepo.findAll()).filter((move) => move.core),
+  },
   dalmaterColors: {
     findAll: async () =>
       (await memberService.getAllMembers()).filter(
@@ -42,11 +46,24 @@ const repoMapping = {
 };
 
 export class DynamicPageService {
-  async resolveDataSources(dataSources) {
+  async resolveDataSources(dataSources, query = {}) {
     if (!Array.isArray(dataSources) || dataSources.length === 0) return {};
     const result = {};
     for (const source of dataSources) {
-      const repo = repoMapping[source];
+      if (
+        typeof source !== "string" ||
+        ["__proto__", "constructor", "prototype", "users"].includes(source)
+      )
+        continue;
+      if (source.startsWith("view:")) {
+        const id = source.slice(5);
+        const resolved = viewService.run(id, query, { publicOnly: true });
+        result[id] = resolved.records;
+        continue;
+      }
+      const repo = Object.hasOwn(repoMapping, source)
+        ? repoMapping[source]
+        : null;
       if (!repo) {
         result[source] = null;
         continue;

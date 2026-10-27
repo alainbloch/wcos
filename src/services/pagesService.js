@@ -1,3 +1,5 @@
+import { viewService } from "./collections/views.js";
+import { readBinding } from "./collections/render.js";
 /**
  * Pages Service
  * Handles general CMS pages
@@ -63,21 +65,52 @@ export class PagesService {
     return {
       title,
       slug,
+      dataView: readBinding(data, existing?.dataView),
       content:
         typeof data.content === "string"
           ? data.content
           : existing?.content || "",
       published: data.published === true,
       dataSources: (() => {
-        if (Array.isArray(data.dataSources)) return data.dataSources;
-        if (typeof data.dataSources === "string" && data.dataSources.trim().length > 0) {
-          return data.dataSources.split(",").map((s) => s.trim()).filter(Boolean);
+        const sources =
+          data.dataSourcesPresent && !data.dataSources
+            ? []
+            : Array.isArray(data.dataSources)
+              ? data.dataSources
+              : typeof data.dataSources === "string"
+                ? data.dataSources
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                : existing?.dataSources || [];
+        for (const source of sources) {
+          if (
+            typeof source !== "string" ||
+            ["__proto__", "constructor", "prototype"].includes(source)
+          )
+            throw new Error("Invalid data source.");
+          if (
+            source.startsWith("view:") &&
+            !viewService
+              .list()
+              .some((v) => v.id === source.slice(5) && v.public)
+          )
+            throw new Error("Select an existing public data view.");
         }
-        return existing?.dataSources || [];
+        return sources;
       })(),
-      layout: typeof data.layout === "string" ? data.layout : (existing?.layout || null),
-      parentSlug: typeof data.parentSlug === "string" ? data.parentSlug : (existing?.parentSlug || null),
-      styleOverrides: typeof data.styleOverrides === "string" ? data.styleOverrides : (existing?.styleOverrides || null),
+      layout:
+        typeof data.layout === "string"
+          ? data.layout
+          : existing?.layout || null,
+      parentSlug:
+        typeof data.parentSlug === "string"
+          ? data.parentSlug
+          : existing?.parentSlug || null,
+      styleOverrides:
+        typeof data.styleOverrides === "string"
+          ? data.styleOverrides
+          : existing?.styleOverrides || null,
     };
   }
 
@@ -90,7 +123,16 @@ export class PagesService {
     if (!existing) throw new Error("Page not found.");
     return pagesRepo.update(
       id,
-      await this.validatePage({ ...existing, ...data }, existing),
+      await this.validatePage(
+        {
+          ...existing,
+          ...data,
+          ...(data.dataSourcesPresent && !data.dataSources
+            ? { dataSources: [] }
+            : {}),
+        },
+        existing,
+      ),
     );
   }
 
