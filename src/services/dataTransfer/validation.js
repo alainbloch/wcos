@@ -1,4 +1,4 @@
-import { validateState, emptyState } from '../collections/store.js';
+import { validateState, emptyState } from "../collections/store.js";
 import { FORMAT, VERSION } from "./format.js";
 import { validUpdateDate } from "../updatesService.js";
 import { renderLayoutTemplate, layoutContext } from "../layoutService.js";
@@ -81,8 +81,14 @@ export function inspectSnapshot(snapshot, mode) {
   )
     errors.push("Invalid system metadata.");
   if (snapshot.system?.dynamic) {
-    try { validateState({ ...snapshot.collections, dynamic: snapshot.system.dynamic }); }
-    catch (error) { errors.push(error.message); }
+    try {
+      validateState({
+        ...snapshot.collections,
+        dynamic: snapshot.system.dynamic,
+      });
+    } catch (error) {
+      errors.push(error.message);
+    }
   }
   for (const key of Object.keys(snapshot.collections))
     if (!COLLECTIONS.includes(key)) errors.push(`Unknown collection: ${key}`);
@@ -209,24 +215,45 @@ export function mergeCollections(current, incoming, mode) {
     delete result.resources;
   }
   if (incoming.system?.dynamic) {
-    const previous = current.dynamic || emptyState(), next = incoming.system.dynamic;
-    if (mode === 'restore') result.dynamic = structuredClone(next);
+    const previous = current.dynamic || emptyState(),
+      next = incoming.system.dynamic;
+    if (mode === "restore") result.dynamic = structuredClone(next);
     else {
-      const merge = (old, rows) => [...new Map((mode === 'populate' ? [...rows, ...old] : [...old, ...rows]).map(row => [row.id, structuredClone(row)])).values()];
+      const merge = (old, rows) => [
+        ...new Map(
+          (mode === "populate" ? [...rows, ...old] : [...old, ...rows]).map(
+            (row) => [row.id, structuredClone(row)],
+          ),
+        ).values(),
+      ];
       result.dynamic = {
         definitions: merge(previous.definitions, next.definitions),
         views: merge(previous.views, next.views),
         history: previous.history,
-        records: Object.fromEntries([...new Set([...Object.keys(previous.records), ...Object.keys(next.records)])].map(id => [id, merge(previous.records[id] || [], next.records[id] || [])])),
+        records: Object.fromEntries(
+          [
+            ...new Set([
+              ...Object.keys(previous.records),
+              ...Object.keys(next.records),
+            ]),
+          ].map((id) => [
+            id,
+            merge(previous.records[id] || [], next.records[id] || []),
+          ]),
+        ),
       };
     }
-  } else if (mode === 'restore') delete result.dynamic;
+  } else if (mode === "restore") delete result.dynamic;
   result.referenceMigrationVersion = 1;
   return { result, counts };
 }
 export function validateDatabase(data) {
   const errors = [];
-  try { validateState(data); } catch (error) { errors.push(error.message); }
+  try {
+    validateState(data);
+  } catch (error) {
+    errors.push(error.message);
+  }
   const fail = (key, row, field, message) => {
     if (errors.length < 1000)
       errors.push(`${key}[${row.id}].${field}: ${message}`);
