@@ -19,7 +19,7 @@ import { BaseController } from "./baseController.js";
 import { collectionStore, stateOf } from "../services/collections/store.js";
 import { viewService, queryView } from "../services/collections/views.js";
 import { TYPES } from "../services/collections/schema.js";
-import { uploadMoveMedia } from "../services/moveMediaService.js";
+import { uploadCollectionMedia } from "../services/collectionMediaService.js";
 
 export class CollectionsController extends BaseController {
   async guard(request, reply) {
@@ -27,13 +27,22 @@ export class CollectionsController extends BaseController {
     if ((await usersRepo.findById(request.user?.id))?.role !== "admin")
       return reply.code(403).send({ error: "Administrator access required." });
     request.session.schemaCsrf ||= randomBytes(32).toString("hex");
-    if (request.method !== "GET" && !request.collectionCompatibility) {
-      const supplied = request.headers["x-csrf-token"] || request.body?._csrf;
-      const expected = request.session.schemaCsrf;
+    if (request.method !== "GET") {
+      const token = request.body?._csrf;
+      const supplied =
+        request.headers["x-csrf-token"] ||
+        (token?.type === "field" ? token.value : token);
+      const tokens = [request.session.schemaCsrf];
+      if (request.routeOptions.config.legacyCollectionAlias)
+        tokens.push(request.session.userCsrf);
       if (
         typeof supplied !== "string" ||
-        supplied.length !== expected.length ||
-        !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))
+        !tokens.some(
+          (expected) =>
+            typeof expected === "string" &&
+            Buffer.byteLength(supplied) === Buffer.byteLength(expected) &&
+            timingSafeEqual(Buffer.from(supplied), Buffer.from(expected)),
+        )
       )
         return reply
           .code(403)
@@ -77,9 +86,7 @@ export class CollectionsController extends BaseController {
       record,
       unsavedJson: JSON.stringify(record),
       unsavedErrorsJson: JSON.stringify(request.formErrors || {}),
-      formAction: request.url.split("?")[0].endsWith("/new")
-        ? request.url.split("?")[0].slice(0, -4)
-        : request.url.split("?")[0],
+      formAction: `/admin/collections/${encodeURIComponent(collection || "")}${recordId ? `/${encodeURIComponent(recordId)}/edit` : ""}`,
       formValues: Object.fromEntries(
         Object.entries(record || {}).map(([key, value]) => [
           key,
@@ -120,10 +127,7 @@ export class CollectionsController extends BaseController {
             records: "Collections",
           }[mode],
       mode,
-      csrf:
-        request.collection === "updates"
-          ? request.session.userCsrf
-          : request.session.schemaCsrf,
+      csrf: request.session.schemaCsrf,
     });
   }
   allowOption(row, rule) {
@@ -158,10 +162,26 @@ export class CollectionsController extends BaseController {
     try {
       const definition = collectionStore.definition(collection);
       const generated = request.body?._generated === "true";
-      const record = generated
+      const design = request.body?._design === "true";
+      if (design && !definition.capabilities?.design)
+        throw new Error("This collection does not support design editing.");
+      let record = generated
         ? readGeneratedForm(definition, request.body)
         : readLegacyForm(collection, request.body, old);
-      if (!generated && ["members", "updates"].includes(collection)) {
+      if (design) {
+        const draft = readLegacyForm("pages", request.body, old);
+        draft[definition.contentField || "content"] = draft.content;
+        record = Object.fromEntries(
+          Object.entries(draft).filter(([key]) =>
+            definition.fields.some((field) => field.name === key),
+          ),
+        );
+      }
+      if (
+        !generated &&
+        !design &&
+        ["members", "updates"].includes(collection)
+      ) {
         imageService =
           collection === "members" ? memberImageService : updateImageService;
         uploaded = await imageService.save(request.body?.image);
@@ -176,7 +196,9 @@ export class CollectionsController extends BaseController {
       request.session.adminFlash = {
         success: `${collection === "pages" ? "Page" : "Record"} ${id ? "updated" : "created"} successfully`,
       };
-      return reply.redirect(`/admin/${collection}/${saved.id}/edit`);
+      return reply.redirect(
+        `/admin/collections/${encodeURIComponent(collection)}/${saved.id}/edit`,
+      );
     } catch (error) {
       if (uploaded)
         await imageService.discard(uploaded).catch((e) => request.log.error(e));
@@ -212,16 +234,26 @@ export class CollectionsController extends BaseController {
     const collection = request.collection || request.params.collection;
     try {
       await collectionStore.deleteRecord(collection, request.params.id);
-      return reply.redirect(`/admin/${collection}`);
+      return reply.redirect(
+        `/admin/collections/${encodeURIComponent(collection)}`,
+      );
     } catch (error) {
       return reply.code(400).send({ error: error.message });
     }
   }
   async reorder(request, reply) {
     try {
+      const definition =
+        request.collectionDefinition ||
+        collectionStore.definition(
+          request.collection || request.params.collection,
+        );
+      if (!definition.orderField)
+        throw new Error("Ordering is not configured for this collection.");
       await collectionStore.reorder(
-        request.collection || request.params.collection,
-        request.body.ids,
+        definition.id,
+        request.body?.ids,
+        definition.orderField,
       );
       return reply.send({ success: true });
     } catch (error) {
@@ -231,7 +263,7 @@ export class CollectionsController extends BaseController {
   async upload(request, reply) {
     try {
       return reply.send(
-        await uploadMoveMedia(request.body.file || request.body.media),
+        await uploadCollectionMedia(request.body.file || request.body.media),
       );
     } catch (error) {
       return reply.code(400).send({ error: error.message });
@@ -386,7 +418,7 @@ export class CollectionsController extends BaseController {
         if (action === "preview-view")
           return queryView(collectionStore.data(), body.view, body.query || {});
         if (action === "upload")
-          return await uploadMoveMedia(request.body.file);
+          return await uploadCollectionMedia(request.body.file);
       }
       return reply.code(404).send({ error: "Unknown action." });
     } catch (error) {

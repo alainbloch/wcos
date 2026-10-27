@@ -160,13 +160,13 @@ it("renders actual paginated records in unsaved previews and public pages with m
     dataSources: ["view:upcoming"],
     dataView: binding,
   };
-  const preview = await request("/admin/pages/preview", draft);
+  const preview = await request("/admin/collections/pages/preview", draft);
   expect(preview.statusCode).toBe(200);
   expect(preview.payload).toContain("Autumn Tournament");
   expect(preview.payload).not.toContain("Winter Tournament");
   expect(preview.payload).toContain("page=2");
   expect(preview.payload).toContain("Unsaved heading");
-  const second = await request("/admin/pages/preview", {
+  const second = await request("/admin/collections/pages/preview", {
     ...draft,
     query: { page: 2 },
   });
@@ -210,7 +210,7 @@ it("renders actual paginated records in unsaved previews and public pages with m
   });
   expect(changed.statusCode).toBe(302);
   expect((await app.inject("/events")).payload).toContain("data-view-more");
-  const edit = await request(`/admin/page-design/${stored.id}`);
+  const edit = await request(`/admin/collections/pages/${stored.id}/design`);
   expect(edit.payload).toContain("Data view: Upcoming Events");
   expect(edit.payload).toContain("data-live-preview");
   previewDoc.window.close();

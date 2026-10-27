@@ -54,3 +54,13 @@ Full JSON and ZIP exports include schemas, custom records, views, schema history
 ## Validation
 
 Run `npm test -- --runInBand` for the entire Jest suite with coverage. The Events and existing-Glossary-schema end-to-end tests use jsdom interactions with the actual Fastify routes and LowDB services; it does not substitute a real browser layout/accessibility audit. Additional tests cover JSON Schema types/constraints, relationship cardinalities, structured queries, role/CSRF checks, backup round trips, page bindings and preview/public parity.
+
+## Schema-owned field configuration
+
+`src/schemas/collections.json` contains the initial built-in JSON Schemas. Choices use `enum` (or `items.enum`), labels use `title`, and item defaults use `default` on item properties. UI-only annotations such as controls, grouping, list columns and manual ordering live under `x-wcos` in the same schema. There is no presentation preset registry. The generic `fieldsFromSchema` projection supplies the visual editor's controls; schemas saved through that editor retain these annotations and validation rules in their JSON Schema. Saved collection definitions take precedence over initial schemas and are included in backups. Reading the schemas never reseeds or rewrites records.
+
+## Collection navigation and operations
+
+The admin sidebar reads the live schema registry on every render. All content collections use `/admin/collections/:collection`, with `/new`, `/:id/edit`, `/:id/delete`, `/order`, and `/media` operations. Short `/:collection` aliases remain available through the same shared registration and authorization/CSRF checks. New collections receive a numeric `sortOrder` field and an `orderField` annotation by default. New records append to that order. Ordering uses the schema's numeric `orderField`; it does not repurpose Members' existing `position` value.
+
+Schemas can enable `x-wcos.capabilities.design` and `preview`, and specify `x-wcos.contentField`. Design implies preview. The generic `/:id/design` and `/preview` operations resolve records within that collection; unsupported operations return 404. The shared designer saves its content to the configured field and submits the same CSRF token used by generated collection forms. Preview renders unsaved HTML and data bindings through the public rendering pipeline without saving. There is no separate `/page-design/:id` route. Old Pages/Updates preview paths resolve only through the generic short aliases.

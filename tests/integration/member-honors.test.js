@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect} from '@jest/globals';
 import fs from 'node:fs';
@@ -8,9 +10,10 @@ import {authService} from '../../src/services/authService.js';
 import {memberService} from '../../src/services/memberService.js';
 import {mergeMemberHonors,honorsSeed} from '../../src/models/migrations/mergeMemberHonors.js';
 let app,cookie,member;
-beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;member=await membersRepo.create({position:'Test Champion',level:'L3',active:false});});
+beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));member=await membersRepo.create({position:'Test Champion',level:'L3',active:false});});
 afterAll(async()=>{await app.close();});
-function post(values){return app.inject({method:'POST',url:`/admin/members/${member.id}/edit`,headers:{cookie,'content-type':'multipart/form-data; boundary=honors'},payload:Object.entries({circleName:'Test Champion',level:'L3',honorsPresent:'1',...values}).map(([name,value])=>`--honors\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`).join('')+'--honors--\r\n'});}
+function post(values){return app.inject({method:'POST',url:`/admin/members/${member.id}/edit`,headers: {"x-csrf-token": schemaCsrf, cookie,'content-type':'multipart/form-data; boundary=honors'},payload:Object.entries({circleName:'Test Champion',level:'L3',honorsPresent:'1',...values}).map(([name,value])=>`--honors\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`).join('')+'--honors--\r\n'});}
 it('saves integer years and fallen status, preserves errors, and clears honors',async()=>{
  expect((await post({fallenHero:'on',championships:JSON.stringify([{year:'2022',note:'Champions Edition'},{year:'2023',note:''}])})).statusCode).toBe(302);
  expect(await membersRepo.findById(member.id)).toMatchObject({fallenHero:true,championships:[{year:2022,note:'Champions Edition'},{year:2023,note:''}]});
@@ -41,7 +44,7 @@ it('renders the same winners in both layouts, inactive heroes, images and unique
  expect($('.profile-title').filter((i,e)=>$(e).text().includes('2010')).closest('.profile-body').text()).toContain('Gad');
  expect(result.payload).toContain('Joel');expect(result.payload).toContain('2006: No Champion.');expect(result.payload).toContain('The Black Braid');expect($('[data-modal-target]').length).toBe(48);
  const ids=$('template').map((i,e)=>$(e).attr('id')).get();expect(new Set(ids).size).toBe(ids.length);
- expect((await app.inject({url:'/admin/champions',headers:{cookie}})).statusCode).toBe(404);
+ expect((await app.inject({url:'/admin/champions',headers: {"x-csrf-token": schemaCsrf, cookie}})).statusCode).toBe(404);
 });
 it('allows editing an imported historical profile without inventing its rank',async()=>{
  const imported=getDatabase().data.members.find(m=>m.importedFrom==='hall-of-heroes');member=imported;

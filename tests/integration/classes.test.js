@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect} from '@jest/globals';
 import fs from 'node:fs';
@@ -11,19 +13,20 @@ import {migrateClasses,retiredCollections} from '../../src/models/migrations/cla
 let app,cookie,teachers,other;
 beforeAll(async()=>{
  app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
  teachers=[];for(const merit of ['Kaiden','Honorary Kaiden','Head Kaiden']) teachers.push(await membersRepo.create({position:merit,merits:[merit]}));
  other=await membersRepo.create({position:'Other',merits:['Expert Swordsman']});
 });
 afterAll(async()=>{await app.close();});
-const post=(url,payload)=>app.inject({method:'POST',url,headers:{cookie},payload});
+const post=(url,payload)=>app.inject({method:'POST',url,headers: {"x-csrf-token": schemaCsrf, cookie},payload});
 it('offers all three Kaiden merits and saves multi, single and cleared selections',async()=>{
- const form=await app.inject({url:'/admin/classes/new',headers:{cookie}});expect(form.statusCode).toBe(200);const $=load(form.payload);
+ const form=await app.inject({url:'/admin/classes/new',headers: {"x-csrf-token": schemaCsrf, cookie}});expect(form.statusCode).toBe(200);const $=load(form.payload);
  for(const teacher of teachers) expect($(`[name=instructorIds] option[value="${teacher.id}"]`).length).toBe(1);
  expect($(`[name=instructorIds] option[value="${other.id}"]`).length).toBe(0);
- const created=await app.inject({method:'POST',url:'/admin/classes',headers:{cookie,'content-type':'application/x-www-form-urlencoded'},payload:`name=Class&active=on&instructorIds=${teachers[0].id}&instructorIds=${teachers[1].id}`});
- expect(created.statusCode).toBe(302);const url=created.headers.location,id=url.split('/')[3];
+ const created=await app.inject({method:'POST',url:'/admin/classes',headers: {"x-csrf-token": schemaCsrf, cookie,'content-type':'application/x-www-form-urlencoded'},payload:`name=Class&active=on&instructorIds=${teachers[0].id}&instructorIds=${teachers[1].id}`});
+ expect(created.statusCode).toBe(302);const url=created.headers.location,id=url.split('/').at(-2);
  expect(await classesRepo.findById(id)).toMatchObject({instructorIds:[teachers[0].id,teachers[1].id],active:true});
- const edit=load((await app.inject({url,headers:{cookie}})).payload);expect(edit('[name=instructorIds] option:selected').length).toBe(2);
+ const edit=load((await app.inject({url,headers: {"x-csrf-token": schemaCsrf, cookie}})).payload);expect(edit('[name=instructorIds] option:selected').length).toBe(2);
  await post(url,{name:'Class',instructorIds:teachers[2].id});expect(await classesRepo.findById(id)).toMatchObject({instructorIds:[teachers[2].id],active:false});
  await post(url,{name:'Class'});expect((await classesRepo.findById(id)).instructorIds).toEqual([]);
 });
@@ -33,7 +36,7 @@ it('rejects invalid instructors without changing data and restores failed forms'
  expect((await classesRepo.findById(cls.id)).name).toBe('Original');
  const failed=await post(url,{name:'',instructorIds:[teachers[0].id,teachers[2].id]});const $=load(failed.payload);
  expect($('[name=instructorIds] option:selected').length).toBe(2);expect($('[name=active]:checked').length).toBe(0);
- const create=await post('/admin/classes',{name:'',instructorIds:teachers[1].id});expect(create.statusCode).toBe(400);expect(load(create.payload)('form.admin-form').attr('action')).toBe('/admin/classes');
+ const create=await post('/admin/classes',{name:'',instructorIds:teachers[1].id});expect(create.statusCode).toBe(400);expect(load(create.payload)('form.admin-form').attr('action')).toBe('/admin/collections/classes');
  expect((await post('/admin/classes/missing/edit',{name:'Missing'})).statusCode).toBe(404);
 });
 it('migrates page data and legacy fields without overwriting custom values, and is idempotent',()=>{
@@ -61,8 +64,8 @@ it('renders active class data and live instructor names in the supplied layout',
  const updated=await dynamicPageService.resolveDataSources(['classes']);expect(updated.classes[0].instructors[0].position).toBe('Renamed teacher');
 });
 it('removes unused admin endpoints and datasource options while preserving public pages',async()=>{
- for(const path of ['ranks','dues','kaidens','kaiden-rules']) expect((await app.inject({url:`/admin/${path}`,headers:{cookie}})).statusCode).toBe(404);
+ for(const path of ['ranks','dues','kaidens','kaiden-rules']) expect((await app.inject({url:`/admin/${path}`,headers: {"x-csrf-token": schemaCsrf, cookie}})).statusCode).toBe(404);
  for(const path of ['rank-requirements','dues','kaidens']) expect((await app.inject({url:`/${path}`})).statusCode).toBe(200);
- const form=(await app.inject({url:'/admin/pages/new',headers:{cookie}})).payload;const $=load(form);
+ const form=(await app.inject({url:'/admin/pages/new',headers: {"x-csrf-token": schemaCsrf, cookie}})).payload;const $=load(form);
  for(const name of retiredCollections) expect($(`[name=dataSources][value="${name}"]`).length).toBe(0);
 });

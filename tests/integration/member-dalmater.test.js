@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { beforeAll, afterAll, it, expect } from "@jest/globals";
 import { load } from "cheerio";
 import { buildApp } from "../../src/app.js";
@@ -7,6 +9,7 @@ let app, cookie, teacher, student, other;
 beforeAll(async () => {
   app = await buildApp();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail("admin@wcos.org"))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
   teacher = await membersRepo.create({
     position: "Teacher",
     merits: ["Kaiden"],
@@ -27,13 +30,13 @@ afterAll(async () => {
   await app.close();
 });
 const url = () => `/admin/members/${student.id}/edit`;
-const get = (url) => app.inject({ url, headers: { cookie } });
+const get = (url) => app.inject({ url, headers: {"x-csrf-token": schemaCsrf, cookie } });
 function post(values) {
   const payload = { circleName: "Student", level: "L3", ...values };
   return app.inject({
     method: "POST",
     url: url(),
-    headers: { cookie, "content-type": "multipart/form-data; boundary=colors" },
+    headers: {"x-csrf-token": schemaCsrf, cookie, "content-type": "multipart/form-data; boundary=colors" },
     payload:
       Object.entries(payload)
         .map(

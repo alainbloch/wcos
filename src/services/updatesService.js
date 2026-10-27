@@ -1,12 +1,19 @@
+import { collectionStore } from "./collections/store.js";
+import { validateRecord } from "./collections/schema.js";
 import { updatesRepo } from "../models/database.js";
 import { sanitizePageContent } from "./referenceSiteService.js";
 import sanitizeHtml from "sanitize-html";
 export function readUpdateForm(body = {}) {
   return Object.fromEntries(
-    ["title", "date", "category", "subcategory", "pageLink", "body", "image"].map((key) => [
-      key,
-      typeof body[key] === "string" ? body[key] : "",
-    ]),
+    [
+      "title",
+      "date",
+      "category",
+      "subcategory",
+      "pageLink",
+      "body",
+      "image",
+    ].map((key) => [key, typeof body[key] === "string" ? body[key] : ""]),
   );
 }
 export function dateLabel(date) {
@@ -30,7 +37,8 @@ export function validUpdateDate(date) {
 }
 export class UpdatesService {
   async getAll(category) {
-    return (await updatesRepo.findAll()).sort((a,b)=>b.date.localeCompare(a.date))
+    return (await updatesRepo.findAll())
+      .sort((a, b) => b.date.localeCompare(a.date))
       .filter((item) => !category || item.category === category)
       .map((item) => ({
         ...item,
@@ -43,8 +51,7 @@ export class UpdatesService {
     data.title = data.title.trim();
     if (data.title.length > 200)
       throw new Error("Title must be at most 200 characters.");
-    if (!["general", "council", "news"].includes(data.category))
-      throw new Error("Choose General Update, Council, or News.");
+    validateRecord(collectionStore.definition("updates"), data);
     if (!validUpdateDate(data.date))
       throw new Error(
         "Enter a valid date as YYYY-MM-DD or YYYY-MM for a month-only date.",

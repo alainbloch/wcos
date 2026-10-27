@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import {beforeAll,afterAll,it,expect,jest} from '@jest/globals';
 import fs from 'node:fs';
@@ -8,9 +10,10 @@ import {authService} from '../../src/services/authService.js';
 import {glossaryService} from '../../src/services/glossaryService.js';
 import {seedGlossary,glossarySeed} from '../../src/models/migrations/seedGlossary.js';
 let app,cookie;
-beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;});
+beforeAll(async()=>{app=await buildApp();await ensureReferencePages();cookie=`wcos_session=${authService.generateToken(await usersRepo.findByEmail('admin@wcos.org'))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));});
 afterAll(async()=>{await app.close();});
-const post=(url,payload)=>app.inject({method:'POST',url,headers:{cookie},payload});
+const post=(url,payload)=>app.inject({method:'POST',url,headers: {"x-csrf-token": schemaCsrf, cookie},payload});
 it('seeds all 69 entries and preserves existing definitions without duplicates',()=>{
  expect(glossarySeed).toHaveLength(69);const data={glossary:[{id:'keep',name:'Advanced Blocks',definition:'Edited'}]};seedGlossary(data);expect(data.glossary).toHaveLength(69);expect(data.glossary[0].definition).toBe('Edited');
  const before=structuredClone(data);seedGlossary(data);expect(data).toEqual(before);
@@ -19,17 +22,17 @@ it('seeds all 69 entries and preserves existing definitions without duplicates',
 });
 it('requires authentication and supports create, read, update and delete',async()=>{
  expect((await app.inject({url:'/admin/glossary'})).statusCode).toBe(401);
- expect((await app.inject({url:'/admin/glossary/new',headers:{cookie}})).statusCode).toBe(200);
- const created=await post('/admin/glossary',{name:'Zebra term',definition:'<p>A definition</p>'});expect(created.statusCode).toBe(302);const url=created.headers.location,id=url.split('/')[3];
- expect((await app.inject({url,headers:{cookie}})).payload).toContain('Zebra term');
+ expect((await app.inject({url:'/admin/glossary/new',headers: {"x-csrf-token": schemaCsrf, cookie}})).statusCode).toBe(200);
+ const created=await post('/admin/glossary',{name:'Zebra term',definition:'<p>A definition</p>'});expect(created.statusCode).toBe(302);const url=created.headers.location,id=url.split('/').at(-2);
+ expect((await app.inject({url,headers: {"x-csrf-token": schemaCsrf, cookie}})).payload).toContain('Zebra term');
  await post(url,{name:'Alpha term',definition:'Updated'});expect(await glossaryRepo.findById(id)).toMatchObject({name:'Alpha term',definition:'Updated'});
  expect((await post(`/admin/glossary/${id}/delete`,{})).statusCode).toBe(302);expect(await glossaryRepo.findById(id)).toBeNull();expect((await post(url,{name:'Gone',definition:'Gone'})).statusCode).toBe(404);
 });
 it('validates names and definitions and redisplays failed create/edit forms',async()=>{
  const item=await glossaryService.create({name:'Unique test',definition:'Original'}),url=`/admin/glossary/${item.id}/edit`;
- const failed=await post(url,{name:'Changed name',definition:''});expect(failed.statusCode).toBe(400);expect(failed.payload).toContain('Changed name');expect(load(failed.payload)('form.admin-form').attr('action')).toBe(url);
+ const failed=await post(url,{name:'Changed name',definition:''});expect(failed.statusCode).toBe(400);expect(failed.payload).toContain('Changed name');expect(load(failed.payload)('form.admin-form').attr('action')).toBe(url.replace(/^\/admin\/(?!collections\/)/, "/admin/collections/"));
  expect((await glossaryRepo.findById(item.id)).name).toBe('Unique test');
- const duplicate=await post('/admin/glossary',{name:' UNIQUE   TEST ',definition:'Other'});expect(duplicate.statusCode).toBe(400);expect(load(duplicate.payload)('form.admin-form').attr('action')).toBe('/admin/glossary');
+ const duplicate=await post('/admin/glossary',{name:' UNIQUE   TEST ',definition:'Other'});expect(duplicate.statusCode).toBe(400);expect(load(duplicate.payload)('form.admin-form').attr('action')).toBe('/admin/collections/glossary');
  expect((await post('/admin/glossary',{name:'Blank',definition:'<script>alert(1)</script>'})).statusCode).toBe(400);
 });
 it('sanitizes rich definitions and rolls back database write failures',async()=>{

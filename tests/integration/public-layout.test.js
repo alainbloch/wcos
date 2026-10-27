@@ -1,3 +1,5 @@
+import {adminSession} from "../helpers/admin-session.js";
+let schemaCsrf;
 import { ensureReferencePages } from "../../src/services/referenceSiteService.js";
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { load } from "cheerio";
@@ -18,10 +20,11 @@ beforeAll(async () => {
   await ensureReferencePages();
   await app.ready();
   cookie = `wcos_session=${authService.generateToken(await usersRepo.findByEmail("admin@wcos.org"))}`;
+  ({cookie, csrf: schemaCsrf} = await adminSession(app, cookie));
 });
 afterAll(async () => app.close());
 const post = (url, payload) =>
-  app.inject({ method: "POST", url, payload, headers: { cookie } });
+  app.inject({ method: "POST", url, payload, headers: {"x-csrf-token": schemaCsrf, cookie } });
 
 describe("One public layout through category controllers", () => {
   it.each(originalPages.map((page) => [page.slug]))(
@@ -123,7 +126,7 @@ describe("One public layout through category controllers", () => {
         expect($(`link[href="${css}"]`).length).toBeGreaterThan(0);
       const editForm = await app.inject({
         url: `/admin/members/${member.id}/edit`,
-        headers: { cookie },
+        headers: {"x-csrf-token": schemaCsrf, cookie },
       });
       expect(editForm.statusCode).toBe(200);
       expect(load(editForm.payload)("[name=position]").val()).toBe("Gad");

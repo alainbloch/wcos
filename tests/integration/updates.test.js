@@ -93,8 +93,8 @@ it("creates, edits, filters, previews and deletes updates", async () => {
     url: "/admin/updates?category=council",
     headers: { cookie },
   });
-  expect(response.payload).toContain(`/admin/updates/${item.id}/edit`);
-  response = await post("/admin/updates/preview", {
+  expect(response.payload).toContain(`/admin/collections/updates/${item.id}/edit`);
+  response = await post("/admin/collections/updates/preview", {
     content: "<p>Unsaved preview</p>",
   });
   expect(response.statusCode).toBe(200);
