@@ -1,3 +1,4 @@
+import { assertNotReferenced } from '../services/collections/store.js';
 import { BaseRepository } from './baseRepository.js';
 export class MovesRepository extends BaseRepository {
   constructor() { super('moves'); }
@@ -18,6 +19,7 @@ export class MovesRepository extends BaseRepository {
     await this.commit(this.collection.map(m => m.id === id ? record : m)); return record;
   }
   async delete(id) {
+    assertNotReferenced(this.db.data, this.collectionName, id);
     if (!await this.findById(id)) throw new Error('Move not found');
     await this.commit(this.collection.filter(m => m.id !== id)); return true;
   }

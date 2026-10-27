@@ -1,3 +1,4 @@
+import { assertNotReferenced } from '../services/collections/store.js';
 /**
  * Base Repository
  * Provides common CRUD operations for all repositories
@@ -64,6 +65,7 @@ export class BaseRepository {
   }
 
   async delete(id) {
+    assertNotReferenced(this.db.data, this.collectionName, id);
     const index = this.collection?.findIndex((item) => item.id === id);
     if (index === undefined || index === -1) return false;
 

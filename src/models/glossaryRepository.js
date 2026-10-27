@@ -1,3 +1,4 @@
+import { assertNotReferenced } from '../services/collections/store.js';
 import { BaseRepository } from './baseRepository.js';
 export class GlossaryRepository extends BaseRepository {
   constructor() { super('glossary'); }
@@ -16,6 +17,7 @@ export class GlossaryRepository extends BaseRepository {
     await this.commit(this.collection.map(item=>item.id===id?record:item));return record;
   }
   async delete(id) {
+    assertNotReferenced(this.db.data, this.collectionName, id);
     if(!await this.findById(id))throw new Error('Glossary item not found');
     await this.commit(this.collection.filter(item=>item.id!==id));return true;
   }

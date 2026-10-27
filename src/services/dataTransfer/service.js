@@ -131,8 +131,8 @@ function rewrite(value, mapping) {
 }
 function mediaErrors(data, files) {
   const errors = [];
-  for (const key of COLLECTIONS)
-    for (const row of data[key] || []) {
+  for (const [key, rows] of [...COLLECTIONS.map(key => [key, data[key] || []]), ...Object.entries(data.dynamic?.records || {})])
+    for (const row of rows) {
       transformStrings(row, (text) => {
         for (const match of text.matchAll(uploadPattern)) {
           const name = decodeName(match[2]);
@@ -209,6 +209,7 @@ export async function buildPlan(
       return skipped ? row : rewrite(row, mapping);
     });
   }
+  if (adjusted.system?.dynamic) adjusted.system.dynamic = rewrite(adjusted.system.dynamic, mapping);
   const { result, counts } = mergeCollections(current, adjusted, mode);
   errors.push(...validateDatabase(result), ...mediaErrors(result, finalMedia));
   const warnings = [];
