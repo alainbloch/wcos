@@ -117,7 +117,7 @@ export class CollectionStore {
       delete data.dynamic.records[id];
     });
   }
-  async saveRecord(collection, input, id) {
+  async saveRecord(collection, input, id, replace = false) {
     const def = this.definition(collection);
     if (def.system) throw new Error('Use the existing system collection editor.');
     return this.mutate(data => {
@@ -126,7 +126,7 @@ export class CollectionStore {
       const rows = data.dynamic.records[collection];
       const old = id ? rows.find(r => r.id === id) : null;
       if (id && !old) throw new Error('Record not found.');
-      const record = validateRecord(def, { ...old, ...input, id: id || randomUUID(), createdAt: old?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() });
+      const record = validateRecord(def, { ...(replace ? {} : old), ...input, id: id || randomUUID(), createdAt: old?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() });
       if (old) rows.splice(rows.indexOf(old), 1, record); else rows.push(record);
       return record;
     });

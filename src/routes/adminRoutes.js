@@ -1,3 +1,4 @@
+import { collectionsController } from '../controllers/collectionsController.js';
 import { dataTransferController } from '../controllers/dataTransferController.js';
 import { MAX_FILE } from '../services/dataTransfer/format.js';
 import { updatesController } from '../controllers/updatesController.js';
@@ -69,6 +70,11 @@ export async function adminRoutes(fastify) {
     ['post','/settings/data-transfer/apply','apply'],
     ['get','/settings/data-transfer/backups/:name','backup'],
   ]) fastify[method](path, { onRequest: authMiddleware, preHandler: dataTransferController.guard.bind(dataTransferController), bodyLimit: MAX_FILE }, (request, reply) => dataTransferController[action](request, reply));
+
+  for (const path of ['/settings/database-schema', '/collections', '/data-views'])
+    fastify.get(path, { preHandler: collectionsController.guard.bind(collectionsController) }, collectionsController.screen.bind(collectionsController));
+  for (const method of ['get', 'post'])
+    fastify[method]('/schema-api/:action', { preHandler: collectionsController.guard.bind(collectionsController) }, collectionsController.api.bind(collectionsController));
 
   // Dashboard
   fastify.get("/", adminController.dashboard.bind(adminController));
