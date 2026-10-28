@@ -22,8 +22,8 @@
         <ul>
           <li><a href="/admin" {% if request.path == '/admin' %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Overview</a></li>
           <li><a href="/admin/settings" {% if request.path.startsWith('/admin/settings') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Settings</a></li>
-          <li><a href="/admin/layout" {% if request.path.startsWith('/admin/layout') %}class="active" aria-current="page"{% endif %}>Layout</a></li>
-          <li><a href="/admin/users" {% if request.path.startsWith('/admin/users') %}class="active" aria-current="page"{% endif %}>Users</a></li>
+          <li><a href="/admin/layout" {% if request.path.startsWith('/admin/layout') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Layout</a></li>
+          <li><a href="/admin/users" {% if request.path.startsWith('/admin/users') %}class="active" aria-current="page"{% endif %}><span class="nav-mark" aria-hidden="true"></span> Users</a></li>
           {% for collection in adminCollections %}
             <li>
               <a
