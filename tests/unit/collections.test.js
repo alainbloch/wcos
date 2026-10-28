@@ -4,6 +4,7 @@ import {
   revisionOf,
   validateState,
   assertNotReferenced,
+  schemaChanges,
 } from "../../src/services/collections/store.js";
 import { normalizeDefinition } from "../../src/services/collections/schema.js";
 import {
@@ -170,6 +171,33 @@ describe("Schema repository", () => {
   });
 });
 
+it("describes schema edits for backup metadata", () => {
+  const store = setup();
+  const definition = normalizeDefinition(event);
+  const edited = normalizeDefinition({
+    ...event,
+    fields: [
+      { name: "title", type: "string", required: true },
+      { name: "venue", type: "string" },
+    ],
+    columns: ["title"],
+  });
+  const changes = schemaChanges(definition, edited, store.data());
+  expect(changes.removed).toEqual([
+    { name: "date", label: "date", type: "date", records: 0 },
+    { name: "body", label: "body", type: "richtext", records: 0 },
+  ]);
+  expect(changes.added).toEqual([
+    { name: "venue", label: "venue", type: "string" },
+  ]);
+  expect(changes.changed).toEqual([
+    { name: "title", changes: { unique: { from: true, to: false } } },
+  ]);
+  expect(changes.summary).toContain("removed date (0 records)");
+  expect(changes.summary).toContain("removed body (0 records)");
+  expect(changes.summary).toContain("added venue (string)");
+  expect(changes.summary).toContain("changed title (unique)");
+});
 it("applies defaults in compatible migrations and rejects incompatible enum, bounds and regex values", async () => {
   const store = setup();
   const definition = {

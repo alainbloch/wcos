@@ -478,7 +478,7 @@
             schemaHome();
             notice(
               saved.backup
-                ? `Schema saved. Backup: ${saved.backup}. The generated record interface is ready.`
+                ? `Schema saved. Backup: ${saved.backup}${saved.summary ? ` (${saved.summary})` : ""}. The generated record interface is ready.`
                 : "Schema saved. The generated record interface is ready.",
             );
           }),
