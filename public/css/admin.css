@@ -533,6 +533,15 @@ textarea {
   color: #9b2632;
   border: 1px solid #eac0c5;
 }
+.schema-warning {
+  color: #8a5a00;
+  background: #fdf3d8;
+  border: 1px solid #ecd9a0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin: 10px 0;
+}
 .alert-dismiss {
   border: 0;
   background: transparent;

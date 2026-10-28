@@ -463,16 +463,24 @@
           `${result.count} existing records checked. ${result.errors.length ? result.errors.join(" ") : "Compatible. Ready to apply."}`,
         ),
       );
+      if (result.warnings?.length)
+        preview.append(
+          node("p", result.warnings.join(" "), { class: "schema-warning" }),
+        );
       if (!result.errors.length)
         preview.append(
           button("Apply previewed schema", async () => {
-            await api("save-schema", {
+            const saved = await api("save-schema", {
               definition: pending.definition,
               revision: pending.revision,
             });
             await refresh();
             schemaHome();
-            notice("Schema saved. The generated record interface is ready.");
+            notice(
+              saved.backup
+                ? `Schema saved. Backup: ${saved.backup}. The generated record interface is ready.`
+                : "Schema saved. The generated record interface is ready.",
+            );
           }),
         );
     }
