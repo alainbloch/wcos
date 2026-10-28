@@ -290,9 +290,7 @@ export const viewService = {
   async delete(id) {
     return collectionStore.mutate((data) => {
       if (
-        (data.pages || []).some(
-          (p) => p.dataSources?.includes(`view:${id}`) || p.dataView?.id === id,
-        )
+        (data.pages || []).some((p) => p.dataSources?.includes(`view:${id}`))
       )
         throw new Error("View is bound to a page. Remove the binding first.");
       data.dynamic.views = data.dynamic.views.filter((v) => v.id !== id);

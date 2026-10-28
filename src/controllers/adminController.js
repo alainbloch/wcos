@@ -8,7 +8,6 @@ import {
 } from "../services/referenceSiteService.js";
 import { renderView } from "../utils/viewEngine.js";
 import { renderPageContent } from "../services/pageRenderingService.js";
-import { readBinding } from "../services/collections/render.js";
 import { viewService } from "../services/collections/views.js";
 
 export class AdminController extends BaseController {
@@ -44,8 +43,16 @@ export class AdminController extends BaseController {
 
     let content;
     try {
+      const relationshipValues = {};
+      for (const field of definition.fields)
+        if (
+          field.type === "relationship" &&
+          request.body[field.name] !== undefined
+        )
+          relationshipValues[field.name] = request.body[field.name];
       const draft = {
         ...page,
+        ...relationshipValues,
         content:
           typeof request.body.content === "string"
             ? request.body.content
@@ -59,7 +66,6 @@ export class AdminController extends BaseController {
                 .split(",")
                 .filter(Boolean)
           : page?.dataSources || [],
-        dataView: readBinding(request.body, page?.dataView),
       };
       content =
         request.body.rawPreview === true
@@ -100,6 +106,21 @@ export class AdminController extends BaseController {
     }
     const pages = collectionStore.rows(definition.id);
     const collectionBase = `/admin/collections/${encodeURIComponent(definition.id)}`;
+    const relationships = {};
+    for (const field of definition.fields)
+      if (field.type === "relationship") {
+        let options;
+        try {
+          options = collectionStore.rows(field.target);
+        } catch {
+          options = [];
+        }
+        relationships[field.name] = {
+          field,
+          options,
+          selected: new Set([page[field.name]].flat().filter(Boolean)),
+        };
+      }
     await this.renderAdmin(request, reply, "admin/collections/design.njk", {
       dataViews: viewService.list().filter((v) => v.public),
       pageTitle: `Design ${definition.singularLabel || definition.label}`,
@@ -109,6 +130,7 @@ export class AdminController extends BaseController {
       },
       pages,
       definition,
+      relationships,
       collectionBase,
       previewUrl: `${collectionBase}/preview`,
       csrf: request.session.schemaCsrf,

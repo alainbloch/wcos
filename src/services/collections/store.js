@@ -157,23 +157,14 @@ export function validateState(data) {
   }
   validateViews(data);
   for (const page of data.pages || []) {
-    const ids = [
-      ...(Array.isArray(page.dataSources)
-        ? page.dataSources
-            .filter((s) => typeof s === "string" && s.startsWith("view:"))
-            .map((s) => s.slice(5))
-        : []),
-      ...(page.dataView?.id ? [page.dataView.id] : []),
-    ];
+    const ids = Array.isArray(page.dataSources)
+      ? page.dataSources
+          .filter((s) => typeof s === "string" && s.startsWith("view:"))
+          .map((s) => s.slice(5))
+      : [];
     for (const id of ids)
       if (!state.views.some((v) => v.id === id && v.public))
         throw new Error("Page references a missing or private data view.");
-    if (
-      page.dataView &&
-      (!["list", "grid", "detail"].includes(page.dataView.layout) ||
-        !["numbered", "more"].includes(page.dataView.pagination))
-    )
-      throw new Error("Invalid page presentation.");
   }
   return true;
 }

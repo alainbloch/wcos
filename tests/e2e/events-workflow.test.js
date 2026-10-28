@@ -148,73 +148,43 @@ it("renders actual paginated records in unsaved previews and public pages with m
     sort: [{ field: "title", direction: "asc" }],
     pageSize: 1,
   });
-  const binding = {
-    id: "upcoming",
-    layout: "grid",
-    pagination: "numbered",
-    search: true,
-    sorting: true,
-  };
+  const template =
+    "{% for event in upcoming %}<h3>{{ event.title }}</h3>{% else %}<p>No upcoming events.</p>{% endfor %}";
   const draft = {
-    content: "<h2>Unsaved heading</h2>",
+    content: template,
     dataSources: ["view:upcoming"],
-    dataView: binding,
   };
   const preview = await request("/admin/collections/pages/preview", draft);
   expect(preview.statusCode).toBe(200);
   expect(preview.payload).toContain("Autumn Tournament");
-  expect(preview.payload).not.toContain("Winter Tournament");
-  expect(preview.payload).toContain("page=2");
-  expect(preview.payload).toContain("Unsaved heading");
-  const second = await request("/admin/collections/pages/preview", {
-    ...draft,
-    query: { page: 2 },
-  });
-  expect(second.payload).toContain("Winter Tournament");
+  expect(preview.payload).toContain("Winter Tournament");
+  expect(preview.payload).not.toContain("No upcoming events");
   const pageResponse = await request("/admin/pages", {
     title: "Events",
     slug: "events",
-    content: "<h2>Published heading</h2>",
+    content: template,
     published: "on",
     dataSources: ["view:upcoming"],
-    dataView: binding,
   });
   expect(pageResponse.statusCode).toBe(302);
   const publicPage = await app.inject("/events");
   expect(publicPage.statusCode).toBe(200);
   expect(publicPage.payload).toContain("Autumn Tournament");
-  const previewDoc = new JSDOM(preview.payload),
-    publicDoc = new JSDOM(publicPage.payload);
-  expect(previewDoc.window.document.querySelector(".data-view").outerHTML).toBe(
-    publicDoc.window.document.querySelector(".data-view").outerHTML,
-  );
+  expect(publicPage.payload).toContain("Winter Tournament");
   const stored = await pagesRepo.findBySlug("events");
   expect(stored.content).not.toContain("Unsaved");
-  expect((await app.inject("/events?page=2")).payload).toContain(
-    "Winter Tournament",
-  );
-  const record = collectionStore
-    .rows("events")
-    .find((r) => r.title === "Winter Tournament");
-  const detail = await app.inject(`/events?record=${record.id}`);
-  expect(detail.payload).toContain("Winter Tournament");
-  expect(detail.payload).not.toContain("Autumn Tournament");
-  const changed = await request(`/admin/pages/${stored.id}/edit`, {
-    title: stored.title,
-    slug: stored.slug,
-    content: stored.content,
-    published: "on",
-    viewId: "upcoming",
-    viewLayout: "list",
-    viewPagination: "more",
-  });
-  expect(changed.statusCode).toBe(302);
-  expect((await app.inject("/events")).payload).toContain("data-view-more");
   const edit = await request(`/admin/collections/pages/${stored.id}/design`);
   expect(edit.payload).toContain("Data view: Upcoming Events");
   expect(edit.payload).toContain("data-live-preview");
-  previewDoc.window.close();
-  publicDoc.window.close();
+  const changed = await request(`/admin/pages/${stored.id}/edit`, {
+    title: stored.title,
+    slug: stored.slug,
+    content: template,
+    published: "on",
+    dataSources: ["view:upcoming"],
+  });
+  expect(changed.statusCode).toBe(302);
+  expect((await app.inject("/events")).payload).toContain("Autumn Tournament");
 });
 it("round-trips definitions, records, relationships, named views and page configuration", async () => {
   const before = structuredClone(getDatabase().data),

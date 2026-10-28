@@ -3,7 +3,6 @@ import { readMemberForm, memberFormToRecord } from "../../utils/memberForm.js";
 import { readClassForm } from "../classesService.js";
 import { readMoveForm } from "../movesService.js";
 import { readUpdateForm } from "../updatesService.js";
-import { readBinding } from "./render.js";
 export function readLegacyForm(collection, body, old) {
   const plain = Object.fromEntries(
     Object.entries(body || {})
@@ -45,7 +44,6 @@ export function readLegacyForm(collection, body, old) {
             : typeof plain.dataSources === "string"
               ? plain.dataSources.split(",").filter(Boolean)
               : old?.dataSources || [],
-      dataView: readBinding(plain, old?.dataView),
       layout: plain.layout ?? old?.layout ?? null,
       parentSlug: plain.parentSlug ?? old?.parentSlug ?? null,
       styleOverrides: plain.styleOverrides ?? old?.styleOverrides ?? null,

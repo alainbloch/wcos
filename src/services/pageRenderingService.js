@@ -1,14 +1,19 @@
 import { dynamicPageService } from "./dynamicPageService.js";
 import { sanitizePageContent } from "./referenceSiteService.js";
-import { renderDataView } from "./collections/render.js";
 /** Public pages and unsaved previews deliberately use the same data and presentation pipeline. */
 export async function renderPageContent(server, page, query = {}) {
-  const dynamicData = await dynamicPageService.resolveDataSources(
-    page.dataSources || [],
-    query,
-  );
+  // Collection-backed data sources win: relationship fields resolve the selected records,
+  // superseding any legacy resolver of the same name. Remaining names come from dataSources.
+  const relationships = await dynamicPageService.resolveRelationships(page);
+  const dynamicData = {
+    ...(await dynamicPageService.resolveDataSources(
+      page.dataSources || [],
+      query,
+    )),
+    ...relationships,
+  };
   let content = page.content || "";
-  if (page.dataSources?.length && content.trim()) {
+  if (Object.keys(dynamicData).length && content.trim()) {
     try {
       content = await new Promise((resolve, reject) =>
         server.nunjucks.renderString(content, dynamicData, (error, html) =>
@@ -20,6 +25,5 @@ export async function renderPageContent(server, page, query = {}) {
     }
   }
   content = sanitizePageContent(content);
-  if (page.dataView) content += renderDataView(page.dataView, query);
   return { content, dynamicData };
 }

@@ -38,7 +38,8 @@
         "maxLength": 2000000
       },
       "dataSources": {
-        "title": "Data Sources",
+        "title": "Advanced bindings",
+        "description": "Computed or derived data sources (e.g. champions, updates by category, data views). Collection-backed records are selected through the relationship fields below.",
         "x-wcos": {
           "type": "array",
           "group": "Page content"
@@ -49,16 +50,80 @@
         ],
         "maxItems": 1000
       },
-      "dataView": {
-        "title": "Data View",
+      "updates": {
+        "title": "Updates",
+        "description": "Selected updates to expose to this page's templates as the `updates` binding.",
         "x-wcos": {
-          "type": "object",
-          "group": "Page content"
+          "type": "relationship",
+          "target": "updates",
+          "cardinality": "many-to-many",
+          "group": "Page sources"
         },
         "type": [
-          "object",
+          "array",
           "null"
-        ]
+        ],
+        "maxItems": 1000
+      },
+      "members": {
+        "title": "Members",
+        "description": "Selected members to expose to this page's templates as the `members` binding.",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "members",
+          "cardinality": "many-to-many",
+          "group": "Page sources"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
+      },
+      "glossary": {
+        "title": "Glossary",
+        "description": "Selected glossary items to expose to this page's templates as the `glossary` binding.",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "glossary",
+          "cardinality": "many-to-many",
+          "group": "Page sources"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
+      },
+      "classes": {
+        "title": "Classes",
+        "description": "Selected classes to expose to this page's templates as the `classes` binding.",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "classes",
+          "cardinality": "many-to-many",
+          "group": "Page sources"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
+      },
+      "moves": {
+        "title": "Moves",
+        "description": "Selected moves to expose to this page's templates as the `moves` binding.",
+        "x-wcos": {
+          "type": "relationship",
+          "target": "moves",
+          "cardinality": "many-to-many",
+          "group": "Page sources"
+        },
+        "type": [
+          "array",
+          "null"
+        ],
+        "maxItems": 1000
       },
       "styleOverrides": {
         "title": "Style Overrides",
