@@ -1,5 +1,4 @@
 import { viewService } from "./collections/views.js";
-import { readBinding } from "./collections/render.js";
 /**
  * Pages Service
  * Handles general CMS pages
@@ -65,7 +64,6 @@ export class PagesService {
     return {
       title,
       slug,
-      dataView: readBinding(data, existing?.dataView),
       content:
         typeof data.content === "string"
           ? data.content

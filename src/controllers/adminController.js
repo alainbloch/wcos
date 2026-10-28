@@ -8,7 +8,6 @@ import {
 } from "../services/referenceSiteService.js";
 import { renderView } from "../utils/viewEngine.js";
 import { renderPageContent } from "../services/pageRenderingService.js";
-import { readBinding } from "../services/collections/render.js";
 import { viewService } from "../services/collections/views.js";
 
 export class AdminController extends BaseController {
@@ -44,8 +43,16 @@ export class AdminController extends BaseController {
 
     let content;
     try {
+      const relationshipValues = {};
+      for (const field of definition.fields)
+        if (
+          field.type === "relationship" &&
+          request.body[field.name] !== undefined
+        )
+          relationshipValues[field.name] = request.body[field.name];
       const draft = {
         ...page,
+        ...relationshipValues,
         content:
           typeof request.body.content === "string"
             ? request.body.content
@@ -59,7 +66,6 @@ export class AdminController extends BaseController {
                 .split(",")
                 .filter(Boolean)
           : page?.dataSources || [],
-        dataView: readBinding(request.body, page?.dataView),
       };
       content =
         request.body.rawPreview === true

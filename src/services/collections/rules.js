@@ -6,7 +6,6 @@ import { prepareHonors } from "../../utils/memberHonors.js";
 import { prepareDalmater, isKaiden } from "../../utils/memberDalmater.js";
 import { sanitizeDefinition, glossaryNameKey } from "../../utils/glossary.js";
 import { sanitizePageContent } from "../referenceSiteService.js";
-import { readBinding } from "./render.js";
 
 const hasText = (value) => typeof value === "string" && value.trim();
 function fail(field, message) {
@@ -203,7 +202,6 @@ const rules = {
       );
     record.content ??= "";
     record.dataSources ??= [];
-    record.dataView = readBinding(record, old?.dataView);
     if (record.parentSlug) {
       const visited = new Set([record.slug]);
       let slug = record.parentSlug;
