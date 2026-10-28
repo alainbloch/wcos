@@ -173,9 +173,9 @@ it("uses one repository class and blocks incompatible schema changes and locked 
       columns: ["name"],
     },
   });
-  expect(preview.json().errors.join(" ")).toContain(
-    "Cannot remove populated field",
-  );
+  expect(preview.statusCode).toBe(200);
+  expect(preview.json().errors).toEqual([]);
+  expect(preview.json().warnings.join(" ")).toContain("definition");
   expect(
     (
       await post("preview-schema", {
@@ -259,4 +259,75 @@ it("sanitizes new rich-text fields on existing collections and enforces domain r
     record: { date: "2026-02-30", category: "news", body: "Invalid date" },
   });
   expect(invalidDate.statusCode).toBe(400);
+});
+it("warns, backs up and migrates existing records when a populated field is removed", async () => {
+  const definition = {
+    id: "scratchRecords",
+    label: "Scratch records",
+    fields: [
+      { name: "name", type: "string", required: true },
+      { name: "sourceUrl", type: "string" },
+    ],
+  };
+  try {
+    const created = await post("save-schema", {
+      definition,
+      revision: (await post("preview-schema", { definition })).json().revision,
+    });
+    expect(created.statusCode).toBe(200);
+    const first = await post("save-record", {
+      collection: "scratchRecords",
+      record: { name: "Alpha", sourceUrl: "https://example.com/a" },
+    });
+    const second = await post("save-record", {
+      collection: "scratchRecords",
+      record: { name: "Beta", sourceUrl: "https://example.com/b" },
+    });
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);
+    const current = collectionStore.definition("scratchRecords");
+    const withoutUrl = {
+      ...current,
+      fields: current.fields.filter((f) => f.name !== "sourceUrl"),
+      columns: ["name"],
+    };
+    const removal = await post("preview-schema", { definition: withoutUrl });
+    expect(removal.statusCode).toBe(200);
+    expect(removal.json().errors).toEqual([]);
+    expect(removal.json().warnings.join(" ")).toContain("sourceUrl");
+    const applied = await post("save-schema", {
+      definition: withoutUrl,
+      revision: removal.json().revision,
+    });
+    expect(applied.statusCode).toBe(200);
+    expect(applied.json().backup).toMatch(/backup-schema-scratchRecords-\d+$/);
+    expect(applied.json().warnings.join(" ")).toContain("sourceUrl");
+    const rows = collectionStore.rows("scratchRecords");
+    expect(rows).toHaveLength(2);
+    for (const row of rows) {
+      expect(row.sourceUrl).toBeUndefined();
+      expect(row.name).toMatch(/^(Alpha|Beta)$/);
+    }
+    const backup = JSON.parse(
+      fs.readFileSync(applied.json().backup, "utf8"),
+    );
+    expect(
+      backup.dynamic.records.scratchRecords
+        .map((row) => row.sourceUrl)
+        .filter(Boolean)
+        .sort(),
+    ).toEqual(["https://example.com/a", "https://example.com/b"]);
+  } finally {
+    if (collectionStore.definitions().some((d) => d.id === "scratchRecords")) {
+      for (const row of collectionStore.rows("scratchRecords"))
+        await post("delete-record", {
+          collection: "scratchRecords",
+          id: row.id,
+        }).catch(() => {});
+      await post("delete-schema", { id: "scratchRecords" }).catch(() => {});
+    }
+  }
+  expect(
+    collectionStore.definitions().some((d) => d.id === "scratchRecords"),
+  ).toBe(false);
 });

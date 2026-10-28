@@ -27,7 +27,7 @@ function setup() {
       data = candidate;
     },
   };
-  return new CollectionStore(adapter);
+  return new CollectionStore(adapter, async () => "stub-backup");
 }
 async function define(store, definition) {
   return store.saveDefinition(definition, store.preview(definition).revision);
@@ -67,9 +67,12 @@ describe("Schema repository", () => {
     await expect(store.saveDefinition(event, preview.revision)).rejects.toThrow(
       "changed",
     );
-    expect(
-      store.preview({ ...event, fields: [] }).errors.length,
-    ).toBeGreaterThan(0);
+    const removal = store.preview({ ...event, fields: [] });
+    expect(removal.errors).toEqual([]);
+    expect(removal.warnings.join(" ")).toContain("title");
+    // Removing populated fields migrates the records instead of blocking.
+    await store.saveDefinition({ ...event, fields: [] }, removal.revision);
+    expect(store.rows("events")[0]).not.toHaveProperty("title");
     expect(() => normalizeDefinition({ ...event, id: "__proto__" })).toThrow();
     expect(() => normalizeDefinition({ ...event, id: "users" })).toThrow();
     await expect(

@@ -1,7 +1,9 @@
 import { prepareRecord, validateDeletion, afterWrite } from "./rules.js";
 import { validateViews } from "./views.js";
 import { randomUUID, createHash } from "node:crypto";
+import { writeFile } from "node:fs/promises";
 import { getDatabase } from "../../models/database.js";
+import config from "../../config/index.js";
 import {
   assertSafe,
   normalizeDefinition,
@@ -202,9 +204,21 @@ export class LowCollectionAdapter {
     }
   }
 }
+// Schema edits that remove populated fields migrate record values away. A
+// complete database snapshot is written beside DB_PATH first so the change is
+// always reversible (same naming convention as explicit content migrations).
+export async function writeSchemaBackup(collection, data) {
+  const backup = `${config.dbPath}.backup-schema-${collection}-${Date.now()}`;
+  await writeFile(backup, JSON.stringify(data, null, 2), {
+    flag: "wx",
+    mode: 0o600,
+  });
+  return backup;
+}
 export class CollectionStore {
-  constructor(adapter = new LowCollectionAdapter()) {
+  constructor(adapter = new LowCollectionAdapter(), backup = writeSchemaBackup) {
     this.adapter = adapter;
+    this.backup = backup;
     this.queue = Promise.resolve();
   }
   data() {
@@ -263,25 +277,37 @@ export class CollectionStore {
     candidate.dynamic ||= emptyState();
     const previous = definitionsOf(data).find((d) => d.id === definition.id);
     const errors = [];
-    if (previous)
-      for (const f of previous.fields)
-        if (
-          !definition.fields.some((n) => n.name === f.name) &&
-          rowsOf(data, definition.id).some((r) => Object.hasOwn(r, f.name))
-        )
-          errors.push(
-            `Cannot remove populated field ${f.name}. Export and migrate records explicitly first.`,
+    const warnings = [];
+    const removed = new Set(
+      (previous?.fields || [])
+        .filter((f) => !definition.fields.some((n) => n.name === f.name))
+        .map((f) => f.name),
+    );
+    if (removed.size)
+      for (const name of removed) {
+        const affected = rowsOf(data, definition.id).filter((row) =>
+          Object.hasOwn(row, name),
+        ).length;
+        if (affected)
+          warnings.push(
+            `Field ${name} will be removed from ${affected} record${affected === 1 ? "" : "s"}. A backup is created automatically before applying.`,
           );
+      }
     candidate.dynamic.definitions = candidate.dynamic.definitions
       .filter((d) => d.id !== definition.id)
       .concat(definition);
     try {
+      // Validate the migrated state: values of removed fields are dropped the
+      // same way saveDefinition applies them, so a removal preview never
+      // fails just because existing records still carry the old values.
       setRows(
         candidate,
         definition.id,
-        rowsOf(candidate, definition.id).map((row) =>
-          validateRecord(definition, row, { sanitize: false }),
-        ),
+        rowsOf(candidate, definition.id).map((row) => {
+          const migrated = { ...row };
+          for (const name of removed) delete migrated[name];
+          return validateRecord(definition, migrated, { sanitize: false });
+        }),
       );
       validateState(candidate);
     } catch (error) {
@@ -292,10 +318,11 @@ export class CollectionStore {
       revision: revisionOf(data),
       count: rowsOf(data, definition.id).length,
       errors,
+      warnings,
     };
   }
   async saveDefinition(input, revision) {
-    return this.mutate((data) => {
+    return this.mutate(async (data) => {
       if (revision !== revisionOf(this.data()))
         throw new Error(
           "Data changed since preview. Preview again before applying.",
@@ -304,10 +331,24 @@ export class CollectionStore {
       if (preview.errors.length) throw new Error(preview.errors.join(" "));
       const state = data.dynamic,
         previous = definitionsOf(this.data()).find((d) => d.id === input.id);
+      const removed = new Set(
+        (previous?.fields || [])
+          .filter(
+            (f) =>
+              !preview.definition.fields.some((n) => n.name === f.name),
+          )
+          .map((f) => f.name),
+      );
+      // Values of removed fields are migrated away: snapshot the whole
+      // database first so the change stays reversible.
+      const backup = preview.warnings.length
+        ? await this.backup(input.id, this.data())
+        : null;
       state.history.push({
         id: randomUUID(),
         collection: input.id,
         definition: previous || null,
+        backup,
         savedAt: new Date().toISOString(),
       });
       state.history = state.history.slice(-100);
@@ -317,11 +358,19 @@ export class CollectionStore {
       setRows(
         data,
         input.id,
-        rowsOf(data, input.id).map((row) =>
-          validateRecord(preview.definition, row, { sanitize: false }),
-        ),
+        rowsOf(data, input.id).map((row) => {
+          const migrated = { ...row };
+          for (const name of removed) delete migrated[name];
+          return validateRecord(preview.definition, migrated, {
+            sanitize: false,
+          });
+        }),
       );
-      return preview.definition;
+      return {
+        definition: preview.definition,
+        warnings: preview.warnings,
+        backup,
+      };
     });
   }
   async deleteDefinition(id) {
