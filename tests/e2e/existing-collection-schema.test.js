@@ -302,6 +302,15 @@ it("warns, backs up and migrates existing records when a populated field is remo
     expect(applied.statusCode).toBe(200);
     expect(applied.json().backup).toMatch(/backup-schema-scratchRecords-\d+$/);
     expect(applied.json().warnings.join(" ")).toContain("sourceUrl");
+    expect(applied.json().summary).toContain("sourceUrl");
+    const changes = JSON.parse(
+      fs.readFileSync(`${applied.json().backup}.changes.json`, "utf8"),
+    );
+    expect(changes.collection).toBe("scratchRecords");
+    expect(changes.removed).toEqual([
+      { name: "sourceUrl", label: "sourceUrl", type: "string", records: 2 },
+    ]);
+    expect(changes.summary).toBe("removed sourceUrl (2 records)");
     const rows = collectionStore.rows("scratchRecords");
     expect(rows).toHaveLength(2);
     for (const row of rows) {

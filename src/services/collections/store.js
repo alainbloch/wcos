@@ -204,15 +204,90 @@ export class LowCollectionAdapter {
     }
   }
 }
+const COMPARED_KEYS = [
+  "type",
+  "label",
+  "required",
+  "unique",
+  "min",
+  "max",
+  "pattern",
+  "options",
+  "target",
+  "cardinality",
+  "control",
+  "nullable",
+  "default",
+  "optionRule",
+  "group",
+];
+// Human- and machine-readable description of a schema edit, used to annotate
+// the automatic backup with exactly what was removed or changed.
+export function schemaChanges(previous, definition, data) {
+  const next = new Map(definition.fields.map((f) => [f.name, f]));
+  const removed = [];
+  for (const f of previous?.fields || []) {
+    if (next.has(f.name)) continue;
+    const records = rowsOf(data, definition.id).filter((row) =>
+      Object.hasOwn(row, f.name),
+    ).length;
+    removed.push({ name: f.name, label: f.label, type: f.type, records });
+  }
+  const before = new Map((previous?.fields || []).map((f) => [f.name, f]));
+  const added = [];
+  const changed = [];
+  for (const f of definition.fields) {
+    const old = before.get(f.name);
+    if (!old) {
+      added.push({ name: f.name, label: f.label, type: f.type });
+      continue;
+    }
+    const changes = {};
+    for (const key of COMPARED_KEYS)
+      if (JSON.stringify(old[key]) !== JSON.stringify(f[key]))
+        changes[key] = { from: old[key] ?? null, to: f[key] ?? null };
+    if (Object.keys(changes).length)
+      changed.push({ name: f.name, changes });
+  }
+  const summary = [
+    ...removed.map((f) =>
+      `removed ${f.name} (${f.records} record${f.records === 1 ? "" : "s"})`,
+    ),
+    ...added.map((f) => `added ${f.name} (${f.type})`),
+    ...changed.map((f) => `changed ${f.name} (${Object.keys(f.changes).join(", ")})`),
+  ].join("; ");
+  return {
+    summary: summary || "no schema changes recorded",
+    removed,
+    added,
+    changed,
+  };
+}
 // Schema edits that remove populated fields migrate record values away. A
 // complete database snapshot is written beside DB_PATH first so the change is
-// always reversible (same naming convention as explicit content migrations).
-export async function writeSchemaBackup(collection, data) {
+// always reversible (same naming convention as explicit content migrations);
+// a sidecar .changes.json describes exactly what the edit changed.
+export async function writeSchemaBackup(collection, data, changes) {
   const backup = `${config.dbPath}.backup-schema-${collection}-${Date.now()}`;
   await writeFile(backup, JSON.stringify(data, null, 2), {
     flag: "wx",
     mode: 0o600,
   });
+  if (changes) {
+    const meta = {
+      backup,
+      collection,
+      savedAt: new Date().toISOString(),
+      summary: changes.summary,
+      removed: changes.removed,
+      added: changes.added,
+      changed: changes.changed,
+    };
+    await writeFile(`${backup}.changes.json`, JSON.stringify(meta, null, 2), {
+      flag: "wx",
+      mode: 0o600,
+    });
+  }
   return backup;
 }
 export class CollectionStore {
@@ -341,8 +416,9 @@ export class CollectionStore {
       );
       // Values of removed fields are migrated away: snapshot the whole
       // database first so the change stays reversible.
+      const changes = schemaChanges(previous, preview.definition, this.data());
       const backup = preview.warnings.length
-        ? await this.backup(input.id, this.data())
+        ? await this.backup(input.id, this.data(), changes)
         : null;
       state.history.push({
         id: randomUUID(),
@@ -370,6 +446,7 @@ export class CollectionStore {
         definition: preview.definition,
         warnings: preview.warnings,
         backup,
+        summary: changes.summary,
       };
     });
   }
