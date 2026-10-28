@@ -155,6 +155,14 @@ export async function adminRoutes(fastify) {
               ? adminController.designRecord(request, reply)
               : adminController.previewRecord(request, reply);
           }
+          // Design-capable collections edit through the layout editor, so "Edit
+          // Page" and "Open page layout editor" are the same screen.
+          if (
+            action === "screen" &&
+            request.params.id &&
+            request.collectionDefinition.capabilities?.design
+          )
+            return adminController.designRecord(request, reply);
 
           return collectionsController[action](request, reply);
         },

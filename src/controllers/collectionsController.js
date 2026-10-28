@@ -171,6 +171,13 @@ export class CollectionsController extends BaseController {
       if (design) {
         const draft = readLegacyForm("pages", request.body, old);
         draft[definition.contentField || "content"] = draft.content;
+        // Relationship fields post as multi/single-selects on the design form too.
+        for (const field of definition.fields)
+          if (
+            field.type === "relationship" &&
+            request.body[field.name] !== undefined
+          )
+            draft[field.name] = request.body[field.name];
         record = Object.fromEntries(
           Object.entries(draft).filter(([key]) =>
             definition.fields.some((field) => field.name === key),

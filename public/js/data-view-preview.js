@@ -12,6 +12,10 @@
     const body = Object.fromEntries(values);
     body.id = form.dataset.pageId;
     body.dataSources = values.getAll("dataSources");
+    // Relationship fields post as arrays; FormData collapses multi-select to one value.
+    form
+      .querySelectorAll("select[multiple]")
+      .forEach((select) => (body[select.name] = values.getAll(select.name)));
     body.query = query;
     // The visual editor holds source content, while this separate preview is read-only.
     const editor = form
@@ -71,17 +75,5 @@
         .querySelector("iframe")
         .contentDocument.addEventListener("input", schedule),
     );
-  form.querySelectorAll("[name=dataSources]").forEach((box) =>
-    box.addEventListener("change", () => {
-      if (box.checked && box.value.startsWith("view:"))
-        form.elements.viewId.value = box.value.slice(5);
-      else if (
-        !box.checked &&
-        box.value === `view:${form.elements.viewId.value}`
-      )
-        form.elements.viewId.value = "";
-      schedule();
-    }),
-  );
   preview();
 })();

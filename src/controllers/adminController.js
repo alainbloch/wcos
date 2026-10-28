@@ -106,6 +106,21 @@ export class AdminController extends BaseController {
     }
     const pages = collectionStore.rows(definition.id);
     const collectionBase = `/admin/collections/${encodeURIComponent(definition.id)}`;
+    const relationships = {};
+    for (const field of definition.fields)
+      if (field.type === "relationship") {
+        let options;
+        try {
+          options = collectionStore.rows(field.target);
+        } catch {
+          options = [];
+        }
+        relationships[field.name] = {
+          field,
+          options,
+          selected: new Set([page[field.name]].flat().filter(Boolean)),
+        };
+      }
     await this.renderAdmin(request, reply, "admin/collections/design.njk", {
       dataViews: viewService.list().filter((v) => v.public),
       pageTitle: `Design ${definition.singularLabel || definition.label}`,
@@ -115,6 +130,7 @@ export class AdminController extends BaseController {
       },
       pages,
       definition,
+      relationships,
       collectionBase,
       previewUrl: `${collectionBase}/preview`,
       csrf: request.session.schemaCsrf,
